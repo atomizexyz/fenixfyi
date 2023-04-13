@@ -1,13 +1,186 @@
 "use client";
 
+import "react-day-picker/dist/style.css";
+
+import { clsx } from "clsx";
+import { ErrorMessage } from "@hookform/error-message";
+import { BigNumber, ethers } from "ethers";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { PageHeader, GasEstimate, DescriptionDatum, BonusCalculator } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MaxValueField } from "@/components/forms";
+import { DayPicker } from "react-day-picker";
+import { useCallback, useEffect, useState } from "react";
+import { addDays, differenceInDays, isSameMonth, getYear } from "date-fns";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import {
+  useContractWrite,
+  useNetwork,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+  useFeeData,
+  useBalance,
+  useAccount,
+} from "wagmi";
+import * as yup from "yup";
+import { FENIX_MAX_STAKE_LENGTH } from "@/utilities/constants";
+import FENIX_ABI from "@/models/abi/FENIX_ABI";
+import { fenixContract } from "@/libraries/fenixContract";
 
 export default function Stake() {
-  const setValue = () => {};
-  const register = (s: string) => {};
+  const today = new Date();
+  const tomorrow = addDays(today, 1);
+  const maxStakeLengthDay = addDays(today, FENIX_MAX_STAKE_LENGTH);
+
+  const [month, setMonth] = useState<Date>(today);
+  const [isLockMonth, setIsLockMonth] = useState<boolean>(true);
+  const [disabled, setDisabled] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [sizeBonus, setSizeBonus] = useState<number>(0);
+  const [timeBonus, setTimeBonus] = useState<number>(0);
+  const [subtotalBonus, setSubtotalBonus] = useState<number>(0);
+  const [shares, setShares] = useState<number>(0);
+
+  const router = useRouter();
+
+  const { chain } = useNetwork();
+  const { address } = useAccount();
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: fenixBalance } = useBalance({
+    address: address,
+    token: fenixContract(chain).address,
+    watch: true,
+  });
+
+  /*** FORM SETUP ***/
+
+  const schema = yup
+    .object()
+    .shape({
+      startStakeAmount: yup
+        .number()
+        .required("Amount required")
+        .max(
+          Number(ethers.utils.formatUnits(fenixBalance?.value ?? BigNumber.from(0))),
+          `Maximum amount is ${fenixBalance?.formatted}`
+        )
+        .positive("Amount must be greater than 0")
+        .typeError("Amount required"),
+      startStakeDays: yup
+        .number()
+        .required("Days required")
+        .max(FENIX_MAX_STAKE_LENGTH, "Maximum days is ${FENIX_MAX_STAKE_LENGTH}")
+        .positive("Days must be greater than 0")
+        .typeError("Days required"),
+    })
+    .required();
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isValid },
+    setValue,
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+  });
+  const { startStakeAmount, startStakeDays } = watch();
+
+  /*** CONTRACT WRITE SETUP ***/
+
+  const { config } = usePrepareContractWrite({
+    address: fenixContract(chain).address,
+    abi: FENIX_ABI,
+    functionName: "startStake",
+    args: [
+      ethers.utils.parseUnits(Number(startStakeAmount ?? 0).toString(), fenixBalance?.decimals),
+      startStakeDays ?? 0,
+    ],
+    enabled: !disabled,
+  });
+
+  const { data: stakeData, write: writeStake } = useContractWrite({
+    ...config,
+    onSuccess(_data) {
+      setProcessing(true);
+      setDisabled(true);
+    },
+  });
+  const {} = useWaitForTransaction({
+    hash: stakeData?.hash,
+    onSuccess(_data) {
+      toast("Stake started successfully");
+      router.push("/stake/active");
+    },
+  });
+  const handleStartStakeSubmit = (_data: any) => {
+    writeStake?.();
+  };
+
+  const footer = (
+    <div className="flex justify-between">
+      <button
+        disabled={isSameMonth(today, month)}
+        onClick={() => {
+          setIsLockMonth(false);
+          setMonth(addDays(today, 1));
+        }}
+        className="text-sm font-semibold primary-link"
+      >
+        Go to Today
+      </button>
+
+      <div className="relative flex py-4">
+        <div className="min-w-0 flex-1 text-sm leading-6">
+          <label className="select-none font-medium secondary-text">Lock Month</label>
+        </div>
+        <div className="flex ml-2 h-6 items-center">
+          <input
+            onChange={(event) => setIsLockMonth(event.currentTarget.checked)}
+            type="checkbox"
+            className="h-4 w-4 rounded  primary-checkbox"
+            checked={isLockMonth}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const selectedFromDay = useCallback(() => {
+    return addDays(new Date(), startStakeDays ?? 0);
+  }, [startStakeDays]);
+
+  const selectedToDay = (date: any) => {
+    setValue("startStakeDays", differenceInDays(date, today) + 1);
+  };
+
+  useEffect(() => {
+    // setTimeBonus(calcTimeBonus(startStakeDays));
+    // setSizeBonus(calcSizeBonus(startStakeAmount));
+    // setSubtotalBonus(calcBonus(startStakeAmount, startStakeDays));
+    // setShares(subtotalBonus / Number(ethers.utils.formatUnits(shareRate)));
+
+    if (isLockMonth && !isSameMonth(selectedFromDay(), month)) {
+      setMonth(selectedFromDay());
+    }
+
+    setDisabled(!isValid);
+  }, [
+    selectedFromDay,
+    month,
+    isLockMonth,
+    startStakeAmount,
+    startStakeDays,
+    sizeBonus,
+    timeBonus,
+    subtotalBonus,
+    // shareRate,
+    isValid,
+  ]);
 
   return (
     <Container className="max-w-xl">
@@ -17,14 +190,14 @@ export default function Stake() {
       />
 
       <CardContainer>
-        <form className="space-y-6" action="#" method="POST">
+        <form onSubmit={handleSubmit(handleStartStakeSubmit)} className="space-y-6">
           <MaxValueField
             title="FENIX"
             description="Number of FENIX to stake"
             decimals={0}
-            value={1000}
-            // errorMessage={<ErrorMessage errors={errors} name="burnXENAmount" />}
-            register={register("burnXENAmount")}
+            value={ethers.utils.formatUnits(fenixBalance?.value ?? BigNumber.from(0))}
+            errorMessage={<ErrorMessage errors={errors} name="startStakeAmount" />}
+            register={register("startStakeAmount")}
             setValue={setValue}
           />
 
@@ -32,11 +205,32 @@ export default function Stake() {
             title="Days"
             description="Number of days"
             decimals={0}
-            value={1000}
-            // errorMessage={<ErrorMessage errors={errors} name="burnXENAmount" />}
-            register={register("burnXENAmount")}
+            value={FENIX_MAX_STAKE_LENGTH}
+            errorMessage={<ErrorMessage errors={errors} name="startStakeDays" />}
+            register={register("startStakeDays")}
             setValue={setValue}
           />
+
+          <div className="flex justify-center">
+            <DayPicker
+              mode="single"
+              className="primary-text"
+              modifiersClassNames={{
+                selected: "day-selected",
+                outside: "day-outside",
+              }}
+              disabled={[{ before: tomorrow, after: maxStakeLengthDay }]}
+              selected={selectedFromDay()}
+              onSelect={selectedToDay}
+              month={month}
+              onMonthChange={setMonth}
+              footer={footer}
+              fromYear={getYear(today)}
+              toYear={getYear(maxStakeLengthDay)}
+              captionLayout="dropdown"
+              fixedWeeks
+            />
+          </div>
 
           <CardContainer className="glass">
             <BonusCalculator sizeBonus={100} timeBonus={100} base={100} subtotal={100} shareRate={100} shares={100} />
@@ -45,12 +239,17 @@ export default function Stake() {
             <DescriptionDatum title="Your Stake Shares" datum="1 day" />
           </dl>
 
-          <div>
-            <Link href="https://xen.fyi" className="flex w-full justify-center primary-button">
-              Start
-            </Link>
-          </div>
-          <GasEstimate />
+          <button
+            type="submit"
+            className={clsx("flex w-full justify-center primary-button", {
+              loading: processing,
+            })}
+            disabled={disabled}
+          >
+            Start
+          </button>
+
+          {/* <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} /> */}
         </form>
       </CardContainer>
     </Container>

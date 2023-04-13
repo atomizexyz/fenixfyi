@@ -17,6 +17,8 @@
   border: none;
   outline: none;
   @apply text-transparent bg-clip-text bg-gradient-to-br from-[#F9386D] to-[#F6781A];
+  @apply disabled:text-neutral-200;
+  @apply dark:disabled:text-neutral-700;
 }
 
 .primary-element {
@@ -51,14 +53,18 @@
 
 .primary-input {
   outline: none;
+  @apply text-neutral-950;
   @apply block w-full rounded-md border-0 px-3.5 py-2 shadow-sm ring-1 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm sm:leading-6 focus:ring-[#FF5320];
-  @apply text-neutral-950 ring-neutral-300;
-  @apply dark:text-neutral-50 dark:ring-neutral-700;
+  @apply ring-neutral-300;
+  @apply dark:ring-neutral-700;
+}
+
+.primary-checkbox {
+  outline: none;
+  @apply text-[#FF5320] focus:ring-[#FF5320];
 }
 
 /* Secondary Elements */
-.secondary-background {
-}
 
 .secondary-text {
   @apply text-neutral-600;
@@ -96,6 +102,15 @@
 }
 
 /* Custom Elements */
+
+.day-selected:not([disabled]) {
+  @apply bg-gradient-to-br from-[#F9386D] to-[#F6781A] text-neutral-50;
+}
+
+.rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  @apply bg-neutral-200;
+  @apply dark:bg-neutral-700;
+}
 
 .badge-success {
   @apply bg-green-100 text-green-800;

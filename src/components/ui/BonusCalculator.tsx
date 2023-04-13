@@ -16,7 +16,7 @@ interface BonusCalculatorStat {
 export const BonusCalculator: NextPage<BonusCalculatorStat> = (props) => {
   return (
     <div className="stat">
-      <div className="stat-title">Calculator</div>
+      <div className="primary-text">Calculator</div>
 
       <div className="overflow-x-auto">
         <table className="table table-zebra table-compact w-full">
