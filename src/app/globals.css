@@ -14,6 +14,8 @@
 }
 
 .primary-link {
+  border: none;
+  outline: none;
   @apply text-transparent bg-clip-text bg-gradient-to-br from-[#F9386D] to-[#F6781A];
 }
 
