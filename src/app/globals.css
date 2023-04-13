@@ -2,26 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+/* Primary Elements  */
+.primary-background {
+  @apply bg-neutral-100;
+  @apply dark:bg-black;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.primary-text {
+  @apply text-neutral-950;
+  @apply dark:text-neutral-50;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.primary-link {
+  @apply text-transparent bg-clip-text bg-gradient-to-br from-[#F9386D] to-[#F6781A];
+}
+
+.primary-element {
+  @apply text-neutral-500;
+  @apply dark:text-neutral-400;
+}
+
+.primary-divider {
+  @apply divide-neutral-900/30;
+  @apply dark:divide-neutral-900/80;
+}
+
+.primary-button {
+  @apply rounded-md px-3.5 py-2.5 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
+  @apply text-white bg-gradient-to-br from-[#F9386D] to-[#F6781A];
+}
+
+.primary-button-mini {
+  @apply px-2 rounded-md ml-2;
+  @apply text-white bg-gradient-to-br from-[#F9386D] to-[#F6781A];
+}
+
+.primary-card {
+  @apply bg-white;
+  @apply dark:bg-neutral-900;
+}
+
+.primary-gradient {
+  @apply bg-gradient-to-t from-neutral-100 pt-[7%];
+  @apply dark:bg-gradient-to-t dark:from-black dark:pt-[7%];
+}
+
+/* Secondary Elements */
+.secondary-background {
+}
+
+.secondary-text {
+  @apply text-neutral-600;
+  @apply dark:text-neutral-400;
+}
+
+.secondary-link {
+  @apply text-neutral-800;
+  @apply dark:text-neutral-200;
+}
+
+.secondary-divider {
+  @apply divide-neutral-900/5;
+  @apply dark:divide-neutral-900/95;
+}
+.secondary-group-hover {
+  @apply group-hover:text-white;
+  @apply text-neutral-600;
+  @apply dark:text-neutral-400;
+}
+
+.secondary-background-group-hover {
+  @apply group-hover:bg-gradient-to-br group-hover:from-[#F9386D] group-hover:to-[#F6781A];
+}
+
+/* Tertiary Elements */
+
+.tertiary-text {
+  @apply text-neutral-400;
+  @apply dark:text-neutral-500;
+}
+
+.tertiary-link {
+  @apply text-[#FF5320] hover:text-[#FF3F42];
+}
+
+/* Custom Elements */
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+  @apply dark:bg-green-700 dark:text-green-50;
+}
+
+.badge-warn {
+  @apply bg-orange-100 text-orange-800;
+  @apply dark:bg-yellow-800 dark:text-orange-50;
+}
+
+.badge-error {
+  @apply bg-red-100 text-red-800;
+  @apply dark:bg-red-800 dark:text-red-50;
+}
+
+.progress-gradient,
+.background-gradient {
+  @apply bg-gradient-to-br from-[#F9386D] to-[#F6781A];
+}
+
+.fenix-gradient {
+  @apply text-transparent bg-clip-text bg-gradient-to-br from-[#F9386D] to-[#F6781A];
+}
+
+.glass,
+.glass:hover,
+.glass.btn-active,
+.tab-lifted.glass {
+  border: none;
+  -webkit-backdrop-filter: blur(var(--glass-blur, 40px));
+  backdrop-filter: blur(var(--glass-blur, 40px));
+  box-shadow: 0 0 0 1px rgb(255 255 255 / var(--glass-border-opacity, 10%)) inset, 0 0 0 2px rgb(0 0 0 / 5%);
+  text-shadow: 0 1px rgb(0 0 0 / var(--glass-text-shadow-opacity, 5%));
 }
