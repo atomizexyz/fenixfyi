@@ -249,7 +249,7 @@ export default function Stake() {
             Start
           </button>
 
-          {/* <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} /> */}
+          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
         </form>
       </CardContainer>
     </Container>
