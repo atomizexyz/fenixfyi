@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { CardContainer, Container } from "@/components/containers";
 import { GasEstimate, PageHeader, DescriptionDatum } from "@/components/ui";
 import {
+  Chain,
   useContractWrite,
   useFeeData,
   useNetwork,
@@ -18,11 +19,11 @@ import { fenixContract } from "@/libraries/fenixContract";
 import { ethers } from "ethers";
 
 export default function Reward() {
-  const { chain } = useNetwork();
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
-
   const [disabled, setDisabled] = useState(false);
   const [processing, setProcessing] = useState(false);
+
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
 
   const {
     handleSubmit,

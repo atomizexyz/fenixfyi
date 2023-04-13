@@ -7,6 +7,8 @@ import { MaxValueField } from "@/components/forms";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import {
+  Address,
+  Chain,
   useContractWrite,
   useFeeData,
   useNetwork,
@@ -33,8 +35,8 @@ const BurnXEN = () => {
   const [burnMaximum, setBurnMaximum] = useState<BigNumber>(BigNumber.from(0));
 
   const router = useRouter();
-  const { address } = useAccount();
-  const { chain } = useNetwork();
+  const { address } = useAccount() as unknown as { address: Address };
+  const { chain } = useNetwork() as unknown as { chain: Chain };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
   const { data: fenixBalance } = useBalance({
     address: address,

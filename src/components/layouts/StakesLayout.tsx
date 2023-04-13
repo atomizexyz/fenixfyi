@@ -1,38 +1,39 @@
+"use client";
+
 import { NextPage } from "next";
 import { PageHeader, StakeRow, StakeCard, StakeRowHeaderFooter } from "@/components/ui";
 import { Container, CardContainer } from "@/components/containers";
-import { StakeRowDatum, StakeStatus } from "@/models/stake";
+import { Address, Chain, useAccount, useContractRead, useNetwork } from "wagmi";
+
+import { fenixContract } from "@/libraries/fenixContract";
+import FENIX_ABI from "@/models/abi/FENIX_ABI";
+import { StakeStatus } from "@/models/stake";
 
 export interface StakeLayoutDatum {
   title: string;
   subtitle: string;
-  status: StakeStatus;
-  stakes: StakeRowDatum[];
+  stakeStatus: StakeStatus;
 }
 
-export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, status, stakes }) => {
+export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stakeStatus }) => {
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { address } = useAccount() as unknown as { address: Address };
+  const { stakeCount } = useContractRead({
+    address: fenixContract(chain).address,
+    abi: FENIX_ABI,
+    functionName: "stakeCount",
+    args: [address],
+  }) as unknown as { stakeCount: number };
+
   return (
     <Container>
       <PageHeader title={title} subtitle={subtitle} />
       <div className="md:hidden">
         <CardContainer className="max-w-2xl">
           <div className="flex flex-col space-y-4 divide-y primary-divider">
-            {stakes
-              .filter((stake) => stake.status === status)
-              .map((stake) => (
-                <StakeCard
-                  key={stake.index}
-                  index={stake.index}
-                  status={stake.status}
-                  start={stake.start}
-                  end={stake.end}
-                  principal={0}
-                  shares={0}
-                  payout={stake.payout}
-                  penalty={stake.penalty}
-                  progress={stake.progress}
-                />
-              ))}
+            {Array.from(Array(stakeCount ?? 0).keys()).map((stakeIndex) => (
+              <StakeCard key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
+            ))}
           </div>
         </CardContainer>
       </div>
@@ -43,22 +44,9 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stat
               <StakeRowHeaderFooter />
             </thead>
             <tbody className="divide-y secondary-divider">
-              {stakes
-                .filter((stake) => stake.status === status)
-                .map((stake) => (
-                  <StakeRow
-                    key={stake.index}
-                    index={stake.index}
-                    status={stake.status}
-                    start={stake.start}
-                    end={stake.end}
-                    principal={0}
-                    shares={0}
-                    payout={stake.payout}
-                    penalty={stake.penalty}
-                    progress={stake.progress}
-                  />
-                ))}
+              {Array.from(Array(stakeCount ?? 0).keys()).map((stakeIndex) => (
+                <StakeRow key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
+              ))}
             </tbody>
           </table>
         </CardContainer>

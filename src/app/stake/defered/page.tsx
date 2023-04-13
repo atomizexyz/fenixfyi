@@ -1,12 +1,10 @@
 "use client";
 
 import { StakesLayout } from "@/components/layouts/StakesLayout";
-import { StakeStatus, stakes } from "@/models/stake";
+import { StakeStatus } from "@/models/stake";
 
 const StakeDefer = () => {
-  return (
-    <StakesLayout title="Deferred Stakes" subtitle="Deferred FENIX stakes" status={StakeStatus.DEFER} stakes={stakes} />
-  );
+  return <StakesLayout title="Deferred Stakes" subtitle="Deferred FENIX stakes" status={StakeStatus.DEFER} />;
 };
 
 export default StakeDefer;

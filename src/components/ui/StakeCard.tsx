@@ -1,31 +1,46 @@
 "use client";
 
 import { NextPage } from "next";
-import { StakeRowDatum, StakeStatus } from "@/models/stake";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { clamp } from "@/utilities/helpers";
+import FENIX_ABI from "@/models/abi/FENIX_ABI";
+import { Address, Chain, useAccount, useContractRead, useNetwork } from "wagmi";
+import { BigNumber } from "ethers";
+import { fenixContract } from "@/libraries/fenixContract";
+import { StakeStatus } from "@/models/stake";
 
-export const StakeCard: NextPage<StakeRowDatum> = ({
-  index,
-  status,
-  start,
-  end,
-  principal,
-  shares,
-  payout,
-  penalty,
-  progress,
-}) => {
-  const [startString, setStartString] = useState("");
-  const [endString, setEndString] = useState("");
+export const StakeCard: NextPage<{ stakeIndex: number; stakeStatus: StakeStatus }> = ({ stakeIndex, stakeStatus }) => {
+  const [startString, setStartString] = useState("-");
+  const [endString, setEndString] = useState("-");
+  const [principal, setPrincipal] = useState("-");
+  const [shares, setShares] = useState("-");
+  const [payout, setPayout] = useState("-");
+  const [penalty, setPenalty] = useState("-");
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState(0);
   const [clampedProgress, setClampedProgress] = useState(0);
 
-  useEffect(() => {
-    setClampedProgress(clamp(progress, 0, 100));
-    setStartString(new Date(start).toLocaleDateString());
-    setEndString(new Date(end).toLocaleDateString());
-  }, [end, progress, start]);
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { address } = useAccount() as unknown as { address: Address };
+
+  const { data: stake } = useContractRead({
+    address: fenixContract(chain).address,
+    abi: FENIX_ABI,
+    functionName: "stakeFor",
+    args: [address, BigNumber.from(stakeIndex)],
+    watch: true,
+  });
+
+  console.log("stake", stake);
+
+  if (stake?.status != stakeStatus) return null;
+
+  // useEffect(() => {
+  //   setClampedProgress(clamp(progress, 0, 100));
+  //   setStartString(new Date(start).toLocaleDateString());
+  //   setEndString(new Date(end).toLocaleDateString());
+  // }, [end, progress, start]);
 
   return (
     <div>
@@ -74,7 +89,7 @@ export const StakeCard: NextPage<StakeRowDatum> = ({
           </dd>
         </div>
         <div className="py-2 flex space-x-8">
-          {status !== StakeStatus.END && (
+          {/* {status !== StakeStatus.END && (
             <Link href={`/dashboard/${index}`} className="flex w-full justify-center primary-button">
               End
             </Link>
@@ -83,7 +98,7 @@ export const StakeCard: NextPage<StakeRowDatum> = ({
             <Link href={`/dashboard/${index}`} className="flex w-full justify-center primary-button">
               Defer
             </Link>
-          )}
+          )} */}
         </div>
       </dl>
     </div>

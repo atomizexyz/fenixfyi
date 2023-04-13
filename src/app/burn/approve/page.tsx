@@ -7,6 +7,8 @@ import { MaxValueField } from "@/components/forms";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import {
+  Chain,
+  Address,
   useContractWrite,
   useFeeData,
   useNetwork,
@@ -32,8 +34,8 @@ const BurnApprove = () => {
   const [processing, setProcessing] = useState(false);
 
   const router = useRouter();
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { address } = useAccount() as unknown as { address: Address };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
   const { data: xenBalance } = useBalance({
     address: address,
@@ -44,7 +46,7 @@ const BurnApprove = () => {
   const schema = yup
     .object()
     .shape({
-      burnXENAmount: yup
+      approveXENAmount: yup
         .number()
         .required("Amount required")
         .max(
@@ -67,7 +69,7 @@ const BurnApprove = () => {
     resolver: yupResolver(schema),
   });
 
-  const { burnXENAmount } = watch() as { burnXENAmount: number };
+  const { approveXENAmount } = watch() as { approveXENAmount: number };
 
   const { config: fixedConfig } = usePrepareContractWrite({
     address: xenContract(chain).address,
@@ -75,7 +77,7 @@ const BurnApprove = () => {
     functionName: "approve",
     args: [
       fenixContract(chain).address,
-      ethers.utils.parseUnits((burnXENAmount || 0).toString(), xenBalance?.decimals ?? 0),
+      ethers.utils.parseUnits((approveXENAmount || 0).toString(), xenBalance?.decimals ?? 0),
     ],
     enabled: !disabled,
   });
@@ -140,8 +142,8 @@ const BurnApprove = () => {
             description="Number of XEN to burn"
             decimals={0}
             value={ethers.utils.formatUnits(xenBalance?.value ?? BigNumber.from(0))}
-            errorMessage={<ErrorMessage errors={errors} name="burnXENAmount" />}
-            register={register("burnXENAmount")}
+            errorMessage={<ErrorMessage errors={errors} name="approveXENAmount" />}
+            register={register("approveXENAmount")}
             setValue={setValue}
           />
 
@@ -156,7 +158,7 @@ const BurnApprove = () => {
             })}
             disabled={disabled}
           >
-            {`Approve Limited Burn ${burnXENAmount} XEN`}
+            {`Approve Limited Burn ${approveXENAmount} XEN`}
           </button>
 
           <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={fixedConfig?.request?.gasLimit} />

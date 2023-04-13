@@ -1,31 +1,44 @@
 "use client";
 
 import { NextPage } from "next";
-import { StakeRowDatum, StakeStatus } from "@/models/stake";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { clamp } from "@/utilities/helpers";
+import { Address, Chain, useAccount, useContractRead, useNetwork } from "wagmi";
+import { BigNumber } from "ethers";
+import FENIX_ABI from "@/models/abi/FENIX_ABI";
+import { fenixContract } from "@/libraries/fenixContract";
+import { StakeStatus } from "@/models/stake";
 
-export const StakeRow: NextPage<StakeRowDatum> = ({
-  index,
-  status,
-  start,
-  end,
-  principal,
-  shares,
-  payout,
-  penalty,
-  progress,
-}) => {
-  const [startString, setStartString] = useState("");
-  const [endString, setEndString] = useState("");
+export const StakeRow: NextPage<{ stakeIndex: number; stakeStatus: StakeStatus }> = ({ stakeIndex, stakeStatus }) => {
+  const [startString, setStartString] = useState("-");
+  const [endString, setEndString] = useState("-");
+  const [principal, setPrincipal] = useState("-");
+  const [shares, setShares] = useState("-");
+  const [payout, setPayout] = useState("-");
+  const [penalty, setPenalty] = useState("-");
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState(0);
   const [clampedProgress, setClampedProgress] = useState(0);
 
-  useEffect(() => {
-    setClampedProgress(clamp(progress, 0, 100));
-    setStartString(new Date(start).toLocaleDateString());
-    setEndString(new Date(end).toLocaleDateString());
-  }, [end, progress, start]);
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { address } = useAccount() as unknown as { address: Address };
+
+  const { data: stake } = useContractRead({
+    address: fenixContract(chain).address,
+    abi: FENIX_ABI,
+    functionName: "stakeFor",
+    args: [address, BigNumber.from(stakeIndex)],
+    watch: true,
+  });
+
+  if (stake?.status != stakeStatus) return null;
+
+  // useEffect(() => {
+  //   setClampedProgress(clamp(progress, 0, 100));
+  //   setStartString(new Date(start).toLocaleDateString());
+  //   setEndString(new Date(end).toLocaleDateString());
+  // }, [end, progress, start]);
 
   return (
     <tr>
@@ -52,16 +65,16 @@ export const StakeRow: NextPage<StakeRowDatum> = ({
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex space-x-4">
-          {status !== StakeStatus.END && (
-            <Link href={`/dashboard/${index}`} className="primary-link">
+          {/* {status !== StakeStatus.END && (
+            <Link href={`/dashboard/${stakeIndex}`} className="primary-link">
               End
             </Link>
           )}
           {progress > 100.0 && status === StakeStatus.ACTIVE && (
-            <Link href={`/dashboard/${index}`} className="primary-link">
+            <Link href={`/dashboard/${stakeIndex}`} className="primary-link">
               Defer
             </Link>
-          )}
+          )} */}
         </div>
       </td>
     </tr>

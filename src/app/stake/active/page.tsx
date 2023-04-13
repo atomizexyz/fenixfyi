@@ -1,12 +1,10 @@
 "use client";
 
 import { StakesLayout } from "@/components/layouts/StakesLayout";
-import { StakeStatus, stakes } from "@/models/stake";
+import { StakeStatus } from "@/models/stake";
 
 const StakeActive = () => {
-  return (
-    <StakesLayout title="Active Stakes" subtitle="Active FENIX stakes" status={StakeStatus.ACTIVE} stakes={stakes} />
-  );
+  return <StakesLayout title="Active Stakes" subtitle="Active FENIX stakes" status={StakeStatus.ACTIVE} />;
 };
 
 export default StakeActive;
