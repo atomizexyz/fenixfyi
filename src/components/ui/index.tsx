@@ -1,3 +1,4 @@
+import Or from "./Or";
 import Footer from "./Footer";
 import Header from "./Header";
 import ConnectButton from "./ConnectButton";
@@ -10,6 +11,7 @@ import { DashboardCard } from "./DashboardCard";
 import { DashboardRow } from "./DashboardRow";
 
 export {
+  Or,
   Footer,
   Header,
   ConnectButton,
