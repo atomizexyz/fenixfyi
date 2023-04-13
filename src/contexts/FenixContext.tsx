@@ -56,10 +56,12 @@ export interface Balance {
 
 interface IFenixContext {
   showConfetti: boolean;
+  feeData?: FeeData;
 }
 
 const FenixContext = createContext<IFenixContext>({
   showConfetti: false,
+  feeData: undefined,
 });
 
 export const FenixProvider = ({ children }: any) => {
