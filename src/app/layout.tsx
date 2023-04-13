@@ -1,5 +1,5 @@
 import "@/app/globals.css";
-import GlobalContainer from "@/components/containers/GlobalContainer";
+import { GlobalContainer } from "@/components/containers";
 import { Header, Footer } from "@/components/ui";
 
 export const metadata = {
