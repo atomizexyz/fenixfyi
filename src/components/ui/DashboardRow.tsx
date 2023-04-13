@@ -70,7 +70,7 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
           end={Number(ethers.utils.formatUnits(equityPoolSupply))}
           preserveValue={true}
           separator=","
-          decimals={4}
+          decimals={2}
         />
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text text-right font-mono">
@@ -78,11 +78,11 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
           end={Number(ethers.utils.formatUnits(rewardPoolSupply))}
           preserveValue={true}
           separator=","
-          decimals={4}
+          decimals={2}
         />
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text text-right font-mono">
-        <CountUp end={Number(ethers.utils.formatUnits(shareRate))} preserveValue={true} separator="," decimals={4} />
+        <CountUp end={Number(ethers.utils.formatUnits(shareRate))} preserveValue={true} separator="," decimals={2} />
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text font-mono">
         {truncateAddress(token?.address ?? "")}

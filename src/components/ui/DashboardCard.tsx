@@ -79,7 +79,7 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
             end={Number(ethers.utils.formatUnits(equityPoolSupply))}
             preserveValue={true}
             separator=","
-            decimals={4}
+            decimals={2}
           />
         </dd>
       </div>
@@ -90,14 +90,14 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
             end={Number(ethers.utils.formatUnits(rewardPoolSupply))}
             preserveValue={true}
             separator=","
-            decimals={4}
+            decimals={2}
           />
         </dd>
       </div>
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Share Rate</dt>
         <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
-          <CountUp end={Number(ethers.utils.formatUnits(shareRate))} preserveValue={true} separator="," decimals={4} />
+          <CountUp end={Number(ethers.utils.formatUnits(shareRate))} preserveValue={true} separator="," decimals={2} />
         </dd>
       </div>
       <div className="py-2 flex justify-between">
