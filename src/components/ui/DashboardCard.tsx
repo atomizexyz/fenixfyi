@@ -1,61 +1,110 @@
+"use client";
+
 import { truncateAddress } from "@/utilities/helpers";
 import { NextPage } from "next";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { IconCopy, IconShare2 } from "@tabler/icons-react";
-import { DashboardRowDatum, ChainStatus } from "@/models/dashboard";
+import { Chain, useContractReads, useToken } from "wagmi";
+import { fenixContract } from "@/libraries/fenixContract";
+import CountUp from "react-countup";
+import { BigNumber, ethers } from "ethers";
+import { Token } from "@/contexts/FenixContext";
 
-export const DashboardCard: NextPage<DashboardRowDatum> = ({
-  chainId,
-  chainName,
-  chainStatus,
-  equitySupply,
-  rewardSupply,
-  shareRate,
-  address,
-}) => {
-  const renderStatus = (status: ChainStatus) => {
-    switch (chainStatus) {
-      case ChainStatus.ACTIVE:
-        return (
-          <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-success">Active</span>
-        );
-      case ChainStatus.INACTIVE:
-        return (
-          <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-error">Inactive</span>
-        );
+export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
+  const [token, setToken] = useState<Token | null>(null);
+  const [shareRate, setShareRate] = useState<BigNumber>(BigNumber.from(0));
+  const [equityPoolSupply, setEquityPoolSupply] = useState<BigNumber>(BigNumber.from(0));
+  const [rewardPoolSupply, setRewardPoolSupply] = useState<BigNumber>(BigNumber.from(0));
+
+  const { data: tokenData } = useToken({
+    address: fenixContract(chain).address,
+    chainId: chain?.id,
+  });
+
+  useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "shareRate",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "rewardPoolSupply",
+      },
+    ],
+    onSuccess(data) {
+      setShareRate(BigNumber.from(data?.[0] ?? 0));
+      setEquityPoolSupply(BigNumber.from(data?.[1] ?? 0));
+      setRewardPoolSupply(BigNumber.from(data?.[2] ?? 0));
+    },
+    watch: true,
+  });
+
+  useEffect(() => {
+    if (tokenData) {
+      setToken(tokenData);
     }
-  };
+  }, [tokenData]);
 
   return (
     <dl className="divide-y secondary-divider">
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Chain</dt>
         <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text">
-          <Link href={`/dashboard/${chainId}`} className="primary-link">
-            {chainName}
+          <Link href={`/dashboard/${chain.id}`} className="primary-link">
+            {chain.name}
           </Link>
         </dd>
       </div>
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Status</dt>
-        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text">{renderStatus(chainStatus)}</dd>
+        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text">
+          {token ? (
+            <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-success">Active</span>
+          ) : (
+            <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-error">Inactive</span>
+          )}
+        </dd>
       </div>
 
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Equity Supply</dt>
-        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{equitySupply}</dd>
+        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
+          <CountUp
+            end={Number(ethers.utils.formatUnits(equityPoolSupply))}
+            preserveValue={true}
+            separator=","
+            decimals={4}
+          />
+        </dd>
       </div>
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Reward Supply</dt>
-        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{rewardSupply}</dd>
+        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
+          <CountUp
+            end={Number(ethers.utils.formatUnits(rewardPoolSupply))}
+            preserveValue={true}
+            separator=","
+            decimals={4}
+          />
+        </dd>
       </div>
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Share Rate</dt>
-        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{shareRate}</dd>
+        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
+          <CountUp end={Number(ethers.utils.formatUnits(shareRate))} preserveValue={true} separator="," decimals={4} />
+        </dd>
       </div>
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Address</dt>
-        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{truncateAddress(address)}</dd>
+        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
+          {truncateAddress(token?.address ?? "")}
+        </dd>
       </div>
       <div className="py-2 flex space-x-8">
         <a href="#" className="tertiary-link">

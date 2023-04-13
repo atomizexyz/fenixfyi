@@ -15,7 +15,7 @@ const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID as string;
 const chainNetwork = process.env.NEXT_PUBLIC_CHAIN_NETWORK as string;
 
-let allChains: Chain[];
+export let allChains: Chain[];
 if (chainNetwork == "mainnet") {
   allChains = [mainnet];
 } else {
