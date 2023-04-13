@@ -1,4 +1,5 @@
 import "@/app/globals.css";
+import GlobalContainer from "@/components/containers/GlobalContainer";
 import { Header, Footer } from "@/components/ui";
 
 export const metadata = {
@@ -58,12 +59,14 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html className="h-full primary-background" lang="en">
-      <body className="h-full">
-        <Header />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <GlobalContainer>
+      <html className="h-full primary-background" lang="en">
+        <body className="h-full">
+          <Header />
+          {children}
+          <Footer />
+        </body>
+      </html>
+    </GlobalContainer>
   );
 }

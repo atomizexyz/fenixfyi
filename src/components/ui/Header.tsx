@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Fragment, useState } from "react";
 import { Dialog, Popover, Transition } from "@headlessui/react";
 import { FenixText } from "@/components/Icons";
-// import ConnectButton from "./ConnectButton";
+import ConnectButton from "./ConnectButton";
 import { burn, callsToAction, stake } from "@/models/menu";
 import { IconChevronDown, IconMenu2, IconX } from "@tabler/icons-react";
 
@@ -22,7 +22,7 @@ export default function Header() {
           </a>
         </div>
         <div className="flex lg:hidden space-x-4">
-          {/* <ConnectButton /> */}
+          <ConnectButton />
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-950 dark:text-neutral-50"
@@ -129,7 +129,9 @@ export default function Header() {
             Reward
           </a>
         </Popover.Group>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">{/* <ConnectButton /> */}</div>
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          <ConnectButton />
+        </div>
       </nav>
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
         <div className="fixed inset-0 z-10" />
