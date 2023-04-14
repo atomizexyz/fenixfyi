@@ -20,6 +20,12 @@ import { pulseChain, x1Devnet } from "@/libraries/chains";
 
 export const xenContract = (contractChain?: Chain) => {
   switch (contractChain?.id) {
+    case foundry.id:
+      return {
+        address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" as Address,
+        abi: XENCryptoABI,
+        chainId: contractChain.id,
+      };
     case dogechain.id:
       return {
         address: "0x948eed4490833D526688fD1E5Ba0b9B35CD2c32e" as Address,
@@ -76,7 +82,7 @@ export const xenContract = (contractChain?: Chain) => {
         abi: XENCryptoABI,
         chainId: contractChain.id,
       };
-    case foundry.id:
+
     case localhost.id:
       return {
         address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9" as Address,

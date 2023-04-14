@@ -1,30 +1,35 @@
 "use client";
 
-import { NextPage } from "next";
 import Link from "next/link";
+import { NextPage } from "next";
 import { useEffect, useState } from "react";
-import { clamp } from "@/utilities/helpers";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
+import { calculateProgress, calculatePenalty } from "@/utilities/helpers";
 import { Address, Chain, useAccount, useContractRead, useNetwork } from "wagmi";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stake";
 
-export const StakeCard: NextPage<{ stakeIndex: number; stakeStatus: StakeStatus }> = ({ stakeIndex, stakeStatus }) => {
+export const StakeCard: NextPage<{
+  stakeIndex: number;
+  stakeStatus: StakeStatus;
+  equityPoolSupply: BigNumber;
+  equityPoolTotalShares: BigNumber;
+}> = ({ stakeIndex, stakeStatus, equityPoolSupply, equityPoolTotalShares }) => {
   const [startString, setStartString] = useState("-");
   const [endString, setEndString] = useState("-");
   const [principal, setPrincipal] = useState("-");
   const [shares, setShares] = useState("-");
   const [payout, setPayout] = useState("-");
   const [penalty, setPenalty] = useState("-");
-  const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState(0);
+  const [progress, setProgress] = useState("-");
   const [clampedProgress, setClampedProgress] = useState(0);
+  const [status, setStatus] = useState(0);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
 
-  const { data: stake } = useContractRead({
+  const { data } = useContractRead({
     address: fenixContract(chain).address,
     abi: FENIX_ABI,
     functionName: "stakeFor",
@@ -32,15 +37,29 @@ export const StakeCard: NextPage<{ stakeIndex: number; stakeStatus: StakeStatus 
     watch: true,
   });
 
-  console.log("stake", stake);
+  useEffect(() => {
+    if (data) {
+      setStartString(new Date(data.startTs * 1000).toLocaleDateString());
+      setEndString(new Date(data.endTs * 1000).toLocaleDateString());
+      setPrincipal(Number(ethers.utils.formatUnits(data.fenix)).toFixed(2));
+      setShares(Number(ethers.utils.formatUnits(data.shares)).toFixed(2));
 
-  if (stake?.status != stakeStatus) return null;
+      const penalty = calculatePenalty(data.startTs, data.endTs, data.term);
+      setPenalty((penalty * 100).toFixed(2) + "%");
 
-  // useEffect(() => {
-  //   setClampedProgress(clamp(progress, 0, 100));
-  //   setStartString(new Date(start).toLocaleDateString());
-  //   setEndString(new Date(end).toLocaleDateString());
-  // }, [end, progress, start]);
+      const equityPayout = data.shares.div(equityPoolTotalShares).mul(equityPoolSupply);
+      const equityPayoutString = ethers.utils.formatUnits(equityPayout);
+      const payout = Number(equityPayoutString) * (1 - penalty);
+      setPayout(payout.toFixed(2));
+
+      const clampedProgress = calculateProgress(data.startTs, data.endTs);
+      setClampedProgress(clampedProgress);
+      setProgress((clampedProgress * 100).toFixed(2) + "%");
+      setStatus(data.status);
+    }
+  }, [data, equityPoolSupply, equityPoolTotalShares]);
+
+  if (data?.status != stakeStatus) return null;
 
   return (
     <div>
@@ -63,13 +82,14 @@ export const StakeCard: NextPage<{ stakeIndex: number; stakeStatus: StakeStatus 
           <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{shares}</dd>
         </div>
         <div className="py-2 flex justify-between">
-          <dt className="text-sm font-medium primary-text">Payout</dt>
-          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{payout}</dd>
-        </div>
-        <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Penalty</dt>
           <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{penalty}</dd>
         </div>
+        <div className="py-2 flex justify-between">
+          <dt className="text-sm font-medium primary-text">Payout</dt>
+          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{payout}</dd>
+        </div>
+
         <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Progress</dt>
           <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
@@ -88,17 +108,17 @@ export const StakeCard: NextPage<{ stakeIndex: number; stakeStatus: StakeStatus 
             </div>
           </dd>
         </div>
-        <div className="py-2 flex space-x-8">
-          {/* {status !== StakeStatus.END && (
-            <Link href={`/dashboard/${index}`} className="flex w-full justify-center primary-button">
+        <div className="py-2 flex justify-between">
+          {status !== StakeStatus.END && (
+            <Link href={`/stake/${address}/${stakeIndex}/end`} className="primary-link">
               End
             </Link>
           )}
-          {progress > 100.0 && status === StakeStatus.ACTIVE && (
-            <Link href={`/dashboard/${index}`} className="flex w-full justify-center primary-button">
+          {clampedProgress == 100.0 && status === StakeStatus.ACTIVE && (
+            <Link href={`/stake/${address}/${stakeIndex}/defer`} className="primary-link">
               Defer
             </Link>
-          )} */}
+          )}
         </div>
       </dl>
     </div>

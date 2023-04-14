@@ -3,11 +3,12 @@
 import { NextPage } from "next";
 import { PageHeader, StakeRow, StakeCard, StakeRowHeaderFooter } from "@/components/ui";
 import { Container, CardContainer } from "@/components/containers";
-import { Address, Chain, useAccount, useContractRead, useNetwork } from "wagmi";
-
+import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
 import { fenixContract } from "@/libraries/fenixContract";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { StakeStatus } from "@/models/stake";
+import { BigNumber } from "ethers";
+import { useEffect, useState } from "react";
 
 export interface StakeLayoutDatum {
   title: string;
@@ -16,14 +17,39 @@ export interface StakeLayoutDatum {
 }
 
 export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stakeStatus }) => {
+  const [stakeCount, setStakeCount] = useState<number>(0);
+  const [equityPoolSupply, setEquityPoolSupply] = useState<BigNumber>(BigNumber.from(0));
+  const [equityPoolTotalShares, setEquityPoolTotalShares] = useState<BigNumber>(BigNumber.from(0));
+
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { stakeCount } = useContractRead({
-    address: fenixContract(chain).address,
-    abi: FENIX_ABI,
-    functionName: "stakeCount",
-    args: [address],
-  }) as unknown as { stakeCount: number };
+
+  const { data: readData } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "stakeCount",
+        args: [address],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolTotalShares",
+      },
+    ],
+    watch: true,
+  });
+
+  useEffect(() => {
+    if (readData) {
+      setStakeCount(readData[0].toNumber());
+      setEquityPoolSupply(readData[1]);
+      setEquityPoolTotalShares(readData[2]);
+    }
+  }, [readData]);
 
   return (
     <Container>
@@ -31,8 +57,14 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
       <div className="md:hidden">
         <CardContainer className="max-w-2xl">
           <div className="flex flex-col space-y-4 divide-y primary-divider">
-            {Array.from(Array(stakeCount ?? 0).keys()).map((stakeIndex) => (
-              <StakeCard key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
+            {Array.from(Array(stakeCount).keys()).map((stakeIndex) => (
+              <StakeCard
+                key={stakeIndex}
+                stakeIndex={stakeIndex}
+                stakeStatus={stakeStatus}
+                equityPoolSupply={equityPoolSupply}
+                equityPoolTotalShares={equityPoolTotalShares}
+              />
             ))}
           </div>
         </CardContainer>
@@ -44,8 +76,14 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
               <StakeRowHeaderFooter />
             </thead>
             <tbody className="divide-y secondary-divider">
-              {Array.from(Array(stakeCount ?? 0).keys()).map((stakeIndex) => (
-                <StakeRow key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
+              {Array.from(Array(stakeCount).keys()).map((stakeIndex) => (
+                <StakeRow
+                  key={stakeIndex}
+                  stakeIndex={stakeIndex}
+                  stakeStatus={stakeStatus}
+                  equityPoolSupply={equityPoolSupply}
+                  equityPoolTotalShares={equityPoolTotalShares}
+                />
               ))}
             </tbody>
           </table>

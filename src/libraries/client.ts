@@ -10,16 +10,24 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { mainnet, polygonMumbai, goerli } from "wagmi/chains";
 
 import { pulseChain, x1Devnet } from "./chains";
+import { foundry } from "wagmi/chains";
 
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID as string;
 const chainNetwork = process.env.NEXT_PUBLIC_CHAIN_NETWORK as string;
 
 export let allChains: Chain[];
-if (chainNetwork == "mainnet") {
-  allChains = [mainnet];
-} else {
-  allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
+
+switch (chainNetwork) {
+  case "mainnet":
+    allChains = [mainnet];
+    break;
+  case "localnet":
+    allChains = [foundry];
+    break;
+  default:
+    allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
+    break;
 }
 
 const { chains, provider, webSocketProvider } = configureChains(allChains, [

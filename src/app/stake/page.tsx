@@ -8,7 +8,6 @@ import { BigNumber, ethers } from "ethers";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PageHeader, GasEstimate, DescriptionDatum, BonusCalculator } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MaxValueField } from "@/components/forms";
 import { DayPicker } from "react-day-picker";

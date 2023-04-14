@@ -43,10 +43,15 @@ const BurnXEN = () => {
     token: fenixContract(chain).address,
     watch: true,
   });
+  const { data: xenBalance } = useBalance({
+    address: address,
+    token: xenContract(chain).address,
+    watch: true,
+  });
   const { data: allowance } = useContractRead({
     ...xenContract(chain),
     functionName: "allowance",
-    args: [address!, fenixContract(chain).address],
+    args: [address, fenixContract(chain).address],
     watch: true,
   });
 
@@ -57,8 +62,8 @@ const BurnXEN = () => {
         .number()
         .required("Amount Required")
         .max(
-          Number(ethers.utils.formatUnits(fenixBalance?.value ?? BigNumber.from(0))),
-          `Maximum amount is ${fenixBalance?.formatted}`
+          Number(ethers.utils.formatUnits(xenBalance?.value ?? BigNumber.from(0))),
+          `Maximum amount is ${xenBalance?.formatted}`
         )
         .positive("Amount must be greater than 0")
         .typeError("Amount required"),
@@ -104,14 +109,13 @@ const BurnXEN = () => {
   };
 
   useEffect(() => {
-    console.log("allowance", allowance);
-    if (allowance && fenixBalance && fenixBalance.value.gt(allowance)) {
+    if (xenBalance && allowance && xenBalance.value.gt(allowance)) {
       setBurnMaximum(allowance);
     } else {
-      setBurnMaximum(fenixBalance?.value ?? BigNumber.from(0));
+      setBurnMaximum(xenBalance?.value ?? BigNumber.from(0));
     }
     setDisabled(!isValid);
-  }, [allowance, burnMaximum, isValid, fenixBalance]);
+  }, [allowance, burnMaximum, isValid, xenBalance]);
 
   return (
     <Container className="max-w-xl">
@@ -129,8 +133,8 @@ const BurnXEN = () => {
             setValue={setValue}
           />
           <dl className="sm:divide-y sm:secondary-divider">
-            <DescriptionDatum title="New" datum={`${allowance}`} />
-            <DescriptionDatum title="Liquid" datum={fenixBalance?.formatted ?? "-"} />
+            <DescriptionDatum title="New FENIX" datum={`${burnXENAmount / 10_000}`} />
+            <DescriptionDatum title="Liquid FENIX" datum={fenixBalance?.formatted ?? "-"} />
           </dl>
 
           <div>

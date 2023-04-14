@@ -91,17 +91,17 @@ const FENIX_ABI = [
   },
   {
     inputs: [],
-    name: "StakeEnded",
+    name: "StakeLate",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StakeNotActive",
     type: "error",
   },
   {
     inputs: [],
     name: "StakeNotEnded",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "StakeNotStarted",
     type: "error",
   },
   {
@@ -399,6 +399,11 @@ const FENIX_ABI = [
             type: "uint40",
           },
           {
+            internalType: "uint40",
+            name: "endTs",
+            type: "uint40",
+          },
+          {
             internalType: "uint16",
             name: "term",
             type: "uint16",
@@ -452,6 +457,11 @@ const FENIX_ABI = [
           {
             internalType: "uint40",
             name: "deferralTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "endTs",
             type: "uint40",
           },
           {
@@ -732,6 +742,60 @@ const FENIX_ABI = [
   },
   {
     inputs: [],
+    name: "rewardCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+    ],
+    name: "rewardFor",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint40",
+            name: "id",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "rewardTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint256",
+            name: "fenix",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "caller",
+            type: "address",
+          },
+        ],
+        internalType: "struct Reward",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "rewardPoolSupply",
     outputs: [
       {
@@ -808,6 +872,11 @@ const FENIX_ABI = [
             type: "uint40",
           },
           {
+            internalType: "uint40",
+            name: "endTs",
+            type: "uint40",
+          },
+          {
             internalType: "uint16",
             name: "term",
             type: "uint16",
@@ -831,60 +900,6 @@ const FENIX_ABI = [
         internalType: "struct Stake",
         name: "",
         type: "tuple",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "stakes",
-    outputs: [
-      {
-        internalType: "enum Status",
-        name: "status",
-        type: "uint8",
-      },
-      {
-        internalType: "uint40",
-        name: "startTs",
-        type: "uint40",
-      },
-      {
-        internalType: "uint40",
-        name: "deferralTs",
-        type: "uint40",
-      },
-      {
-        internalType: "uint16",
-        name: "term",
-        type: "uint16",
-      },
-      {
-        internalType: "uint256",
-        name: "fenix",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "shares",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "payout",
-        type: "uint256",
       },
     ],
     stateMutability: "view",

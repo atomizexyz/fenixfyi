@@ -42,6 +42,12 @@ const BurnApprove = () => {
     token: xenContract(chain).address,
     watch: true,
   });
+  const { data: allowance } = useContractRead({
+    ...xenContract(chain),
+    functionName: "allowance",
+    args: [address, fenixContract(chain).address],
+    watch: true,
+  });
 
   const schema = yup
     .object()
@@ -148,7 +154,7 @@ const BurnApprove = () => {
           />
 
           <dl className="sm:divide-y sm:secondary-divider">
-            <DescriptionDatum title="Spend Allowance" datum="1000 XEN" />
+            <DescriptionDatum title="Spend Allowance" datum={allowance?.toString() ?? "0"} />
           </dl>
 
           <button

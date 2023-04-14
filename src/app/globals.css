@@ -103,6 +103,9 @@
 
 /* Custom Elements */
 
+.numerical-data {
+  @apply font-mono text-right;
+}
 .day-selected:not([disabled]) {
   @apply bg-gradient-to-br from-[#F9386D] to-[#F6781A] text-neutral-50;
 }
