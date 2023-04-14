@@ -47,10 +47,12 @@ export const StakeCard: NextPage<{
       const penalty = calculatePenalty(data.startTs, data.endTs, data.term);
       setPenalty((penalty * 100).toFixed(2) + "%");
 
-      const equityPayout = data.shares.div(equityPoolTotalShares).mul(equityPoolSupply);
-      const equityPayoutString = ethers.utils.formatUnits(equityPayout);
-      const payout = Number(equityPayoutString) * (1 - penalty);
-      setPayout(payout.toFixed(2));
+      if (equityPoolTotalShares.gt(0)) {
+        const equityPayout = data.shares.div(equityPoolTotalShares).mul(equityPoolSupply);
+        const equityPayoutString = ethers.utils.formatUnits(equityPayout);
+        const payout = Number(equityPayoutString) * (1 - penalty);
+        setPayout(payout.toFixed(2));
+      }
 
       const clampedProgress = calculateProgress(data.startTs, data.endTs);
       setClampedProgress(clampedProgress);
@@ -59,7 +61,7 @@ export const StakeCard: NextPage<{
     }
   }, [data, equityPoolSupply, equityPoolTotalShares]);
 
-  if (data?.status != stakeStatus) return null;
+  if (data?.status != stakeStatus && stakeStatus != StakeStatus.ALL) return null;
 
   return (
     <div>
@@ -96,25 +98,25 @@ export const StakeCard: NextPage<{
             <div className="relative w-32">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full rounded primary-background">
-                  <div className="h-6 rounded progress-gradient" style={{ width: `${clampedProgress}%` }} />
+                  <div className="h-6 rounded progress-gradient" style={{ width: progress }} />
                 </div>
               </div>
               <div className="absolute inset-0 flex items-center">
-                <div className="h-6 rounded glass" style={{ width: `${clampedProgress}%` }} />
+                <div className="h-6 rounded glass" style={{ width: progress }} />
               </div>
               <div className="relative flex justify-center">
-                <span className="text-sm primary-text font-mono my-2">{`${progress}%`}</span>
+                <span className="text-sm primary-text font-mono my-2">{progress}</span>
               </div>
             </div>
           </dd>
         </div>
         <div className="py-2 flex justify-between">
-          {status !== StakeStatus.END && (
+          {(status !== StakeStatus.END || stakeStatus == StakeStatus.ALL) && (
             <Link href={`/stake/${address}/${stakeIndex}/end`} className="primary-link">
               End
             </Link>
           )}
-          {clampedProgress == 100.0 && status === StakeStatus.ACTIVE && (
+          {((clampedProgress == 100.0 && status === StakeStatus.ACTIVE) || stakeStatus == StakeStatus.ALL) && (
             <Link href={`/stake/${address}/${stakeIndex}/defer`} className="primary-link">
               Defer
             </Link>

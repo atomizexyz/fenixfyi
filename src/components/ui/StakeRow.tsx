@@ -9,7 +9,6 @@ import { BigNumber, ethers } from "ethers";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stake";
-import { addDays, differenceInDays, isSameMonth, getYear } from "date-fns";
 
 export const StakeRow: NextPage<{
   stakeIndex: number;
@@ -48,10 +47,12 @@ export const StakeRow: NextPage<{
       const penalty = calculatePenalty(data.startTs, data.endTs, data.term);
       setPenalty((penalty * 100).toFixed(2) + "%");
 
-      const equityPayout = data.shares.div(equityPoolTotalShares).mul(equityPoolSupply);
-      const equityPayoutString = ethers.utils.formatUnits(equityPayout);
-      const payout = Number(equityPayoutString) * (1 - penalty);
-      setPayout(payout.toFixed(2));
+      if (equityPoolTotalShares.gt(0)) {
+        const equityPayout = data.shares.div(equityPoolTotalShares).mul(equityPoolSupply);
+        const equityPayoutString = ethers.utils.formatUnits(equityPayout);
+        const payout = Number(equityPayoutString) * (1 - penalty);
+        setPayout(payout.toFixed(2));
+      }
 
       const clampedProgress = calculateProgress(data.startTs, data.endTs);
       setClampedProgress(clampedProgress);

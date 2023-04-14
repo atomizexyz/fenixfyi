@@ -64,11 +64,23 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Status</dt>
         <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text">
-          {token ? (
-            <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-success">Active</span>
-          ) : (
-            <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-error">Inactive</span>
-          )}
+          <div className="flex items-center justify-end gap-x-2 sm:justify-start">
+            {token ? (
+              <>
+                <div className="status-success flex-none rounded-full p-1">
+                  <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                </div>
+                <div className="primary-text">Active</div>
+              </>
+            ) : (
+              <>
+                <div className="status-error flex-none rounded-full p-1">
+                  <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                </div>
+                <div className="primary-text">Inactive</div>
+              </>
+            )}
+          </div>
         </dd>
       </div>
 

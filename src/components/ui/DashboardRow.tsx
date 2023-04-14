@@ -58,12 +58,24 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
           {chain.name}
         </Link>
       </td>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">
-        {token ? (
-          <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-success">Active</span>
-        ) : (
-          <span className="inline-flex rounded-full  px-2 text-xs font-semibold leading-5 badge-error">Inactive</span>
-        )}
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm  primary-text sm:pl-6">
+        <div className="flex items-center justify-end gap-x-2 sm:justify-start">
+          {token ? (
+            <>
+              <div className="status-success flex-none rounded-full p-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-current" />
+              </div>
+              <div className="primary-text">Active</div>
+            </>
+          ) : (
+            <>
+              <div className="status-error flex-none rounded-full p-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-current" />
+              </div>
+              <div className="primary-text">Inactive</div>
+            </>
+          )}
+        </div>
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text text-right font-mono">
         <CountUp
