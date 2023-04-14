@@ -58,13 +58,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
         <CardContainer className="max-w-2xl">
           <div className="flex flex-col space-y-4 divide-y primary-divider">
             {Array.from(Array(stakeCount).keys()).map((stakeIndex) => (
-              <StakeCard
-                key={stakeIndex}
-                stakeIndex={stakeIndex}
-                stakeStatus={stakeStatus}
-                equityPoolSupply={equityPoolSupply}
-                equityPoolTotalShares={equityPoolTotalShares}
-              />
+              <StakeCard key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
             ))}
           </div>
         </CardContainer>
@@ -77,13 +71,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
             </thead>
             <tbody className="divide-y secondary-divider">
               {Array.from(Array(stakeCount).keys()).map((stakeIndex) => (
-                <StakeRow
-                  key={stakeIndex}
-                  stakeIndex={stakeIndex}
-                  stakeStatus={stakeStatus}
-                  equityPoolSupply={equityPoolSupply}
-                  equityPoolTotalShares={equityPoolTotalShares}
-                />
+                <StakeRow key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
               ))}
             </tbody>
           </table>

@@ -12,16 +12,15 @@ import { allChains } from "@/libraries/client";
 import { daysSince } from "@/utilities/helpers";
 
 const DashboardChainId = () => {
-  const { chainId } = useParams() as unknown as { chainId: number };
-
-  const chainFromId = allChains.find((c) => c && c.id == chainId);
-
-  console.log("BOOM:", chainId);
   const [token, setToken] = useState<Token | null>(null);
   const [genesisTs, setGenesisTs] = useState<number>(0);
   const [shareRate, setShareRate] = useState<BigNumber>(BigNumber.from(0));
   const [equityPoolSupply, setEquityPoolSupply] = useState<BigNumber>(BigNumber.from(0));
   const [rewardPoolSupply, setRewardPoolSupply] = useState<BigNumber>(BigNumber.from(0));
+
+  const { chainId } = useParams() as unknown as { chainId: number };
+
+  const chainFromId = allChains.find((c) => c && c.id == chainId);
 
   const { data: tokenData } = useToken({
     address: fenixContract(chainFromId).address,

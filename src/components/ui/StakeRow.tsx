@@ -4,18 +4,15 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { calculateProgress, calculatePenalty } from "@/utilities/helpers";
-import { Address, Chain, useAccount, useContractRead, useNetwork } from "wagmi";
+import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
 import { BigNumber, ethers } from "ethers";
-import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stake";
 
 export const StakeRow: NextPage<{
   stakeIndex: number;
   stakeStatus: StakeStatus;
-  equityPoolSupply: BigNumber;
-  equityPoolTotalShares: BigNumber;
-}> = ({ stakeIndex, stakeStatus, equityPoolSupply, equityPoolTotalShares }) => {
+}> = ({ stakeIndex, stakeStatus }) => {
   const [startString, setStartString] = useState("-");
   const [endString, setEndString] = useState("-");
   const [principal, setPrincipal] = useState("-");
@@ -29,39 +26,53 @@ export const StakeRow: NextPage<{
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
 
-  const { data } = useContractRead({
-    address: fenixContract(chain).address,
-    abi: FENIX_ABI,
-    functionName: "stakeFor",
-    args: [address, BigNumber.from(stakeIndex)],
+  const { data } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "stakeFor",
+        args: [address, BigNumber.from(stakeIndex)],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolTotalShares",
+      },
+    ],
     watch: true,
   });
 
   useEffect(() => {
-    if (data) {
-      setStartString(new Date(data.startTs * 1000).toLocaleDateString());
-      setEndString(new Date(data.endTs * 1000).toLocaleDateString());
-      setPrincipal(Number(ethers.utils.formatUnits(data.fenix)).toFixed(2));
-      setShares(Number(ethers.utils.formatUnits(data.shares)).toFixed(2));
+    const stake = data?.[0];
+    const equityPoolSupply = Number(ethers.utils.formatUnits(data?.[1] ?? 0));
+    const equityPoolTotalShares = Number(ethers.utils.formatUnits(data?.[2] ?? 0));
+    if (stake && equityPoolTotalShares && equityPoolSupply) {
+      setStartString(new Date(stake.startTs * 1000).toLocaleDateString());
+      setEndString(new Date(stake.endTs * 1000).toLocaleDateString());
+      setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)).toFixed(2));
+      setShares(Number(ethers.utils.formatUnits(stake.shares)).toFixed(2));
 
-      const penalty = calculatePenalty(data.startTs, data.endTs, data.term);
+      const penalty = calculatePenalty(stake.startTs, stake.endTs, stake.term);
       setPenalty((penalty * 100).toFixed(2) + "%");
 
-      if (equityPoolTotalShares.gt(0)) {
-        const equityPayout = data.shares.div(equityPoolTotalShares).mul(equityPoolSupply);
-        const equityPayoutString = ethers.utils.formatUnits(equityPayout);
-        const payout = Number(equityPayoutString) * (1 - penalty);
+      if (equityPoolTotalShares > 0) {
+        const shares = Number(ethers.utils.formatUnits(stake.shares));
+        const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
+        const payout = equityPayout * (1 - penalty);
         setPayout(payout.toFixed(2));
       }
 
-      const clampedProgress = calculateProgress(data.startTs, data.endTs);
+      const clampedProgress = calculateProgress(stake.startTs, stake.endTs);
       setClampedProgress(clampedProgress);
       setProgress((clampedProgress * 100).toFixed(2) + "%");
-      setStatus(data.status);
+      setStatus(stake.status);
     }
-  }, [data, equityPoolSupply, equityPoolTotalShares]);
+  }, [data]);
 
-  if (data?.status != stakeStatus) return null;
+  if (data?.[0].status != stakeStatus) return null;
 
   return (
     <tr>

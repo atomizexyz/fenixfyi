@@ -1,8 +1,5 @@
 import { BigNumber, ethers } from "ethers";
-
-export const UTC_TIME = new Date().getTime() / 1000;
-const ONE_DAY_TS = 86400;
-const ONE_EIGHTY_DAYS_TS = 180 * ONE_DAY_TS;
+import { UTC_TIME, ONE_DAY_TS, ONE_EIGHTY_DAYS_TS, FENIX_MAX_STAKE_LENGTH } from "./constants";
 
 export const truncateAddress = (address: string) => {
   if (address == undefined) return "";

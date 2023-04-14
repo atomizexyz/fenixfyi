@@ -16,6 +16,8 @@ import { addDays, differenceInDays, isSameMonth, getYear } from "date-fns";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import {
+  Chain,
+  Address,
   useContractWrite,
   useNetwork,
   usePrepareContractWrite,
@@ -23,6 +25,7 @@ import {
   useFeeData,
   useBalance,
   useAccount,
+  useContractReads,
 } from "wagmi";
 import * as yup from "yup";
 import { FENIX_MAX_STAKE_LENGTH } from "@/utilities/constants";
@@ -41,12 +44,13 @@ export default function Stake() {
   const [sizeBonus, setSizeBonus] = useState<number>(0);
   const [timeBonus, setTimeBonus] = useState<number>(0);
   const [subtotalBonus, setSubtotalBonus] = useState<number>(0);
+  const [totalBonus, setTotalBonus] = useState<number>(0);
+  const [shareRate, setShareRate] = useState<BigNumber>(BigNumber.from(0));
   const [shares, setShares] = useState<number>(0);
 
   const router = useRouter();
-
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { address } = useAccount() as unknown as { address: Address };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
   const { data: fenixBalance } = useBalance({
     address: address,
@@ -157,11 +161,48 @@ export default function Stake() {
     setValue("startStakeDays", differenceInDays(date, today) + 1);
   };
 
+  useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "shareRate",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateSizeBonus",
+        args: [ethers.utils.parseUnits(Number(startStakeAmount ?? 0).toString())],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateTimeBonus",
+        args: [startStakeDays ?? 0],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateBonus",
+        args: [ethers.utils.parseUnits(Number(startStakeAmount ?? 0).toString()), startStakeDays ?? 0],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateShares",
+        args: [ethers.utils.parseUnits(totalBonus.toString())],
+      },
+    ],
+    onSuccess(data) {
+      setShareRate(BigNumber.from(data?.[0] ?? 0));
+      setSizeBonus(Number(ethers.utils.formatUnits(data?.[1] ?? 0)));
+      setTimeBonus(Number(ethers.utils.formatUnits(data?.[2] ?? 0)));
+      setSubtotalBonus(Number(ethers.utils.formatUnits(data?.[3] ?? 0)));
+      setShares(Number(ethers.utils.formatUnits(data?.[4] ?? 0)));
+    },
+    watch: true,
+  });
+
   useEffect(() => {
-    // setTimeBonus(calcTimeBonus(startStakeDays));
-    // setSizeBonus(calcSizeBonus(startStakeAmount));
-    // setSubtotalBonus(calcBonus(startStakeAmount, startStakeDays));
-    // setShares(subtotalBonus / Number(ethers.utils.formatUnits(shareRate)));
+    if (subtotalBonus) {
+      const total = Number(startStakeAmount ?? 0) * subtotalBonus;
+      setTotalBonus(Number(total));
+    }
 
     if (isLockMonth && !isSameMonth(selectedFromDay(), month)) {
       setMonth(selectedFromDay());
@@ -177,7 +218,7 @@ export default function Stake() {
     sizeBonus,
     timeBonus,
     subtotalBonus,
-    // shareRate,
+    totalBonus,
     isValid,
   ]);
 
@@ -232,10 +273,17 @@ export default function Stake() {
           </div>
 
           <CardContainer className="glass">
-            <BonusCalculator sizeBonus={100} timeBonus={100} base={100} subtotal={100} shareRate={100} shares={100} />
+            <BonusCalculator
+              sizeBonus={sizeBonus}
+              timeBonus={timeBonus}
+              subtotal={subtotalBonus}
+              total={totalBonus}
+              shareRate={Number(ethers.utils.formatUnits(shareRate))}
+              shares={shares}
+            />
           </CardContainer>
           <dl className="sm:divide-y sm:secondary-divider">
-            <DescriptionDatum title="Your Stake Shares" datum="1 day" />
+            <DescriptionDatum title="Your Stake Shares" datum={shares.toFixed(6)} />
           </dl>
 
           <button
