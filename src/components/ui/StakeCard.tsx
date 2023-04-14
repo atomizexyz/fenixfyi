@@ -123,12 +123,12 @@ export const StakeCard: NextPage<{
         </div>
         <div className="py-2 flex justify-between">
           {(status !== StakeStatus.END || stakeStatus == StakeStatus.ALL) && (
-            <Link href={`/stake/${address}/${stakeIndex}/end`} className="primary-link">
+            <Link href={`/stake/end?stakeIndex=${stakeIndex}`} className="primary-link">
               End
             </Link>
           )}
           {((clampedProgress == 100.0 && status === StakeStatus.ACTIVE) || stakeStatus == StakeStatus.ALL) && (
-            <Link href={`/stake/${address}/${stakeIndex}/defer`} className="primary-link">
+            <Link href={`/stake/defer?address${address}=&stakeIndex=${stakeIndex}`} className="primary-link">
               Defer
             </Link>
           )}

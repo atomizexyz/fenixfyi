@@ -100,12 +100,12 @@ export const StakeRow: NextPage<{
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex space-x-4">
           {status !== StakeStatus.END && (
-            <Link href={`/stake/${address}/${stakeIndex}/end`} className="primary-link">
+            <Link href={`/stake/end?stakeIndex=${stakeIndex}`} className="primary-link">
               End
             </Link>
           )}
           {clampedProgress == 100.0 && status === StakeStatus.ACTIVE && (
-            <Link href={`/stake/${address}/${stakeIndex}/defer`} className="primary-link">
+            <Link href={`/stake/defer?address${address}=&stakeIndex=${stakeIndex}`} className="primary-link">
               Defer
             </Link>
           )}

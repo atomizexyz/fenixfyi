@@ -4,7 +4,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { GasEstimate, PageHeader } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 
 import { useContext, useEffect, useState } from "react";
@@ -21,28 +21,50 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { fenixContract } from "@/libraries/fenixContract";
 import Link from "next/link";
+import { WALLET_ADDRESS_REGEX } from "@/utilities/constants";
 import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
+import { WalletAddressField } from "@/components/forms";
 
-export default function StakeAddressIndexEnd() {
+const StakeAddressIndexDefer = () => {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
 
+  const searchParams = useSearchParams();
+
+  const address = searchParams.get("address") as unknown as Address;
+  const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
+
   const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { stakeIndex } = useParams() as unknown as { address: Address; stakeIndex: number };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
 
+  const schema = yup
+    .object()
+    .shape({
+      deferAddress: yup.string().required("Wallet address required").matches(WALLET_ADDRESS_REGEX, {
+        message: "Wallet address Invalid",
+        excludeEmptyString: true,
+      }),
+    })
+    .required();
+
   const {
+    register,
     handleSubmit,
-    formState: {},
+    watch,
+    formState: { errors },
+    setValue,
   } = useForm({
     mode: "onChange",
+    resolver: yupResolver(schema),
   });
+
+  const { deferAddress } = watch();
 
   const { config } = usePrepareContractWrite({
     ...fenixContract(chain),
-    functionName: "endStake",
-    args: [BigNumber.from(stakeIndex)],
+    functionName: "deferStake",
+    args: [BigNumber.from(stakeIndex), address],
     enabled: !disabled,
   });
 
@@ -57,28 +79,44 @@ export default function StakeAddressIndexEnd() {
   const {} = useWaitForTransaction({
     hash: data?.hash,
     onSuccess(_data) {
-      toast("Stake ended successfully", { icon: "🎉" });
+      toast("Defer stake successful");
     },
   });
 
-  const handleEndSubmit = (_data: any) => {
+  const handleDeferSubmit = (_data: any) => {
     write?.();
   };
 
+  // useEffect(() => {
+  //   if (address) {
+  //     setValue(address);
+  //   }
+  // }, [address]);
+
   return (
     <Container className="max-w-xl">
-      <PageHeader title="End Stake" subtitle="End your stake and deposit FENIX in your wallet." />
+      <PageHeader
+        title="Defer Stake"
+        subtitle="End your stake but store your FENIX in the contract. Deferred FENIX can be moved to your wallet by ending your stake."
+      />
 
       <CardContainer>
-        <form onSubmit={handleSubmit(handleEndSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(handleDeferSubmit)} className="space-y-6">
+          <WalletAddressField
+            disabled={disabled}
+            errorMessage={<ErrorMessage errors={errors} name="deferAddress" />}
+            register={register("deferAddress")}
+          />
+
           <div className="form-control w-full">
             <button
               type="submit"
               className={clsx("flex w-full justify-center primary-button", {
                 loading: processing,
               })}
+              disabled={disabled}
             >
-              End Stake
+              Defer Stake
             </button>
           </div>
           <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
@@ -86,4 +124,6 @@ export default function StakeAddressIndexEnd() {
       </CardContainer>
     </Container>
   );
-}
+};
+
+export default StakeAddressIndexDefer;
