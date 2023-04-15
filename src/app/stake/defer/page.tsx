@@ -25,9 +25,10 @@ import { WALLET_ADDRESS_REGEX } from "@/utilities/constants";
 import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
 import { WalletAddressField } from "@/components/forms";
+import { useRouter } from "next/router";
 
 const StakeAddressIndexDefer = () => {
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
   const [processing, setProcessing] = useState(false);
 
   const searchParams = useSearchParams();
@@ -35,6 +36,7 @@ const StakeAddressIndexDefer = () => {
   const address = searchParams.get("address") as unknown as Address;
   const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
 
+  const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
 
@@ -74,11 +76,16 @@ const StakeAddressIndexDefer = () => {
       setProcessing(true);
       setDisabled(true);
     },
+    onError(_error) {
+      setProcessing(false);
+      setDisabled(false);
+    },
   });
 
   const {} = useWaitForTransaction({
     hash: data?.hash,
     onSuccess(_data) {
+      router.push("/stake/deferred");
       toast("Defer stake successful");
     },
   });

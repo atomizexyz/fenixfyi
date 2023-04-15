@@ -4,7 +4,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { GasEstimate, PageHeader } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 
 import { useContext, useEffect, useState } from "react";
@@ -25,11 +25,12 @@ import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
 
 export default function StakeAddressIndexEnd() {
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
   const [processing, setProcessing] = useState(false);
 
   const searchParams = useSearchParams();
 
+  const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
@@ -54,11 +55,16 @@ export default function StakeAddressIndexEnd() {
       setProcessing(true);
       setDisabled(true);
     },
+    onError(_error) {
+      setProcessing(false);
+      setDisabled(false);
+    },
   });
 
   const {} = useWaitForTransaction({
     hash: data?.hash,
     onSuccess(_data) {
+      router.push("/stake/deferred");
       toast("Stake ended successfully", { icon: "🎉" });
     },
   });
