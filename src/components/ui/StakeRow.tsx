@@ -8,6 +8,7 @@ import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi"
 import { BigNumber, ethers } from "ethers";
 import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stake";
+import { StatusState } from "connectkit/build/siwe/SIWEContext";
 
 export const StakeRow: NextPage<{
   stakeIndex: number;
@@ -74,29 +75,50 @@ export const StakeRow: NextPage<{
 
   if (data?.[0].status != stakeStatus) return null;
 
+  const renderPenalty = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <div>-</div>;
+      default:
+        return <div>{penalty}</div>;
+    }
+  };
+
+  const renderProgress = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+        return <div className="text-center uppercase">Ended</div>;
+      case StakeStatus.DEFER:
+        return <div className="text-center uppercase">Deferred</div>;
+      default:
+        return (
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full rounded primary-background">
+                <div className="h-6 rounded progress-gradient" style={{ width: progress }} />
+              </div>
+            </div>
+            <div className="absolute inset-0 flex items-center">
+              <div className="h-6 rounded glass" style={{ width: progress }} />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="text-sm primary-text font-mono my-2">{progress}</span>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <tr>
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">{startString}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm primary-text">{endString}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{principal}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{shares}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{penalty}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPenalty(status)}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{payout}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text font-mono">
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full rounded primary-background">
-              <div className="h-6 rounded progress-gradient" style={{ width: progress }} />
-            </div>
-          </div>
-          <div className="absolute inset-0 flex items-center">
-            <div className="h-6 rounded glass" style={{ width: progress }} />
-          </div>
-          <div className="relative flex justify-center">
-            <span className="text-sm primary-text font-mono my-2">{progress}</span>
-          </div>
-        </div>
-      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text font-mono">{renderProgress(status)}</td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex space-x-4">
           {status !== StakeStatus.END && (

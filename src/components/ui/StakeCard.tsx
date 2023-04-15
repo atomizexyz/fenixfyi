@@ -74,6 +74,41 @@ export const StakeCard: NextPage<{
 
   if (data?.[0].status != stakeStatus && stakeStatus != StakeStatus.ALL) return null;
 
+  const renderPenalty = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <div>-</div>;
+      default:
+        return <div>{penalty}</div>;
+    }
+  };
+
+  const renderProgress = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+        return <div className="text-center uppercase">Ended</div>;
+      case StakeStatus.DEFER:
+        return <div className="text-center uppercase">Deferred</div>;
+      default:
+        return (
+          <div className="relative w-32">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full rounded primary-background">
+                <div className="h-6 rounded progress-gradient" style={{ width: progress }} />
+              </div>
+            </div>
+            <div className="absolute inset-0 flex items-center">
+              <div className="h-6 rounded glass" style={{ width: progress }} />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="text-sm primary-text font-mono my-2">{progress}</span>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div>
       <dl className="divide-y secondary-divider">
@@ -96,7 +131,7 @@ export const StakeCard: NextPage<{
         </div>
         <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Penalty</dt>
-          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{penalty}</dd>
+          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{renderPenalty(status)}</dd>
         </div>
         <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Payout</dt>
@@ -105,21 +140,7 @@ export const StakeCard: NextPage<{
 
         <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Progress</dt>
-          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
-            <div className="relative w-32">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full rounded primary-background">
-                  <div className="h-6 rounded progress-gradient" style={{ width: progress }} />
-                </div>
-              </div>
-              <div className="absolute inset-0 flex items-center">
-                <div className="h-6 rounded glass" style={{ width: progress }} />
-              </div>
-              <div className="relative flex justify-center">
-                <span className="text-sm primary-text font-mono my-2">{progress}</span>
-              </div>
-            </div>
-          </dd>
+          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{renderProgress(status)}</dd>
         </div>
         <div className="py-2 flex justify-between">
           {(status !== StakeStatus.END || stakeStatus == StakeStatus.ALL) && (

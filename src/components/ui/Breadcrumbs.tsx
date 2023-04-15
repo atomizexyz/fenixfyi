@@ -53,21 +53,26 @@ export default function Breadcrumbs() {
           })}
         </ol>
       </nav>
+      {tokenData && (
+        <button
+          className="flex items-center rounded-full px-3 py-1 text-sm leading-6 primary-link ring-1 ring-inset glass"
+          onClick={() => {
+            (connector as InjectedConnector)?.watchAsset?.({
+              address: tokenData.address,
+              decimals: tokenData.decimals,
+              image: "https://ipfs.io/ipfs/QmVcNfm2AvoZwcH5iKD5sQy8hBLjWvtpnG8R8gc7jhBje4",
+              symbol: tokenData.symbol,
+            });
+          }}
+        >
+          <div className="font-mono">
+            <CountUp start={0} end={Number(fenixBalance?.formatted ?? 0)} decimals={2} />
+          </div>
 
-      <button
-        className="flex items-center rounded-full px-3 py-1 text-sm font-semibold leading-6 primary-link ring-1 ring-inset glass"
-        onClick={() => {
-          (connector as InjectedConnector)?.watchAsset?.({
-            address: tokenData?.address ?? fenixContract(chain).address,
-            decimals: tokenData?.decimals,
-            image: "https://ipfs.io/ipfs/QmVcNfm2AvoZwcH5iKD5sQy8hBLjWvtpnG8R8gc7jhBje4",
-            symbol: tokenData?.symbol ?? "FENIX",
-          });
-        }}
-      >
-        <CountUp start={0} end={Number(fenixBalance?.formatted ?? 0)} decimals={2} suffix=" FENIX" />
-        <IconEyeFilled className="h-4 w-4 flex-shrink-0 ml-2 secondary-text" aria-hidden="true" />
-      </button>
+          <div className="pl-2">{tokenData.symbol}</div>
+          <IconEyeFilled className="h-4 w-4 flex-shrink-0 ml-2 primary-text" aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 }
