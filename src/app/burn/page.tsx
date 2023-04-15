@@ -100,8 +100,11 @@ const BurnXEN = () => {
   const {} = useWaitForTransaction({
     hash: data?.hash,
     onSuccess(_data) {
-      toast("XEN burned for FENIX successfully");
+      toast.success("Your XEN has been burned and converted to FENIX.");
       router.push("/stake");
+    },
+    onError(_error) {
+      toast.error("XEN burn and conversion to FENIX was unsuccessful. Please try again.");
     },
   });
   const onBurnSubmit = () => {

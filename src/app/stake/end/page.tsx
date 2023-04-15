@@ -1,31 +1,19 @@
 "use client";
 
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { GasEstimate, PageHeader } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
 import { useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 
-import { useContext, useEffect, useState } from "react";
-import {
-  Address,
-  Chain,
-  useFeeData,
-  useContractWrite,
-  useNetwork,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
+import { useState } from "react";
+import { Chain, useFeeData, useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import { useForm } from "react-hook-form";
-import * as yup from "yup";
 import { fenixContract } from "@/libraries/fenixContract";
-import Link from "next/link";
 import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
 
 export default function StakeAddressIndexEnd() {
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
 
   const router = useRouter();
@@ -63,8 +51,11 @@ export default function StakeAddressIndexEnd() {
   const {} = useWaitForTransaction({
     hash: data?.hash,
     onSuccess(_data) {
+      toast.success("Your stake has been successfully ended and rewards collected.");
       router.push("/stake/ended");
-      toast("Stake ended successfully", { icon: "🎉" });
+    },
+    onError(_error) {
+      toast.error("Ending your stake was unsuccessful. Please try again later.");
     },
   });
 
@@ -84,6 +75,7 @@ export default function StakeAddressIndexEnd() {
               className={clsx("flex w-full justify-center primary-button", {
                 loading: processing,
               })}
+              disabled={disabled}
             >
               End Stake
             </button>

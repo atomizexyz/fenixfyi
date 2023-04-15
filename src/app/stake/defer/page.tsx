@@ -26,7 +26,7 @@ import toast from "react-hot-toast";
 import { WalletAddressField } from "@/components/forms";
 
 const StakeAddressIndexDefer = () => {
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
 
   const router = useRouter();
@@ -82,8 +82,11 @@ const StakeAddressIndexDefer = () => {
   const {} = useWaitForTransaction({
     hash: data?.hash,
     onSuccess(_data) {
+      toast.success("Stake deferment confirmed. Your stake can be ended at a later date.");
       router.push("/stake/deferred");
-      toast("Defer stake successful");
+    },
+    onError(_error) {
+      toast.error("Unable to defer your stake. Please try again later.");
     },
   });
 

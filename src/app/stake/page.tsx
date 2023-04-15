@@ -116,8 +116,11 @@ export default function Stake() {
   const {} = useWaitForTransaction({
     hash: stakeData?.hash,
     onSuccess(_data) {
-      toast("Stake started successfully");
+      toast.success("Your stake has been initiated. Happy earning!");
       router.push("/stake/active");
+    },
+    onError(err) {
+      toast.error("Initiating stake was unsuccessful. Please try again later.");
     },
   });
   const handleStartStakeSubmit = (_data: any) => {

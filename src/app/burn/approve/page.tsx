@@ -2,7 +2,6 @@
 
 import { GasEstimate, PageHeader, Or, DescriptionDatum } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
-import Link from "next/link";
 import { MaxValueField } from "@/components/forms";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
@@ -94,8 +93,11 @@ const BurnApprove = () => {
   const {} = useWaitForTransaction({
     hash: fixedApproveData?.hash,
     onSuccess(_data) {
-      toast("Spend approved");
+      toast.success("Limited spend for XEN has been approved.");
       router.push("/burn");
+    },
+    onError(_data) {
+      toast.error("Approval for limited spend of XEN was unsuccessful. Please try again.");
     },
   });
   const onFixedSubmit = () => {
@@ -122,8 +124,11 @@ const BurnApprove = () => {
   const {} = useWaitForTransaction({
     hash: unlimitedApproveData?.hash,
     onSuccess(_data) {
-      toast("Spend approved");
+      toast.success("Unlimited spend for XEN has been approved.");
       router.push("/burn");
+    },
+    onError(_data) {
+      toast.error("Approval for unlimited spend of XEN was unsuccessful. Please try again.");
     },
   });
   const onUnlimitedSubmit = () => {

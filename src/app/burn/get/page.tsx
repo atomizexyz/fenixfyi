@@ -3,6 +3,8 @@
 import { Or, PageHeader } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
 import Link from "next/link";
+import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 const BurnGet = () => {
   return (

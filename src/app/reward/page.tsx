@@ -17,9 +17,10 @@ import {
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { ethers } from "ethers";
+import { toast } from "react-hot-toast";
 
 export default function Reward() {
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
@@ -50,7 +51,10 @@ export default function Reward() {
   const {} = useWaitForTransaction({
     hash: writeData?.hash,
     onSuccess(_data) {
-      console.log("Success");
+      toast.success("Reward pool party initiated. Let the celebration begin!");
+    },
+    onError(_error) {
+      toast.error("Unable to initiate the reward pool party. Please try again later.");
     },
   });
 
@@ -96,6 +100,7 @@ export default function Reward() {
               className={clsx("flex w-full justify-center primary-button", {
                 loading: processing,
               })}
+              disabled={disabled}
             >
               Claim Reward
             </button>
