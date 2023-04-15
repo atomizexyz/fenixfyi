@@ -28,9 +28,8 @@ export default function StakeAddressIndexEnd() {
   const [disabled, setDisabled] = useState(false);
   const [processing, setProcessing] = useState(false);
 
-  const searchParams = useSearchParams();
-
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
@@ -64,7 +63,7 @@ export default function StakeAddressIndexEnd() {
   const {} = useWaitForTransaction({
     hash: data?.hash,
     onSuccess(_data) {
-      router.push("/stake/deferred");
+      router.push("/stake/ended");
       toast("Stake ended successfully", { icon: "🎉" });
     },
   });

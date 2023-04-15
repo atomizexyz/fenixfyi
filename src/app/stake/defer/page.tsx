@@ -4,7 +4,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { GasEstimate, PageHeader } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 
 import { useContext, useEffect, useState } from "react";
@@ -20,25 +20,22 @@ import {
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { fenixContract } from "@/libraries/fenixContract";
-import Link from "next/link";
 import { WALLET_ADDRESS_REGEX } from "@/utilities/constants";
 import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
 import { WalletAddressField } from "@/components/forms";
-import { useRouter } from "next/router";
 
 const StakeAddressIndexDefer = () => {
   const [disabled, setDisabled] = useState(false);
   const [processing, setProcessing] = useState(false);
 
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
 
   const address = searchParams.get("address") as unknown as Address;
   const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
-
-  const router = useRouter();
-  const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
 
   const schema = yup
     .object()
@@ -66,7 +63,7 @@ const StakeAddressIndexDefer = () => {
   const { config } = usePrepareContractWrite({
     ...fenixContract(chain),
     functionName: "deferStake",
-    args: [BigNumber.from(stakeIndex), address],
+    args: [BigNumber.from(stakeIndex), deferAddress],
     enabled: !disabled,
   });
 
@@ -94,11 +91,11 @@ const StakeAddressIndexDefer = () => {
     write?.();
   };
 
-  // useEffect(() => {
-  //   if (address) {
-  //     setValue(address);
-  //   }
-  // }, [address]);
+  useEffect(() => {
+    if (address) {
+      setValue("deferAddress", address);
+    }
+  }, [address, setValue]);
 
   return (
     <Container className="max-w-xl">

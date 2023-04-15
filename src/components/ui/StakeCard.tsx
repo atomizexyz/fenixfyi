@@ -148,8 +148,8 @@ export const StakeCard: NextPage<{
               End
             </Link>
           )}
-          {((clampedProgress == 100.0 && status === StakeStatus.ACTIVE) || stakeStatus == StakeStatus.ALL) && (
-            <Link href={`/stake/defer?address${address}=&stakeIndex=${stakeIndex}`} className="primary-link">
+          {((clampedProgress == 1 && status === StakeStatus.ACTIVE) || stakeStatus == StakeStatus.ALL) && (
+            <Link href={`/stake/defer?address=${address}&stakeIndex=${stakeIndex}`} className="primary-link">
               Defer
             </Link>
           )}

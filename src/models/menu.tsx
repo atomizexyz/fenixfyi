@@ -38,7 +38,7 @@ export const stake = [
   },
   {
     name: "Deferred Stakes",
-    href: "/stake/defered",
+    href: "/stake/deferred",
     description: "View your deferred FENIX stakes",
     icon: IconRotateClockwise2,
   },
