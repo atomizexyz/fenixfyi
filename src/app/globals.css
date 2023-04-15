@@ -32,8 +32,11 @@
 }
 
 .primary-button {
-  @apply rounded-md px-3.5 py-2.5 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
+  @apply rounded-md px-3.5 py-2.5 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-75;
   @apply text-white bg-gradient-to-br from-[#F9386D] to-[#F6781A];
+
+  @apply disabled:from-neutral-900 disabled:to-neutral-700;
+  @apply dark:disabled:from-neutral-600 dark:disabled:to-neutral-400;
 }
 
 .primary-button-mini {

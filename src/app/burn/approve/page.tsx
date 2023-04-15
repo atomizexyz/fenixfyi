@@ -131,7 +131,6 @@ const BurnApprove = () => {
   };
 
   useEffect(() => {
-    console.log(approveXENAmount);
     setDisabled(!isValid);
   }, [isValid]);
 

@@ -17,13 +17,16 @@ export const Features = () => {
       </div>
       <div className="relative overflow-hidden pt-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Image
-            src="/images/product-dark.png"
-            alt="App screenshot"
-            className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-white/10"
-            width={2432}
-            height={1442}
-          />
+          <picture>
+            <source srcSet="/images/product-dark.png" media="(prefers-color-scheme: dark)" />
+            <img
+              src="/images/product-light.png"
+              alt="App screenshot"
+              width={2432}
+              height={1442}
+              className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-black/10 dark:ring-white/10"
+            />
+          </picture>
           <div className="relative" aria-hidden="true">
             <div className="absolute -inset-x-20 bottom-0 primary-gradient" />
           </div>

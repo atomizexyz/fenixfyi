@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { calculateProgress, calculatePenalty } from "@/utilities/helpers";
-import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
+import { Address, Chain, useAccount, useContractReads, useNetwork, useBlockNumber } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stake";
@@ -27,7 +27,7 @@ export const StakeRow: NextPage<{
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-
+  const { data: blockNumber } = useBlockNumber();
   const { data } = useContractReads({
     contracts: [
       {

@@ -293,7 +293,7 @@ export default function Stake() {
             })}
             disabled={disabled}
           >
-            Start
+            Start Stake
           </button>
 
           <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
