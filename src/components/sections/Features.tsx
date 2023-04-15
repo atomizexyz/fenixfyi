@@ -21,9 +21,9 @@ export const Features = () => {
             <source srcSet="/images/product-dark.png" media="(prefers-color-scheme: dark)" />
             <img
               src="/images/product-light.png"
-              alt="App screenshot"
-              width={2432}
-              height={1442}
+              alt="FENIX App screenshot"
+              width={2128}
+              height={1262}
               className="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-black/10 dark:ring-white/10"
             />
           </picture>
