@@ -18,6 +18,7 @@ export const StakeCard: NextPage<{
   const [principal, setPrincipal] = useState("-");
   const [shares, setShares] = useState("-");
   const [payout, setPayout] = useState("-");
+  const [projectedPayout, setProjectedPayout] = useState("-");
   const [penalty, setPenalty] = useState("-");
   const [progress, setProgress] = useState("-");
   const [clampedProgress, setClampedProgress] = useState(0);
@@ -62,17 +63,18 @@ export const StakeCard: NextPage<{
         const shares = Number(ethers.utils.formatUnits(stake.shares));
         const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
         const payout = equityPayout * (1 - penalty);
-        setPayout(payout.toFixed(2));
+        setProjectedPayout(payout.toFixed(2));
       }
 
       const clampedProgress = calculateProgress(stake.startTs, stake.endTs);
       setClampedProgress(clampedProgress);
       setProgress((clampedProgress * 100).toFixed(2) + "%");
       setStatus(stake.status);
+      setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
   }, [data]);
 
-  if (data?.[0].status != stakeStatus && stakeStatus != StakeStatus.ALL) return null;
+  if (data?.[0] && data?.[0].status != stakeStatus && stakeStatus != StakeStatus.ALL) return null;
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -109,6 +111,16 @@ export const StakeCard: NextPage<{
     }
   };
 
+  const renderPayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <>{payout}</>;
+      default:
+        return <>{projectedPayout}</>;
+    }
+  };
+
   return (
     <div>
       <dl className="divide-y secondary-divider">
@@ -135,7 +147,7 @@ export const StakeCard: NextPage<{
         </div>
         <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Payout</dt>
-          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{payout}</dd>
+          <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{renderPayout(status)}</dd>
         </div>
 
         <div className="py-2 flex justify-between">

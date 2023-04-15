@@ -5,7 +5,7 @@ export const MaxValueField: NextPage<any> = (props) => {
     <div className="form-control w-full flex flex-col space-y-2">
       <label className="flex justify-between">
         <span className="text-sm secondary-text">{props.title}</span>
-        <span className="text-sm text-error">{props.errorMessage}</span>
+        <span className="text-sm secondary-text">{props.errorMessage}</span>
       </label>
       <input
         type="number"

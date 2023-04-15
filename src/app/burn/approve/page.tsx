@@ -28,6 +28,7 @@ import * as yup from "yup";
 import XENCryptoABI from "@/models/abi/XENCryptoABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { xenContract } from "@/libraries/xenContract";
+import { UNLIMITED_ALLOWANCE } from "@/utilities/constants";
 
 const BurnApprove = () => {
   const [disabled, setDisabled] = useState(true);
@@ -81,10 +82,7 @@ const BurnApprove = () => {
     address: xenContract(chain).address,
     abi: XENCryptoABI,
     functionName: "approve",
-    args: [
-      fenixContract(chain).address,
-      ethers.utils.parseUnits((approveXENAmount || 0).toString(), xenBalance?.decimals ?? 0),
-    ],
+    args: [fenixContract(chain).address, ethers.utils.parseUnits(Number(approveXENAmount ?? 0).toString())],
     enabled: !disabled,
   });
   const { data: fixedApproveData, write: fixedWrite } = useContractWrite({
@@ -134,6 +132,7 @@ const BurnApprove = () => {
   };
 
   useEffect(() => {
+    console.log(approveXENAmount);
     setDisabled(!isValid);
   }, [isValid]);
 
@@ -154,7 +153,11 @@ const BurnApprove = () => {
           />
 
           <dl className="sm:divide-y sm:secondary-divider">
-            <DescriptionDatum title="Spend Allowance" datum={allowance?.toString() ?? "0"} />
+            {allowance && allowance.gte(UNLIMITED_ALLOWANCE) ? (
+              <DescriptionDatum title="Spend Allowance" datum={"Unlimited"} />
+            ) : (
+              <DescriptionDatum title="Spend Allowance" datum={allowance?.toString() ?? "0"} />
+            )}
           </dl>
 
           <button

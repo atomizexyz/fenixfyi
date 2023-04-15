@@ -19,6 +19,7 @@ export const StakeRow: NextPage<{
   const [principal, setPrincipal] = useState("-");
   const [shares, setShares] = useState("-");
   const [payout, setPayout] = useState("-");
+  const [projectedPayout, setProjectedPayout] = useState("-");
   const [penalty, setPenalty] = useState("-");
   const [progress, setProgress] = useState("-");
   const [clampedProgress, setClampedProgress] = useState(0);
@@ -63,17 +64,18 @@ export const StakeRow: NextPage<{
         const shares = Number(ethers.utils.formatUnits(stake.shares));
         const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
         const payout = equityPayout * (1 - penalty);
-        setPayout(payout.toFixed(2));
+        setProjectedPayout(payout.toFixed(2));
       }
 
       const clampedProgress = calculateProgress(stake.startTs, stake.endTs);
       setClampedProgress(clampedProgress);
       setProgress((clampedProgress * 100).toFixed(2) + "%");
       setStatus(stake.status);
+      setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
   }, [data]);
 
-  if (data?.[0].status != stakeStatus) return null;
+  if (data?.[0] && data?.[0].status != stakeStatus) return null;
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -110,6 +112,16 @@ export const StakeRow: NextPage<{
     }
   };
 
+  const renderPayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <>{payout}</>;
+      default:
+        return <>{projectedPayout}</>;
+    }
+  };
+
   return (
     <tr>
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">{startString}</td>
@@ -117,7 +129,7 @@ export const StakeRow: NextPage<{
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{principal}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{shares}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPenalty(status)}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{payout}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPayout(status)}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text font-mono">{renderProgress(status)}</td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex space-x-4">

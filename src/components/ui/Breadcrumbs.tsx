@@ -22,7 +22,7 @@ export default function Breadcrumbs() {
 
   const { data: tokenData } = useToken({
     address: fenixContract(chain).address,
-    chainId: chain.id,
+    chainId: chain?.id,
   });
 
   return (

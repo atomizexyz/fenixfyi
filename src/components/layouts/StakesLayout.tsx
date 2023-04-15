@@ -44,7 +44,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
   });
 
   useEffect(() => {
-    if (readData) {
+    if (readData?.[0] && readData?.[1] && readData?.[2]) {
       setStakeCount(readData[0].toNumber());
       setEquityPoolSupply(readData[1]);
       setEquityPoolTotalShares(readData[2]);
