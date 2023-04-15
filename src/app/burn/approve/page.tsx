@@ -28,7 +28,6 @@ import * as yup from "yup";
 import XENCryptoABI from "@/models/abi/XENCryptoABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { xenContract } from "@/libraries/xenContract";
-import { UNLIMITED_ALLOWANCE } from "@/utilities/constants";
 
 const BurnApprove = () => {
   const [disabled, setDisabled] = useState(true);
@@ -153,7 +152,7 @@ const BurnApprove = () => {
           />
 
           <dl className="sm:divide-y sm:secondary-divider">
-            {allowance && allowance.gte(UNLIMITED_ALLOWANCE) ? (
+            {allowance && allowance.gte(ethers.constants.MaxUint256) ? (
               <DescriptionDatum title="Spend Allowance" datum={"Unlimited"} />
             ) : (
               <DescriptionDatum title="Spend Allowance" datum={allowance?.toString() ?? "0"} />
