@@ -3,6 +3,10 @@
 import React, { createContext, useState } from "react";
 import { Address } from "@wagmi/core";
 import { BigNumber } from "ethers";
+import { Chain, useContractRead, useNetwork } from "wagmi";
+import { fenixContract } from "@/libraries/fenixContract";
+import { watchContractEvent } from "@wagmi/core";
+import { differenceInSeconds } from "date-fns";
 
 export interface UserMint {
   user: string;
@@ -66,6 +70,28 @@ const FenixContext = createContext<IFenixContext>({
 
 export const FenixProvider = ({ children }: any) => {
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
+
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const unwatch = watchContractEvent(
+    {
+      ...fenixContract(chain),
+      eventName: "FlushRewardPool",
+    },
+    (_reward) => {
+      setShowConfetti(true);
+    }
+  );
+  const { data: cooldownUnlockTs } = useContractRead({
+    ...fenixContract(chain),
+    functionName: "cooldownUnlockTs",
+    watch: true,
+  });
+
+  const cooldownUnlockMs = Number(cooldownUnlockTs);
+  const differenceTs = differenceInSeconds(new Date(cooldownUnlockMs * 1000), new Date());
+  if (differenceTs < 120) {
+    setShowConfetti(true);
+  }
 
   return <FenixContext.Provider value={{ showConfetti }}>{children}</FenixContext.Provider>;
 };

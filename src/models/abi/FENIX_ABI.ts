@@ -165,6 +165,151 @@ const FENIX_ABI = [
     anonymous: false,
     inputs: [
       {
+        components: [
+          {
+            internalType: "enum Status",
+            name: "status",
+            type: "uint8",
+          },
+          {
+            internalType: "uint40",
+            name: "startTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "deferralTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "endTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint16",
+            name: "term",
+            type: "uint16",
+          },
+          {
+            internalType: "uint256",
+            name: "fenix",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "shares",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "payout",
+            type: "uint256",
+          },
+        ],
+        indexed: true,
+        internalType: "struct Stake",
+        name: "_stake",
+        type: "tuple",
+      },
+    ],
+    name: "DeferStake",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "enum Status",
+            name: "status",
+            type: "uint8",
+          },
+          {
+            internalType: "uint40",
+            name: "startTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "deferralTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "endTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint16",
+            name: "term",
+            type: "uint16",
+          },
+          {
+            internalType: "uint256",
+            name: "fenix",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "shares",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "payout",
+            type: "uint256",
+          },
+        ],
+        indexed: true,
+        internalType: "struct Stake",
+        name: "_stake",
+        type: "tuple",
+      },
+    ],
+    name: "EndStake",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "uint40",
+            name: "id",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "rewardTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint256",
+            name: "fenix",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "caller",
+            type: "address",
+          },
+        ],
+        indexed: true,
+        internalType: "struct Reward",
+        name: "reward",
+        type: "tuple",
+      },
+    ],
+    name: "FlushRewardPool",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "user",
@@ -202,6 +347,61 @@ const FENIX_ABI = [
     anonymous: false,
     inputs: [
       {
+        components: [
+          {
+            internalType: "enum Status",
+            name: "status",
+            type: "uint8",
+          },
+          {
+            internalType: "uint40",
+            name: "startTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "deferralTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint40",
+            name: "endTs",
+            type: "uint40",
+          },
+          {
+            internalType: "uint16",
+            name: "term",
+            type: "uint16",
+          },
+          {
+            internalType: "uint256",
+            name: "fenix",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "shares",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "payout",
+            type: "uint256",
+          },
+        ],
+        indexed: true,
+        internalType: "struct Stake",
+        name: "_stake",
+        type: "tuple",
+      },
+    ],
+    name: "StartStake",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "from",
@@ -221,6 +421,19 @@ const FENIX_ABI = [
       },
     ],
     name: "Transfer",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "_shareRate",
+        type: "uint256",
+      },
+    ],
+    name: "UpdateShareRate",
     type: "event",
   },
   {
