@@ -5,13 +5,13 @@ import { Header, Footer } from "@/components/ui";
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
-    template: "%s | FENIX",
+    template: "FENIX",
     default: "FENIX",
   },
-  description: "Empower your crypto, earn while you hold!",
+  description: "Empower your crypto, earn while you hold Fenix",
   openGraph: {
-    title: "%s | FENIX",
-    description: "Empower your crypto, earn while you hold!",
+    title: "FENIX",
+    description: "Empower your crypto, earn while you hold Fenix",
     url: "https://fenix-fyi",
     siteName: "fenix.fyi",
     images: [
@@ -47,8 +47,8 @@ export const metadata = {
   manifest: "/manifest.json",
   twitter: {
     card: "summary_large_image",
-    title: "%s | FENIX",
-    description: "Empower your crypto, earn while you hold!",
+    title: "FENIX",
+    description: "Empower your crypto, earn while you hold Fenix",
     siteId: "1612469567934062592",
     creator: "@fenix_protocol",
     creatorId: "1612469567934062592",
@@ -59,14 +59,14 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <GlobalContainer>
-      <html className="h-full primary-background" lang="en">
+    <html className="h-full primary-background" lang="en">
+      <GlobalContainer>
         <body className="h-full">
           <Header />
           {children}
           <Footer />
         </body>
-      </html>
-    </GlobalContainer>
+      </GlobalContainer>
+    </html>
   );
 }

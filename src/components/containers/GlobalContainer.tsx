@@ -4,6 +4,8 @@ import { ConnectKitProvider } from "connectkit";
 import { WagmiConfig } from "wagmi";
 import { client } from "@/libraries/client";
 import { FenixProvider } from "@/contexts/FenixContext";
+import { GoogleAnalytics } from "nextjs-google-analytics";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function GlobalContainer({ children }: any) {
   return (
@@ -25,7 +27,11 @@ export default function GlobalContainer({ children }: any) {
           ),
         }}
       >
-        <FenixProvider>{children}</FenixProvider>
+        <FenixProvider>
+          <GoogleAnalytics trackPageViews />
+          {children}
+          <Analytics />
+        </FenixProvider>
       </ConnectKitProvider>
     </WagmiConfig>
   );
