@@ -1,8 +1,7 @@
 "use client";
 
-import { GasEstimate, PageHeader, Or, DescriptionDatum } from "@/components/ui";
+import { GasEstimate, PageHeader } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
-import Link from "next/link";
 import { MaxValueField } from "@/components/ui/forms";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
@@ -28,6 +27,7 @@ import * as yup from "yup";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { xenContract } from "@/libraries/xenContract";
+import { CountUpDatum } from "@/components/ui/datum";
 
 const BurnXEN = () => {
   const [disabled, setDisabled] = useState(true);
@@ -135,9 +135,9 @@ const BurnXEN = () => {
             register={register("burnXENAmount")}
             setValue={setValue}
           />
-          <dl className="sm:divide-y sm:secondary-divider">
-            <DescriptionDatum title="New FENIX" datum={`${burnXENAmount / 10_000}`} />
-            <DescriptionDatum title="Liquid FENIX" datum={fenixBalance?.formatted ?? "-"} />
+          <dl className="divide-y secondary-divider">
+            <CountUpDatum title="New FENIX" value={burnXENAmount / 10_000} suffix=" FENIX" />
+            <CountUpDatum title="Liquid" value={Number(fenixBalance?.formatted)} suffix=" FENIX" />
           </dl>
 
           <div>

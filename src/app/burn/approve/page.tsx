@@ -1,6 +1,6 @@
 "use client";
 
-import { GasEstimate, PageHeader, Or, DescriptionDatum } from "@/components/ui";
+import { GasEstimate, PageHeader, Or } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
 import { MaxValueField } from "@/components/ui/forms";
 import { useForm } from "react-hook-form";
@@ -27,11 +27,12 @@ import * as yup from "yup";
 import XENCryptoABI from "@/models/abi/XENCryptoABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { xenContract } from "@/libraries/xenContract";
+import { CountUpDatum, TextDatum } from "@/components/ui/datum";
 
 const BurnApprove = () => {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
-
+  const [allowance, setAllowance] = useState<number>(0);
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
@@ -41,7 +42,7 @@ const BurnApprove = () => {
     token: xenContract(chain).address,
     watch: true,
   });
-  const { data: allowance } = useContractRead({
+  const { data: allowanceData } = useContractRead({
     ...xenContract(chain),
     functionName: "allowance",
     args: [address, fenixContract(chain).address],
@@ -136,6 +137,9 @@ const BurnApprove = () => {
   };
 
   useEffect(() => {
+    if (allowanceData) {
+      setAllowance(Number(ethers.utils.formatUnits(allowanceData)));
+    }
     setDisabled(!isValid);
   }, [isValid]);
 
@@ -155,11 +159,11 @@ const BurnApprove = () => {
             setValue={setValue}
           />
 
-          <dl className="sm:divide-y sm:secondary-divider">
-            {allowance && allowance.gte(ethers.constants.MaxUint256) ? (
-              <DescriptionDatum title="Spend Allowance" datum={"Unlimited"} />
+          <dl className="divide-y secondary-divider">
+            {allowanceData && allowanceData.gte(ethers.constants.MaxUint256) ? (
+              <TextDatum title="Spend Allowance" value="Unlimited" />
             ) : (
-              <DescriptionDatum title="Spend Allowance" datum={allowance?.toString() ?? "0"} />
+              <CountUpDatum title="Spend Allowance" value={allowance} suffix=" XEN" />
             )}
           </dl>
 
