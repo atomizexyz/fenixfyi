@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 
 export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
   const [token, setToken] = useState<Token | null>(null);
+  const [tokenAddress, setTokenAddress] = useState<string>("");
   const [shareRate, setShareRate] = useState<BigNumber>(BigNumber.from(0));
   const [equityPoolSupply, setEquityPoolSupply] = useState<BigNumber>(BigNumber.from(0));
   const [rewardPoolSupply, setRewardPoolSupply] = useState<BigNumber>(BigNumber.from(0));
@@ -51,6 +52,9 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
   useEffect(() => {
     if (tokenData) {
       setToken(tokenData);
+      if (tokenData.address) {
+        setTokenAddress(tokenData.address);
+      }
     }
   }, [tokenData]);
 
@@ -126,17 +130,15 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
       </div>
       <div className="py-2 flex justify-between">
         <dt className="text-sm font-medium primary-text">Address</dt>
-        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
-          {truncateAddress(token?.address ?? "")}
-        </dd>
+        <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{truncateAddress(tokenAddress)}</dd>
       </div>
       <div className="py-2 flex space-x-8">
         <button className="tertiary-link" onClick={() => copyAddress()}>
           <IconCopy className="w-5 h-5" />
         </button>
-        <a href="#" className="tertiary-link">
+        <Link href={`${chain.blockExplorers?.default.url}/address/${tokenAddress}`} className="tertiary-link">
           <IconShare2 className="w-5 h-5" />
-        </a>
+        </Link>
       </div>
     </dl>
   );

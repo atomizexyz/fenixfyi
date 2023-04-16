@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 
 export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
   const [token, setToken] = useState<Token | null>(null);
+  const [tokenAddress, setTokenAddress] = useState<string>("");
   const [shareRate, setShareRate] = useState<BigNumber>(BigNumber.from(0));
   const [equityPoolSupply, setEquityPoolSupply] = useState<BigNumber>(BigNumber.from(0));
   const [rewardPoolSupply, setRewardPoolSupply] = useState<BigNumber>(BigNumber.from(0));
@@ -51,6 +52,9 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
   useEffect(() => {
     if (tokenData) {
       setToken(tokenData);
+      if (tokenData.address) {
+        setTokenAddress(tokenData.address);
+      }
     }
   }, [tokenData]);
 
@@ -117,9 +121,9 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
             <IconCopy className="w-5 h-5" />
           </button>
 
-          <a href="#" className="tertiary-link">
+          <Link href={`${chain.blockExplorers?.default.url}/address/${tokenAddress}`} className="tertiary-link">
             <IconShare2 className="w-5 h-5" />
-          </a>
+          </Link>
         </div>
       </td>
     </tr>
