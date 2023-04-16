@@ -10,6 +10,8 @@ import { fenixContract } from "@/libraries/fenixContract";
 import CountUp from "react-countup";
 import { BigNumber, ethers } from "ethers";
 import { Token } from "@/contexts/FenixContext";
+import { useCopyToClipboard } from "usehooks-ts";
+import toast from "react-hot-toast";
 
 export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
   const [token, setToken] = useState<Token | null>(null);
@@ -17,6 +19,7 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
   const [equityPoolSupply, setEquityPoolSupply] = useState<BigNumber>(BigNumber.from(0));
   const [rewardPoolSupply, setRewardPoolSupply] = useState<BigNumber>(BigNumber.from(0));
 
+  const [_, setCopy] = useCopyToClipboard();
   const { data: tokenData } = useToken({
     address: fenixContract(chain).address,
     chainId: chain?.id,
@@ -50,6 +53,15 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
       setToken(tokenData);
     }
   }, [tokenData]);
+
+  const copyAddress = () => {
+    if (token?.address) {
+      setCopy(token.address);
+      toast.success(`${truncateAddress(token.address)} copied to clipboard`);
+    } else {
+      toast.error("Could not copy address");
+    }
+  };
 
   return (
     <tr>
@@ -101,9 +113,9 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
       </td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex space-x-4">
-          <a href="#" className="tertiary-link">
+          <button className="tertiary-link" onClick={() => copyAddress()}>
             <IconCopy className="w-5 h-5" />
-          </a>
+          </button>
 
           <a href="#" className="tertiary-link">
             <IconShare2 className="w-5 h-5" />

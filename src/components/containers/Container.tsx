@@ -54,7 +54,7 @@ export default function Container({ className, ...props }: any) {
                       }}
                     >
                       <span className="sr-only">Close</span>
-                      <IconX className="h-5 w-5" aria-hidden="true" />
+                      <IconX className="h-5 w-5 p-0.5" aria-hidden="true" />
                     </button>
                   </div>
                 </div>

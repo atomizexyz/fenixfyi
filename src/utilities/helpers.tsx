@@ -3,7 +3,7 @@ import { UTC_TIME, ONE_DAY_TS, ONE_EIGHTY_DAYS_TS, FENIX_MAX_STAKE_LENGTH } from
 
 export const truncateAddress = (address: string) => {
   if (address == undefined) return "";
-  return `${address.slice(0, 6)}•••${address.slice(-4)}`;
+  return `${address.slice(0, 6)}••••${address.slice(-4)}`;
 };
 
 export const clamp = (value: number, min: number, max: number) => {
