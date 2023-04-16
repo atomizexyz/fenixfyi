@@ -108,6 +108,7 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
           <CountUp
             end={Number(ethers.utils.formatUnits(equityPoolSupply))}
             preserveValue={true}
+            suffix=" FENIX"
             separator=","
             decimals={2}
           />
@@ -119,6 +120,7 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
           <CountUp
             end={Number(ethers.utils.formatUnits(rewardPoolSupply))}
             preserveValue={true}
+            suffix=" FENIX"
             separator=","
             decimals={2}
           />
