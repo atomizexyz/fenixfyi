@@ -16,11 +16,6 @@ export const metadata = {
     siteName: "fenix.fyi",
     images: [
       {
-        url: "/images/open-graph/og.jpg",
-        width: 1280,
-        height: 640,
-      },
-      {
         url: "/images/open-graph/og-alt.jpg",
         width: 2560,
         height: 1280,
