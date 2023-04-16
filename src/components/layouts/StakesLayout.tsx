@@ -56,7 +56,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
       <PageHeader title={title} subtitle={subtitle} />
       <div className="md:hidden">
         <CardContainer className="max-w-2xl">
-          <div className="flex flex-col space-y-4 divide-y primary-divider">
+          <div className="flex flex-col space-y-4 primary-divider">
             {Array.from(Array(stakeCount).keys()).map((stakeIndex) => (
               <StakeCard key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
             ))}

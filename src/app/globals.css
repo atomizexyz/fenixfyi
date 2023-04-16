@@ -27,9 +27,9 @@
 }
 
 .primary-divider {
-  @apply border-t;
-  @apply border-neutral-900/20;
-  @apply dark:border-neutral-50/40;
+  @apply border-t divide-y;
+  @apply border-neutral-900/20 divide-neutral-900/20;
+  @apply dark:border-neutral-50/40 dark:divide-neutral-50/40;
 }
 
 .primary-button {

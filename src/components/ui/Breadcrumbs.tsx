@@ -74,7 +74,7 @@ export default function Breadcrumbs() {
           }}
         >
           <div className="font-mono">
-            <CountUp start={0} end={Number(fenixBalance?.formatted ?? 0)} decimals={2} />
+            <CountUp start={0} end={Number(fenixBalance?.formatted ?? 0)} preserveValue={true} decimals={2} />
           </div>
 
           <div className="pl-2">{token.symbol}</div>

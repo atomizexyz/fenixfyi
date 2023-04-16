@@ -6,7 +6,7 @@ import { clsx } from "clsx";
 import { ErrorMessage } from "@hookform/error-message";
 import { BigNumber, ethers } from "ethers";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { PageHeader, GasEstimate, DescriptionDatum, BonusCalculator } from "@/components/ui";
+import { PageHeader, GasEstimate, BonusCalculator } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
 import { useRouter } from "next/navigation";
 import { MaxValueField } from "@/components/ui/forms";
@@ -31,6 +31,7 @@ import * as yup from "yup";
 import { FENIX_MAX_STAKE_LENGTH } from "@/utilities/constants";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
+import { CountUpDatum } from "@/components/ui/datum";
 
 export default function Stake() {
   const today = new Date();
@@ -286,7 +287,7 @@ export default function Stake() {
             />
           </CardContainer>
           <dl className="sm:divide-y sm:secondary-divider">
-            <DescriptionDatum title="Your Stake Shares" datum={shares.toFixed(6)} />
+            <CountUpDatum title="You Will Receive" value={shares} decimals={6} suffix=" Shares" />
           </dl>
 
           <button
