@@ -4,6 +4,7 @@ import { fenixContract } from "@/libraries/fenixContract";
 import { IconChevronRight, IconEyeFilled, IconHome } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import CountUp from "react-countup";
 import { Chain, Address, useBalance, useAccount, useNetwork, useToken } from "wagmi";
 import { InjectedConnector } from "wagmi/dist/connectors/injected";
@@ -11,10 +12,12 @@ import { InjectedConnector } from "wagmi/dist/connectors/injected";
 export default function Breadcrumbs() {
   const pathname = usePathname();
   const path = pathname.split("/").filter((item) => item !== "");
+  const [token, setToken] = useState<any>(null);
+  const [fenixBalance, setFenixBalance] = useState<any>(null);
 
   const { address, connector } = useAccount() as unknown as { address: Address; connector: InjectedConnector };
   const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { data: fenixBalance } = useBalance({
+  const { data: fenixData } = useBalance({
     address: address,
     token: fenixContract(chain).address,
     watch: true,
@@ -24,6 +27,11 @@ export default function Breadcrumbs() {
     address: fenixContract(chain).address,
     chainId: chain?.id,
   });
+
+  useEffect(() => {
+    setToken(tokenData);
+    setFenixBalance(fenixData);
+  }, [fenixData, tokenData]);
 
   return (
     <div className="flex items-center mx-auto max-w-7xl overflow-hidden py-4 px-6 lg:px-8 justify-between">
@@ -53,15 +61,15 @@ export default function Breadcrumbs() {
           })}
         </ol>
       </nav>
-      {tokenData && (
+      {token && (
         <button
           className="flex items-center rounded-full px-3 py-1 text-sm leading-6 primary-link ring-1 ring-inset glass"
           onClick={() => {
             (connector as InjectedConnector)?.watchAsset?.({
-              address: tokenData.address,
-              decimals: tokenData.decimals,
+              address: token.address,
+              decimals: token.decimals,
               image: "https://ipfs.io/ipfs/QmVcNfm2AvoZwcH5iKD5sQy8hBLjWvtpnG8R8gc7jhBje4",
-              symbol: tokenData.symbol,
+              symbol: token.symbol,
             });
           }}
         >
@@ -69,7 +77,7 @@ export default function Breadcrumbs() {
             <CountUp start={0} end={Number(fenixBalance?.formatted ?? 0)} decimals={2} />
           </div>
 
-          <div className="pl-2">{tokenData.symbol}</div>
+          <div className="pl-2">{token.symbol}</div>
           <IconEyeFilled className="h-4 w-4 flex-shrink-0 ml-2 primary-text" aria-hidden="true" />
         </button>
       )}

@@ -23,7 +23,7 @@ import { fenixContract } from "@/libraries/fenixContract";
 import { WALLET_ADDRESS_REGEX } from "@/utilities/constants";
 import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
-import { WalletAddressField } from "@/components/forms";
+import { WalletAddressField } from "@/components/ui/forms";
 
 const StakeAddressIndexDefer = () => {
   const [disabled, setDisabled] = useState(true);

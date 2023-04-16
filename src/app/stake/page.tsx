@@ -9,7 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { PageHeader, GasEstimate, DescriptionDatum, BonusCalculator } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
 import { useRouter } from "next/navigation";
-import { MaxValueField } from "@/components/forms";
+import { MaxValueField } from "@/components/ui/forms";
 import { DayPicker } from "react-day-picker";
 import { useCallback, useEffect, useState } from "react";
 import { addDays, differenceInDays, isSameMonth, getYear } from "date-fns";

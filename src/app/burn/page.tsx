@@ -3,7 +3,7 @@
 import { GasEstimate, PageHeader, Or, DescriptionDatum } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
 import Link from "next/link";
-import { MaxValueField } from "@/components/forms";
+import { MaxValueField } from "@/components/ui/forms";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import {

@@ -1,10 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CardContainer, Container } from "@/components/containers";
-import { GasEstimate, PageHeader, DescriptionDatum } from "@/components/ui";
+import { GasEstimate, PageHeader } from "@/components/ui";
 import {
   Chain,
   useContractWrite,
@@ -16,12 +16,16 @@ import {
 } from "wagmi";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
+import { DateDatum, CountUpDatum, CountDownDatum } from "@/components/ui/datum";
 
 export default function Reward() {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [matureDate, setMatureDate] = useState<Date>(new Date());
+  const [stakePoolSupply, setStakePoolSupply] = useState<number>(0);
+  const [rewardPoolSupply, setRewardPoolSupply] = useState<number>(0);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
@@ -80,6 +84,22 @@ export default function Reward() {
     watch: true,
   });
 
+  useEffect(() => {
+    if (readData?.[0] !== undefined) {
+      const coolDownUnlockTs = Number(readData?.[0] ?? 0);
+      const date = new Date(coolDownUnlockTs * 1000);
+      setMatureDate(date);
+    }
+    if (readData?.[1] !== undefined) {
+      const equityPoolSupply = ethers.utils.formatUnits(readData?.[1] ?? 0);
+      setStakePoolSupply(Number(equityPoolSupply));
+    }
+    if (readData?.[2] !== undefined) {
+      const rewardPoolSupply = ethers.utils.formatUnits(readData?.[2] ?? 0);
+      setRewardPoolSupply(Number(rewardPoolSupply));
+    }
+  }, [readData]);
+
   return (
     <Container className="max-w-xl">
       <PageHeader title="Reward" subtitle="Any user can claim the the reward once the cooldown has elapses." />
@@ -87,10 +107,11 @@ export default function Reward() {
       <CardContainer>
         <form onSubmit={handleSubmit(handleEndSubmit)} className="space-y-6">
           <div className="mt-5">
-            <dl className="sm:divide-y sm:secondary-divider">
-              <DescriptionDatum title="Matures In" datum={ethers.utils.formatUnits(readData?.[0] ?? 0)} />
-              <DescriptionDatum title="Stake Pool Supply" datum={ethers.utils.formatUnits(readData?.[1] ?? 0)} />
-              <DescriptionDatum title="Reward Pool Supply" datum={ethers.utils.formatUnits(readData?.[2] ?? 0)} />
+            <dl className="divide-y secondary-divider">
+              <DateDatum title="Maturity Date" value={matureDate} />
+              <CountDownDatum title="Count Down" value={matureDate} />
+              <CountUpDatum title="Reward Pool Supply" value={rewardPoolSupply} suffix=" FENIX" />
+              <CountUpDatum title="Stake Pool Supply" value={stakePoolSupply} suffix=" FENIX" />
             </dl>
           </div>
 

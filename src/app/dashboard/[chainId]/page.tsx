@@ -10,6 +10,7 @@ import { Token } from "@/contexts/FenixContext";
 import { useParams } from "next/navigation";
 import { allChains } from "@/libraries/client";
 import { daysSince } from "@/utilities/helpers";
+import { DateDatum, TextDatum, CountUpDatum, NumberDatum } from "@/components/ui/datum";
 
 const DashboardChainId = () => {
   const [token, setToken] = useState<Token | null>(null);
@@ -70,65 +71,26 @@ const DashboardChainId = () => {
             <p className="mt-1 text-sm secondary-text">FENIX on stats on {chainFromId?.name} </p>
           </div>
         </div>
-        <div className="border-t primary-divider">
+        <div className="primary-divider">
           <dl className="divide-y secondary-divider">
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Chain Id</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0 font-mono">{chainFromId?.id}</dd>
-            </div>
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Launch Date</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0">
-                {new Date(genesisTs * 1000).toLocaleDateString()}
-              </dd>
-            </div>
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Days Since Launch</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0 font-mono">
-                <CountUp end={daysSince(genesisTs)} preserveValue={true} separator={","} suffix={" days"} />
-              </dd>
-            </div>
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Contract Symbol</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0">{token?.symbol}</dd>
-            </div>
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Contract Address</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0 font-mono">{token?.address}</dd>
-            </div>
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Equity Pool</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0 font-mono">
-                <CountUp
-                  end={Number(ethers.utils.formatUnits(equityPoolSupply))}
-                  preserveValue={true}
-                  separator=","
-                  decimals={2}
-                />
-              </dd>
-            </div>
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Reward Pool</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0 font-mono">
-                <CountUp
-                  end={Number(ethers.utils.formatUnits(rewardPoolSupply))}
-                  preserveValue={true}
-                  separator=","
-                  decimals={2}
-                />
-              </dd>
-            </div>
-            <div className="py-2 flex justify-between">
-              <dt className="text-sm font-medium primary-text">Share Rate</dt>
-              <dd className="mt-1 text-sm secondary-text sm:col-span-2 sm:mt-0 font-mono">
-                <CountUp
-                  end={Number(ethers.utils.formatUnits(shareRate))}
-                  preserveValue={true}
-                  separator=","
-                  decimals={2}
-                />
-              </dd>
-            </div>
+            <NumberDatum title="Chain Id" value={chainFromId?.id.toString() ?? "-"} />
+            <DateDatum title="Launch Date" value={new Date(genesisTs * 1000)} />
+            <CountUpDatum title="Days Since Launch" value={daysSince(genesisTs)} suffix=" days" />
+            <TextDatum title="Contract Symbol" value={token?.symbol ?? "-"} />
+            <NumberDatum title="Contract Address" value={token?.address ?? "-"} />
+            <CountUpDatum
+              title="Equity Pool"
+              value={Number(ethers.utils.formatUnits(equityPoolSupply))}
+              decimals={5}
+              suffix=" FENIX"
+            />
+            <CountUpDatum
+              title="Reward Pool"
+              value={Number(ethers.utils.formatUnits(rewardPoolSupply))}
+              decimals={5}
+              suffix=" FENIX"
+            />
+            <CountUpDatum title="Share Rate" value={Number(ethers.utils.formatUnits(shareRate))} decimals={5} />
           </dl>
         </div>
       </CardContainer>

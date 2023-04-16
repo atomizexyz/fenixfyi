@@ -5,7 +5,6 @@ import ConnectButton from "./ConnectButton";
 import PageHeader from "./PageHeader";
 import ChainDropdown from "./ChainDropdown";
 import Breadcrumbs from "./Breadcrumbs";
-import DescriptionDatum from "./DescriptionDatum";
 import GasEstimate from "./GasEstimate";
 import StakeRowHeaderFooter from "./StakeRowHeaderFooter";
 import { StakeRow } from "./StakeRow";
@@ -22,7 +21,6 @@ export {
   PageHeader,
   ChainDropdown,
   Breadcrumbs,
-  DescriptionDatum,
   StakeRowHeaderFooter,
   GasEstimate,
   DashboardCard,
