@@ -10,7 +10,6 @@ import {
 } from "@tabler/icons-react";
 
 export const burn = [
-  { name: "Burn XEN", description: "Burn your XEN and mint FENIX", href: "/burn", icon: IconFlame },
   { name: "Get XEN", description: "Mint XEN to burn for FENIX", href: "/burn/get", icon: IconArrowBigDownLines },
   {
     name: "Approve FENIX",
@@ -18,6 +17,7 @@ export const burn = [
     href: "/burn/approve",
     icon: IconLockOpen,
   },
+  { name: "Burn XEN", description: "Burn your XEN and mint FENIX", href: "/burn", icon: IconFlame },
 ];
 export const callsToAction = [
   { name: "XEN Litepaper", href: "https://faircrypto.org/xencryptolp.pdf", icon: IconFileText },
