@@ -42,6 +42,9 @@ export default function Reward() {
     abi: FENIX_ABI,
     functionName: "flushRewardPool",
     enabled: !disabled,
+    onError(err) {
+      setDisabled(true);
+    },
   });
 
   const { data: writeData, write } = useContractWrite({

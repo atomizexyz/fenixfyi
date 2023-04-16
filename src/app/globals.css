@@ -119,14 +119,22 @@
   @apply dark:bg-neutral-700;
 }
 
+.status-success-background {
+  @apply bg-green-400;
+}
+
 .status-success {
-  @apply text-green-600 bg-green-100;
-  @apply dark:text-green-400 dark:bg-green-400/10;
+  @apply bg-green-600;
+  @apply dark:bg-green-400;
+}
+
+.status-error-background {
+  @apply bg-rose-400;
 }
 
 .status-error {
-  @apply text-rose-600 bg-rose-100;
-  @apply dark:text-rose-400 dark:bg-rose-400/10;
+  @apply bg-rose-600;
+  @apply dark:bg-rose-400;
 }
 
 .progress-gradient,
