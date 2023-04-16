@@ -27,9 +27,9 @@
 }
 
 .primary-divider {
-  @apply border-t divide-y;
-  @apply border-neutral-900/20 divide-neutral-900/20;
-  @apply dark:border-neutral-50/40 dark:divide-neutral-50/40;
+  @apply divide-y;
+  @apply divide-neutral-900/10;
+  @apply dark:divide-neutral-50/10;
 }
 
 .primary-button {
@@ -81,8 +81,8 @@
 }
 
 .secondary-divider {
-  @apply divide-neutral-900/10;
-  @apply dark:divide-neutral-50/10;
+  @apply divide-neutral-900/5;
+  @apply dark:divide-neutral-50/5;
 }
 .secondary-group-hover {
   @apply group-hover:text-white;
