@@ -16,31 +16,32 @@ export const metadata = {
     siteName: "fenix.fyi",
     images: [
       {
-        url: "/image/open-graph/og.png",
-        width: 800,
-        height: 600,
+        url: "/images/open-graph/og.jpg",
+        width: 1280,
+        height: 640,
       },
       {
-        url: "/image/open-graph/og-alt.png",
-        width: 1800,
-        height: 1600,
-        alt: "Open Graph Image Alt",
+        url: "/images/open-graph/og-alt.jpg",
+        width: 2560,
+        height: 1280,
+        alt: "FENIX",
       },
     ],
     locale: "en-US",
     type: "website",
   },
   icons: {
-    icon: [{ url: "/image/icons/icon.png" }, new URL("/image/icons/icon.png", "https://fenix.fyi")],
-    shortcut: ["/image/icons/shortcut-icon.png"],
+    icon: [{ url: "/images/icons/icon.png" }, new URL("/images/icons/icon.png", "https://fenix.fyi")],
+    shortcut: ["/images/icons/favicon.ico"],
     apple: [
-      { url: "/image/icons/apple-icon.png" },
-      { url: "/image/icons/apple-icon-x3.png", sizes: "180x180", type: "image/png" },
+      { url: "/images/icons/icon@60.png" },
+      { url: "/images/icons/icon@152.png", sizes: "152x152", type: "image/png" },
+      { url: "/images/icons/icon@180.png", sizes: "180x180", type: "image/png" },
     ],
     other: [
       {
         rel: "apple-touch-icon-precomposed",
-        url: "/image/icons/apple-touch-icon-precomposed.png",
+        url: "/images/icons/icon@180.png",
       },
     ],
   },
@@ -52,7 +53,7 @@ export const metadata = {
     siteId: "1612469567934062592",
     creator: "@fenix_protocol",
     creatorId: "1612469567934062592",
-    images: ["/image/open-graph/og.png"],
+    images: ["/images/open-graph/og-alt.jpg"],
   },
   category: "cryptocurrency",
 };
