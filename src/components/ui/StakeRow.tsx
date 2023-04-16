@@ -9,6 +9,7 @@ import { BigNumber, ethers } from "ethers";
 import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stake";
 import { StatusState } from "connectkit/build/siwe/SIWEContext";
+import CountUp from "react-countup";
 
 export const StakeRow: NextPage<{
   stakeIndex: number;
@@ -21,7 +22,7 @@ export const StakeRow: NextPage<{
   const [payout, setPayout] = useState("-");
   const [projectedPayout, setProjectedPayout] = useState("-");
   const [penalty, setPenalty] = useState("-");
-  const [progress, setProgress] = useState("-");
+  const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
 
@@ -66,9 +67,9 @@ export const StakeRow: NextPage<{
         setProjectedPayout(payout.toFixed(2));
       }
 
-      const clampedProgress = calculateProgress(stake.startTs, stake.endTs);
-      setClampedProgress(clampedProgress);
-      setProgress((clampedProgress * 100).toFixed(2) + "%");
+      const progressPct = calculateProgress(stake.startTs, stake.endTs);
+      setClampedProgress(progressPct * 100);
+      setProgress(clampedProgress.toFixed(2) + "%");
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
@@ -104,7 +105,9 @@ export const StakeRow: NextPage<{
               <div className="h-6 rounded glass" style={{ width: progress }} />
             </div>
             <div className="relative flex justify-center">
-              <span className="text-sm primary-text font-mono my-2">{progress}</span>
+              <span className="text-sm primary-text font-mono my-2">
+                <CountUp end={clampedProgress} decimals={2} suffix=" %" />
+              </span>
             </div>
           </div>
         );
@@ -137,7 +140,7 @@ export const StakeRow: NextPage<{
               End
             </Link>
           )}
-          {clampedProgress == 1 && status === StakeStatus.ACTIVE && (
+          {clampedProgress == 100 && status === StakeStatus.ACTIVE && (
             <Link href={`/stake/defer?address=${address}&stakeIndex=${stakeIndex}`} className="primary-link">
               Defer
             </Link>

@@ -22,7 +22,7 @@ export const StakeCard: NextPage<{
   const [payout, setPayout] = useState<number>(0);
   const [projectedPayout, setProjectedPayout] = useState<number>(0);
   const [penalty, setPenalty] = useState<number>(0);
-  const [progress, setProgress] = useState<number>(0);
+  const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
 
@@ -68,9 +68,9 @@ export const StakeCard: NextPage<{
         setProjectedPayout(payout);
       }
 
-      const clampedProgress = calculateProgress(stake.startTs, stake.endTs);
-      setClampedProgress(clampedProgress);
-      setProgress(clampedProgress * 100);
+      const progressPct = calculateProgress(stake.startTs, stake.endTs);
+      setClampedProgress(progressPct * 100);
+      setProgress(clampedProgress.toFixed(2) + "%");
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)));
     }
@@ -117,7 +117,7 @@ export const StakeCard: NextPage<{
             </div>
             <div className="relative flex justify-center">
               <span className="text-sm primary-text font-mono my-2">
-                <CountUp end={progress} decimals={2} suffix=" %" />
+                <CountUp end={clampedProgress} decimals={2} suffix=" %" />
               </span>
             </div>
           </div>
@@ -145,7 +145,7 @@ export const StakeCard: NextPage<{
               End
             </Link>
           )}
-          {((clampedProgress == 1 && status === StakeStatus.ACTIVE) || stakeStatus == StakeStatus.ALL) && (
+          {((clampedProgress == 100 && status === StakeStatus.ACTIVE) || stakeStatus == StakeStatus.ALL) && (
             <Link href={`/stake/defer?address=${address}&stakeIndex=${stakeIndex}`} className="primary-link">
               Defer
             </Link>

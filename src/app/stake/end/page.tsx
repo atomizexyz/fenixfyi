@@ -36,8 +36,8 @@ export default function StakeAddressIndexEnd() {
   const [payout, setPayout] = useState<number>(0);
   const [projectedPayout, setProjectedPayout] = useState<number>(0);
   const [penalty, setPenalty] = useState<number>(0);
-  const [progress, setProgress] = useState<number>(0);
-  const [clampedProgress, setClampedProgress] = useState(0);
+  const [progress, setProgress] = useState<string>("0%");
+  const [clampedProgress, setClampedProgress] = useState<number>(0);
   const [status, setStatus] = useState(0);
 
   const router = useRouter();
@@ -126,9 +126,9 @@ export default function StakeAddressIndexEnd() {
         setProjectedPayout(payout);
       }
 
-      const clampedProgress = calculateProgress(stake.startTs, stake.endTs);
-      setClampedProgress(clampedProgress);
-      setProgress(clampedProgress * 100);
+      const progressPct = calculateProgress(stake.startTs, stake.endTs);
+      setClampedProgress(progressPct * 100);
+      setProgress(clampedProgress.toFixed(2) + "%");
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)));
     }
@@ -174,7 +174,7 @@ export default function StakeAddressIndexEnd() {
             </div>
             <div className="relative flex justify-center">
               <span className="text-sm primary-text font-mono my-2">
-                <CountUp end={progress} decimals={2} suffix=" %" />
+                <CountUp end={clampedProgress} decimals={2} suffix=" %" />
               </span>
             </div>
           </div>
