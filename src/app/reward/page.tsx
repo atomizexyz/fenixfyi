@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CardContainer, Container } from "@/components/containers";
 import { GasEstimate, PageHeader } from "@/components/ui";
@@ -16,7 +16,7 @@ import {
 } from "wagmi";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
 import { DateDatum, CountUpDatum, CountDownDatum } from "@/components/ui/datum";
 
@@ -32,7 +32,7 @@ export default function Reward() {
 
   const {
     handleSubmit,
-    formState: {},
+    formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
   });
@@ -98,7 +98,8 @@ export default function Reward() {
       const rewardPoolSupply = ethers.utils.formatUnits(readData?.[2] ?? 0);
       setRewardPoolSupply(Number(rewardPoolSupply));
     }
-  }, [readData]);
+    setDisabled(!isValid);
+  }, [isValid, readData]);
 
   return (
     <Container className="max-w-xl">

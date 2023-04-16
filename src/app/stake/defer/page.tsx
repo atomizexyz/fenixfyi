@@ -16,26 +16,59 @@ import {
   useNetwork,
   usePrepareContractWrite,
   useWaitForTransaction,
+  useContractReads,
 } from "wagmi";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { fenixContract } from "@/libraries/fenixContract";
 import { WALLET_ADDRESS_REGEX } from "@/utilities/constants";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import toast from "react-hot-toast";
 import { WalletAddressField } from "@/components/ui/forms";
+import { TextDatum, CountUpDatum, DateDatum } from "@/components/ui/datum";
+import { StakeStatus } from "@/models/stake";
+import { calculatePenalty, calculateProgress } from "@/utilities/helpers";
+import CountUp from "react-countup";
 
 const StakeAddressIndexDefer = () => {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [startMs, setStartMs] = useState<Date>(new Date());
+  const [endMs, setEndMs] = useState<Date>(new Date());
+  const [principal, setPrincipal] = useState<number>(0);
+  const [shares, setShares] = useState<number>(0);
+  const [payout, setPayout] = useState<number>(0);
+  const [projectedPayout, setProjectedPayout] = useState<number>(0);
+  const [penalty, setPenalty] = useState<number>(0);
+  const [progress, setProgress] = useState<number>(0);
+  const [clampedProgress, setClampedProgress] = useState(0);
+  const [status, setStatus] = useState(0);
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
-
   const address = searchParams.get("address") as unknown as Address;
   const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
+
+  const { chain } = useNetwork() as unknown as { chain: Chain };
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: readsData } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "stakeFor",
+        args: [address, BigNumber.from(stakeIndex)],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolTotalShares",
+      },
+    ],
+    watch: true,
+  });
 
   const schema = yup
     .object()
@@ -51,7 +84,7 @@ const StakeAddressIndexDefer = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
   } = useForm({
     mode: "onChange",
@@ -95,10 +128,83 @@ const StakeAddressIndexDefer = () => {
   };
 
   useEffect(() => {
+    const stake = readsData?.[0];
+    const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
+    const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
+    if (stake && equityPoolTotalShares && equityPoolSupply) {
+      setStartMs(new Date(stake.startTs * 1000));
+      setEndMs(new Date(stake.endTs * 1000));
+      setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)));
+      setShares(Number(ethers.utils.formatUnits(stake.shares)));
+
+      const penalty = calculatePenalty(stake.startTs, stake.endTs, stake.term);
+      setPenalty(penalty * 100);
+
+      if (equityPoolTotalShares > 0) {
+        const shares = Number(ethers.utils.formatUnits(stake.shares));
+        const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
+        const payout = equityPayout * (1 - penalty);
+        setProjectedPayout(payout);
+      }
+
+      const clampedProgress = calculateProgress(stake.startTs, stake.endTs);
+      setClampedProgress(clampedProgress);
+      setProgress(clampedProgress * 100);
+      setStatus(stake.status);
+      setPayout(Number(ethers.utils.formatUnits(stake.payout)));
+    }
     if (address) {
       setValue("deferAddress", address);
     }
-  }, [address, setValue]);
+    setDisabled(!isValid);
+  }, [address, isValid, readsData, setValue]);
+
+  const renderPenalty = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <TextDatum title="Penalty" value="-" />;
+      default:
+        return <CountUpDatum title="Penalty" value={penalty} decimals={2} suffix=" %" />;
+    }
+  };
+
+  const renderPayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <CountUpDatum title="Payout" value={payout} decimals={2} suffix=" FENIX" />;
+      default:
+        return <CountUpDatum title="Payout" value={projectedPayout} decimals={2} suffix=" FENIX" />;
+    }
+  };
+
+  const renderProgress = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+        return <div className="text-center uppercase">Ended</div>;
+      case StakeStatus.DEFER:
+        return <div className="text-center uppercase">Deferred</div>;
+      default:
+        return (
+          <div className="relative w-32">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full rounded primary-background">
+                <div className="h-6 rounded progress-gradient" style={{ width: progress }} />
+              </div>
+            </div>
+            <div className="absolute inset-0 flex items-center">
+              <div className="h-6 rounded glass" style={{ width: progress }} />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="text-sm primary-text font-mono my-2">
+                <CountUp end={progress} decimals={2} suffix=" %" />
+              </span>
+            </div>
+          </div>
+        );
+    }
+  };
 
   return (
     <Container className="max-w-xl">
@@ -110,10 +216,22 @@ const StakeAddressIndexDefer = () => {
       <CardContainer>
         <form onSubmit={handleSubmit(handleDeferSubmit)} className="space-y-6">
           <WalletAddressField
-            disabled={disabled}
             errorMessage={<ErrorMessage errors={errors} name="deferAddress" />}
             register={register("deferAddress")}
           />
+
+          <dl className="divide-y secondary-divider">
+            <DateDatum title="Start" value={startMs} />
+            <DateDatum title="End" value={endMs} />
+            <CountUpDatum title="Principal" value={principal} decimals={2} suffix=" FENIX" />
+            <CountUpDatum title="Shares" value={shares} decimals={2} />
+            {renderPenalty(status)}
+            {renderPayout(status)}
+            <div className="py-2 flex justify-between">
+              <dt className="text-sm font-medium primary-text">Progress</dt>
+              <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{renderProgress(status)}</dd>
+            </div>
+          </dl>
 
           <div className="form-control w-full">
             <button

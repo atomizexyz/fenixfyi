@@ -27,7 +27,6 @@ export const StakeRow: NextPage<{
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data: blockNumber } = useBlockNumber();
   const { data } = useContractReads({
     contracts: [
       {

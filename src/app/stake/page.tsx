@@ -286,7 +286,7 @@ export default function Stake() {
               shares={shares}
             />
           </CardContainer>
-          <dl className="sm:divide-y sm:secondary-divider">
+          <dl className="divide-y secondary-divider">
             <CountUpDatum title="You Will Receive" value={shares} decimals={6} suffix=" Shares" />
           </dl>
 
