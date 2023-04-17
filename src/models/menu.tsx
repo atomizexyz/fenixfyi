@@ -21,7 +21,7 @@ export const burn = [
 ];
 export const callsToAction = [
   { name: "XEN Litepaper", href: "https://faircrypto.org/xencryptolp.pdf", icon: IconFileText },
-  { name: "FENIX Litepaper", href: "https://github.com/atomizexyz/fenix", icon: IconFileText },
+  { name: "FENIX Litepaper", href: "https://github.com/atomizexyz/litepaper", icon: IconFileText },
 ];
 export const stake = [
   {
