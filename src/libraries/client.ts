@@ -7,7 +7,7 @@ import { infuraProvider } from "wagmi/providers/infura";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { mainnet, polygonMumbai, goerli } from "wagmi/chains";
+import { mainnet, polygonMumbai, goerli, polygon } from "wagmi/chains";
 
 import { pulseChain, x1Devnet } from "./chains";
 import { foundry } from "wagmi/chains";
@@ -20,7 +20,7 @@ export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [mainnet];
+    allChains = [polygon];
     break;
   case "localnet":
     allChains = [foundry];
