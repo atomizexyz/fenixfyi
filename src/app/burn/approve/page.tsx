@@ -141,7 +141,7 @@ const BurnApprove = () => {
       setAllowance(Number(ethers.utils.formatUnits(allowanceData)));
     }
     setDisabled(!isValid);
-  }, [isValid]);
+  }, [allowanceData, isValid]);
 
   return (
     <Container className="max-w-xl">

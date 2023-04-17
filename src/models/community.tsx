@@ -3,7 +3,7 @@ import { SVGProps } from "react";
 export const communityProjects = [
   {
     name: "XEN Crypto",
-    href: "https://xen.netowrk",
+    href: "https://xen.network",
     logo: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
       <svg width="158px" height="48px" viewBox="0 0 158 48" {...props}>
         <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
