@@ -161,3 +161,9 @@
   --rdp-accent-color: #ff5320;
   --rdp-background-color: transparent !important;
 }
+
+@media (prefers-color-scheme: dark) {
+  select option {
+    background-color: #000000;
+  }
+}
