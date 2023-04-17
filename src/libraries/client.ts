@@ -7,7 +7,8 @@ import { infuraProvider } from "wagmi/providers/infura";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { mainnet, polygonMumbai, goerli, polygon } from "wagmi/chains";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { polygonMumbai, goerli, polygon } from "wagmi/chains";
 
 import { pulseChain, x1Devnet } from "./chains";
 import { foundry } from "wagmi/chains";
@@ -46,6 +47,19 @@ export const client = createClient({
       chains,
       options: {
         appName: "fenix.fyi",
+      },
+    }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        projectId: "df88ad6ea5836921bbc94cdf84eaf47c",
+        metadata: {
+          name: "FENIX",
+          description: "Empower your crypto, earn while you hold Fenix",
+          url: "https://fenix.fyi",
+          icons: ["https://fenix.fyi/images/icons/icon.png"],
+        },
+        showQrModal: false,
       },
     }),
     new InjectedConnector({
