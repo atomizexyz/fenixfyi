@@ -73,7 +73,7 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [data]);
+  }, [clampedProgress, data]);
 
   if (data?.[0] && data?.[0].status != stakeStatus) return null;
 
