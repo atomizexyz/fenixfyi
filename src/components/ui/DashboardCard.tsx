@@ -103,24 +103,28 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
       </div>
 
       <div className="py-2 flex justify-between">
-        <dt className="text-sm font-medium primary-text">Equity Supply</dt>
+        <dt className="text-sm font-medium primary-text">
+          Equity Supply
+          <div className="text-xs tertiary-text"> FENIX </div>
+        </dt>
         <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
           <CountUp
             end={Number(ethers.utils.formatUnits(equityPoolSupply))}
             preserveValue={true}
-            suffix=" FENIX"
             separator=","
             decimals={2}
           />
         </dd>
       </div>
       <div className="py-2 flex justify-between">
-        <dt className="text-sm font-medium primary-text">Reward Supply</dt>
+        <dt className="text-sm font-medium primary-text">
+          Reward Supply
+          <div className="text-xs tertiary-text"> FENIX </div>
+        </dt>
         <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">
           <CountUp
             end={Number(ethers.utils.formatUnits(rewardPoolSupply))}
             preserveValue={true}
-            suffix=" FENIX"
             separator=","
             decimals={2}
           />
