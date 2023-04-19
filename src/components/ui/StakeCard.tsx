@@ -74,7 +74,7 @@ export const StakeCard: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)));
     }
-  }, [data]);
+  }, [clampedProgress, data]);
 
   if (data?.[0] && data?.[0].status != stakeStatus && stakeStatus != StakeStatus.ALL) return null;
 
@@ -92,9 +92,9 @@ export const StakeCard: NextPage<{
     switch (status) {
       case StakeStatus.END:
       case StakeStatus.DEFER:
-        return <CountUpDatum title="Payout" value={payout} decimals={2} suffix=" FENIX" />;
+        return <CountUpDatum title="Payout" value={payout} description="FENIX" decimals={2} />;
       default:
-        return <CountUpDatum title="Payout" value={projectedPayout} decimals={2} suffix=" FENIX" />;
+        return <CountUpDatum title="Payout" value={projectedPayout} description="FENIX" decimals={2} />;
     }
   };
 
@@ -130,7 +130,7 @@ export const StakeCard: NextPage<{
       <dl className="divide-y secondary-divider">
         <DateDatum title="Start" value={startMs} />
         <DateDatum title="End" value={endMs} />
-        <CountUpDatum title="Principal" value={principal} decimals={2} suffix=" FENIX" />
+        <CountUpDatum title="Principal" value={principal} description="FENIX" decimals={2} />
         <CountUpDatum title="Shares" value={shares} decimals={2} />
         {renderPenalty(status)}
         {renderPayout(status)}
