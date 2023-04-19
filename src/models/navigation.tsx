@@ -10,7 +10,8 @@ export const navigation = {
   ],
   footer: [
     { name: "Litepaper", href: "http://github.com/atomizexyz/litepaper" },
-    { name: "Brand", href: "https://brand.fenix.fyi/" },
+    { name: "Audit", href: "https://skynet.certik.com/projects/fenix" },
+    { name: "Brand", href: "https://brand.fenix.fyi" },
     { name: "Source Code", href: "https://github.com/atomizexyz/fenixfyi" },
   ],
   social: [
