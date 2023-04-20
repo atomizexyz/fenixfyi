@@ -39,6 +39,7 @@ export default function StakeAddressIndexEnd() {
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState<number>(0);
   const [status, setStatus] = useState(0);
+  const [stake, setStake] = useState<any>();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -70,12 +71,12 @@ export default function StakeAddressIndexEnd() {
       {
         ...fenixContract(chain),
         functionName: "calculateEarlyPayout",
-        args: [readsData![0]],
+        args: [stake],
       },
       {
         ...fenixContract(chain),
         functionName: "calculateLatePayout",
-        args: [readsData![0]],
+        args: [stake],
       },
     ],
   });
@@ -122,7 +123,10 @@ export default function StakeAddressIndexEnd() {
   };
 
   useEffect(() => {
-    const stake = readsData?.[0];
+    if (readsData?.[0]) {
+      setStake(readsData[0]);
+    }
+
     const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
     const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
     if (stake && equityPoolTotalShares && equityPoolSupply) {

@@ -24,10 +24,11 @@ export const StakeRow: NextPage<{
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
+  const [stake, setStake] = useState<any>();
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data } = useContractReads({
+  const { data: readsData } = useContractReads({
     contracts: [
       {
         ...fenixContract(chain),
@@ -51,20 +52,23 @@ export const StakeRow: NextPage<{
       {
         ...fenixContract(chain),
         functionName: "calculateEarlyPayout",
-        args: [data![0]],
+        args: [stake],
       },
       {
         ...fenixContract(chain),
         functionName: "calculateLatePayout",
-        args: [data![0]],
+        args: [stake],
       },
     ],
   });
 
   useEffect(() => {
-    const stake = data?.[0];
-    const equityPoolSupply = Number(ethers.utils.formatUnits(data?.[1] ?? 0));
-    const equityPoolTotalShares = Number(ethers.utils.formatUnits(data?.[2] ?? 0));
+    if (readsData?.[0]) {
+      setStake(readsData[0]);
+    }
+
+    const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
+    const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
 
     if (rewardPayout?.[0]) {
       const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
@@ -97,9 +101,9 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [clampedProgress, data, penalty, rewardPayout]);
+  }, [clampedProgress, penalty, readsData, rewardPayout, stake]);
 
-  if (data?.[0] && data?.[0].status != stakeStatus) return null;
+  if (readsData?.[0] && readsData?.[0].status != stakeStatus) return null;
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {

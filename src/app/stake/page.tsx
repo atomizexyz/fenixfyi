@@ -88,6 +88,7 @@ export default function Stake() {
     watch,
     formState: { errors, isValid },
     setValue,
+    reset,
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
@@ -110,6 +111,7 @@ export default function Stake() {
   const { data: stakeData, write: writeStake } = useContractWrite({
     ...config,
     onSuccess(_data) {
+      reset;
       setProcessing(true);
       setDisabled(true);
     },
