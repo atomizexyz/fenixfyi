@@ -3,12 +3,11 @@
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { calculateProgress, calculatePenalty } from "@/utilities/helpers";
-import { Address, Chain, useAccount, useContractReads, useNetwork, useBlockNumber } from "wagmi";
+import { calculateProgress } from "@/utilities/helpers";
+import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stake";
-import { StatusState } from "connectkit/build/siwe/SIWEContext";
 import CountUp from "react-countup";
 
 export const StakeRow: NextPage<{
@@ -21,7 +20,7 @@ export const StakeRow: NextPage<{
   const [shares, setShares] = useState("-");
   const [payout, setPayout] = useState("-");
   const [projectedPayout, setProjectedPayout] = useState("-");
-  const [penalty, setPenalty] = useState("-");
+  const [penalty, setPenalty] = useState(0);
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
@@ -47,18 +46,43 @@ export const StakeRow: NextPage<{
     watch: true,
   });
 
+  const { data: rewardPayout } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "calculateEarlyPayout",
+        args: [data![0]],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateLatePayout",
+        args: [data![0]],
+      },
+    ],
+  });
+
   useEffect(() => {
     const stake = data?.[0];
     const equityPoolSupply = Number(ethers.utils.formatUnits(data?.[1] ?? 0));
     const equityPoolTotalShares = Number(ethers.utils.formatUnits(data?.[2] ?? 0));
+
+    if (rewardPayout?.[0]) {
+      const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
+      const penalty = 1 - earlyReward;
+      setPenalty(penalty);
+    }
+
+    if (rewardPayout?.[1]) {
+      const lateReward = Number(ethers.utils.formatUnits(rewardPayout?.[1] ?? 0));
+      const penalty = 1 - lateReward;
+      setPenalty(penalty);
+    }
+
     if (stake && equityPoolTotalShares && equityPoolSupply) {
       setStartString(new Date(stake.startTs * 1000).toLocaleDateString());
       setEndString(new Date(stake.endTs * 1000).toLocaleDateString());
       setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)).toFixed(2));
       setShares(Number(ethers.utils.formatUnits(stake.shares)).toFixed(2));
-
-      const penalty = calculatePenalty(stake.startTs, stake.endTs, stake.term);
-      setPenalty((penalty * 100).toFixed(2) + "%");
 
       if (equityPoolTotalShares > 0) {
         const shares = Number(ethers.utils.formatUnits(stake.shares));
@@ -73,7 +97,7 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [clampedProgress, data]);
+  }, [clampedProgress, data, penalty, rewardPayout]);
 
   if (data?.[0] && data?.[0].status != stakeStatus) return null;
 
@@ -83,7 +107,11 @@ export const StakeRow: NextPage<{
       case StakeStatus.DEFER:
         return <div>-</div>;
       default:
-        return <div>{penalty}</div>;
+        return (
+          <div>
+            <CountUp end={penalty * 100} decimals={2} suffix="%" />
+          </div>
+        );
     }
   };
 
@@ -106,7 +134,7 @@ export const StakeRow: NextPage<{
             </div>
             <div className="relative flex justify-center">
               <span className="text-sm primary-text font-mono my-2">
-                <CountUp end={clampedProgress} decimals={2} suffix=" %" />
+                <CountUp end={clampedProgress} decimals={2} suffix="%" />
               </span>
             </div>
           </div>
