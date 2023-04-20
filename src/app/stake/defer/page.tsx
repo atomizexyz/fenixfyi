@@ -43,6 +43,7 @@ const StakeAddressIndexDefer = () => {
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState<number>(0);
   const [status, setStatus] = useState(0);
+  const [stake, setStake] = useState<any>();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -75,12 +76,12 @@ const StakeAddressIndexDefer = () => {
       {
         ...fenixContract(chain),
         functionName: "calculateEarlyPayout",
-        args: [readsData![0]],
+        args: [stake],
       },
       {
         ...fenixContract(chain),
         functionName: "calculateLatePayout",
-        args: [readsData![0]],
+        args: [stake],
       },
     ],
   });
@@ -143,7 +144,10 @@ const StakeAddressIndexDefer = () => {
   };
 
   useEffect(() => {
-    const stake = readsData?.[0];
+    if (readsData?.[0]) {
+      setStake(readsData[0]);
+    }
+
     const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
     const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
     if (stake && equityPoolTotalShares && equityPoolSupply) {
@@ -181,7 +185,7 @@ const StakeAddressIndexDefer = () => {
       setValue("deferAddress", address);
     }
     setDisabled(!isValid);
-  }, [address, clampedProgress, isValid, penalty, readsData, rewardPayout, setValue]);
+  }, [address, clampedProgress, isValid, penalty, readsData, rewardPayout, setValue, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
