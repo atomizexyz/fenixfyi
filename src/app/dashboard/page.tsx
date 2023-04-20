@@ -3,6 +3,7 @@
 import { CardContainer, Container } from "@/components/containers";
 import { PageHeader } from "@/components/ui";
 import { DashboardCard, DashboardRow } from "@/components/ui";
+import DashboardRowHeaderFooter from "@/components/ui/DashboardRowHeaderFooter";
 import { allChains } from "@/libraries/client";
 
 const Dashboard = () => {
@@ -25,34 +26,7 @@ const Dashboard = () => {
         <CardContainer>
           <table className="min-w-full divide-y primary-divider">
             <thead>
-              <tr>
-                <th
-                  scope="col"
-                  className="py-3.5 pl-4 pr-3 text-left align-text-top text-sm font-semibold primary-text sm:pl-6"
-                >
-                  Chain
-                </th>
-                <th scope="col" className="px-3 py-3.5 text-left align-text-top text-sm font-semibold primary-text">
-                  Status
-                </th>
-                <th scope="col" className="px-3 py-3.5 text-right align-text-top text-sm font-semibold primary-text">
-                  Equity Supply
-                  <div className="text-xs tertiary-text"> FENIX </div>
-                </th>
-                <th scope="col" className="px-3 py-3.5 text-right align-text-top text-sm font-semibold primary-text">
-                  Reward Supply
-                  <div className="text-xs tertiary-text"> FENIX </div>
-                </th>
-                <th scope="col" className="px-3 py-3.5 text-right align-text-top text-sm font-semibold primary-text">
-                  Share Rate
-                </th>
-                <th scope="col" className="px-3 py-3.5 text-left align-text-top text-sm font-semibold primary-text">
-                  Address
-                </th>
-                <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                  <span className="sr-only">Edit</span>
-                </th>
-              </tr>
+              <DashboardRowHeaderFooter />
             </thead>
             <tbody className="divide-y secondary-divider">
               {allChains.map((chain) => (
