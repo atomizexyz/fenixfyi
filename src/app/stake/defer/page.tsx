@@ -7,7 +7,7 @@ import { CardContainer, Container } from "@/components/containers";
 import { useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Address,
   Chain,
@@ -27,7 +27,7 @@ import toast from "react-hot-toast";
 import { WalletAddressField } from "@/components/ui/forms";
 import { TextDatum, CountUpDatum, DateDatum } from "@/components/ui/datum";
 import { StakeStatus } from "@/models/stake";
-import { calculatePenalty, calculateProgress } from "@/utilities/helpers";
+import { calculateProgress } from "@/utilities/helpers";
 import CountUp from "react-countup";
 
 const StakeAddressIndexDefer = () => {
@@ -68,6 +68,21 @@ const StakeAddressIndexDefer = () => {
       },
     ],
     watch: true,
+  });
+
+  const { data: rewardPayout } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "calculateEarlyPayout",
+        args: [readsData![0]],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateLatePayout",
+        args: [readsData![0]],
+      },
+    ],
   });
 
   const schema = yup
@@ -137,8 +152,17 @@ const StakeAddressIndexDefer = () => {
       setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)));
       setShares(Number(ethers.utils.formatUnits(stake.shares)));
 
-      const penalty = calculatePenalty(stake.startTs, stake.endTs, stake.term);
-      setPenalty(penalty * 100);
+      if (rewardPayout?.[0]) {
+        const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
+        const penalty = 1 - earlyReward;
+        setPenalty(penalty);
+      }
+
+      if (rewardPayout?.[1]) {
+        const lateReward = Number(ethers.utils.formatUnits(rewardPayout?.[1] ?? 0));
+        const penalty = 1 - lateReward;
+        setPenalty(penalty);
+      }
 
       if (equityPoolTotalShares > 0) {
         const shares = Number(ethers.utils.formatUnits(stake.shares));
@@ -157,7 +181,7 @@ const StakeAddressIndexDefer = () => {
       setValue("deferAddress", address);
     }
     setDisabled(!isValid);
-  }, [address, isValid, readsData, setValue]);
+  }, [address, clampedProgress, isValid, penalty, readsData, rewardPayout, setValue]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -165,7 +189,7 @@ const StakeAddressIndexDefer = () => {
       case StakeStatus.DEFER:
         return <TextDatum title="Penalty" value="-" />;
       default:
-        return <CountUpDatum title="Penalty" value={penalty} decimals={2} suffix=" %" />;
+        return <CountUpDatum title="Penalty" value={penalty * 100} decimals={2} suffix=" %" />;
     }
   };
 

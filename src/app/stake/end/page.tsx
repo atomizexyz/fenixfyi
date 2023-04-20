@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { fenixContract } from "@/libraries/fenixContract";
 import { BigNumber, ethers } from "ethers";
 import toast from "react-hot-toast";
-import { calculatePenalty, calculateProgress } from "@/utilities/helpers";
+import { calculateProgress } from "@/utilities/helpers";
 import { StakeStatus } from "@/models/stake";
 import { CountUpDatum, DateDatum, TextDatum } from "@/components/ui/datum";
 import CountUp from "react-countup";
@@ -63,6 +63,21 @@ export default function StakeAddressIndexEnd() {
       },
     ],
     watch: true,
+  });
+
+  const { data: rewardPayout } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "calculateEarlyPayout",
+        args: [readsData![0]],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateLatePayout",
+        args: [readsData![0]],
+      },
+    ],
   });
 
   const {
@@ -116,8 +131,17 @@ export default function StakeAddressIndexEnd() {
       setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)));
       setShares(Number(ethers.utils.formatUnits(stake.shares)));
 
-      const penalty = calculatePenalty(stake.startTs, stake.endTs, stake.term);
-      setPenalty(penalty * 100);
+      if (rewardPayout?.[0]) {
+        const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
+        const penalty = 1 - earlyReward;
+        setPenalty(penalty);
+      }
+
+      if (rewardPayout?.[1]) {
+        const lateReward = Number(ethers.utils.formatUnits(rewardPayout?.[1] ?? 0));
+        const penalty = 1 - lateReward;
+        setPenalty(penalty);
+      }
 
       if (equityPoolTotalShares > 0) {
         const shares = Number(ethers.utils.formatUnits(stake.shares));
@@ -133,7 +157,7 @@ export default function StakeAddressIndexEnd() {
       setPayout(Number(ethers.utils.formatUnits(stake.payout)));
     }
     setDisabled(!isValid);
-  }, [data, isValid, readsData]);
+  }, [clampedProgress, data, isValid, penalty, readsData, rewardPayout]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -141,7 +165,7 @@ export default function StakeAddressIndexEnd() {
       case StakeStatus.DEFER:
         return <TextDatum title="Penalty" value="-" />;
       default:
-        return <CountUpDatum title="Penalty" value={penalty} decimals={2} suffix=" %" />;
+        return <CountUpDatum title="Penalty" value={penalty * 100} decimals={2} suffix=" %" />;
     }
   };
 
