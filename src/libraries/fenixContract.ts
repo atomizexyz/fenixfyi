@@ -46,7 +46,7 @@ export const fenixContract = (contractChain?: Chain) => {
       };
     case pulseChain.id:
       return {
-        address: "0x27D0497a4B4E07AF5f7043b63c7dB53d5F0629E6" as Address,
+        address: "0xd2ac6954b3f08f7024E90CFAe252fb8c06c0a868" as Address,
         abi: FENIX_ABI,
         chainId: contractChain.id,
       };
