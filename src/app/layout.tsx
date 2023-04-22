@@ -3,7 +3,7 @@ import { GlobalContainer } from "@/components/containers";
 import { Header, Footer } from "@/components/ui";
 
 export const metadata = {
-  metadataBase: new URL(`${process.env.VERCEL_URL}`),
+  metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
     template: "%s | FENIX",
     default: "FENIX",
