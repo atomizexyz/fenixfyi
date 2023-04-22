@@ -3,16 +3,19 @@ import { GlobalContainer } from "@/components/containers";
 import { Header, Footer } from "@/components/ui";
 
 export const metadata = {
-  metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
+  metadataBase: new URL(`${process.env.VERCEL_URL}`),
   title: {
-    template: "FENIX",
+    template: "%s | FENIX",
     default: "FENIX",
   },
   description: "Empower your crypto, earn while you hold Fenix",
   openGraph: {
-    title: "FENIX",
+    title: {
+      template: "%s | FENIX",
+      default: "FENIX",
+    },
     description: "Empower your crypto, earn while you hold Fenix",
-    url: "https://fenix-fyi",
+    url: "https://fenix.fyi",
     siteName: "fenix.fyi",
     images: [
       {
@@ -43,7 +46,10 @@ export const metadata = {
   manifest: "/manifest.json",
   twitter: {
     card: "summary_large_image",
-    title: "FENIX",
+    title: {
+      template: "%s | FENIX",
+      default: "FENIX",
+    },
     description: "Empower your crypto, earn while you hold Fenix",
     siteId: "1612469567934062592",
     creator: "@fenix_protocol",
