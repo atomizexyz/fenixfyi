@@ -47,6 +47,7 @@ const BurnApprove = () => {
     functionName: "allowance",
     args: [address, fenixContract(chain).address],
     watch: true,
+    cacheTime: 30_000,
   });
 
   const schema = yup

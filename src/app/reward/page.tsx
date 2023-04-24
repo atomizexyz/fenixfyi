@@ -85,6 +85,7 @@ export default function Reward() {
       },
     ],
     watch: true,
+    cacheTime: 30_000,
   });
 
   useEffect(() => {

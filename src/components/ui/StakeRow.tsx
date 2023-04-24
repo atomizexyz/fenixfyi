@@ -45,6 +45,7 @@ export const StakeRow: NextPage<{
       },
     ],
     watch: true,
+    cacheTime: 30_000,
   });
 
   const { data: rewardPayout } = useContractReads({
@@ -60,6 +61,7 @@ export const StakeRow: NextPage<{
         args: [stake],
       },
     ],
+    cacheTime: 30_000,
   });
 
   useEffect(() => {

@@ -53,6 +53,7 @@ const BurnXEN = () => {
     functionName: "allowance",
     args: [address, fenixContract(chain).address],
     watch: true,
+    cacheTime: 2_000,
   });
 
   const schema = yup

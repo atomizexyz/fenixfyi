@@ -54,6 +54,7 @@ const DashboardChainId = () => {
       setRewardPoolSupply(BigNumber.from(data?.[3] ?? 0));
     },
     watch: true,
+    cacheTime: 30_000,
   });
 
   useEffect(() => {

@@ -47,6 +47,7 @@ export const StakeCard: NextPage<{
       },
     ],
     watch: true,
+    cacheTime: 30_000,
   });
 
   const { data: rewardPayout } = useContractReads({
@@ -62,6 +63,7 @@ export const StakeCard: NextPage<{
         args: [stake],
       },
     ],
+    cacheTime: 30_000,
   });
 
   useEffect(() => {

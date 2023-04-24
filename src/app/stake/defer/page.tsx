@@ -69,6 +69,7 @@ const StakeAddressIndexDefer = () => {
       },
     ],
     watch: true,
+    cacheTime: 10_000,
   });
 
   const { data: rewardPayout } = useContractReads({
@@ -84,6 +85,7 @@ const StakeAddressIndexDefer = () => {
         args: [stake],
       },
     ],
+    cacheTime: 10_000,
   });
 
   const schema = yup
