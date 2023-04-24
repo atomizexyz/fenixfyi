@@ -136,8 +136,8 @@ const BurnXEN = () => {
             setValue={setValue}
           />
           <dl className="divide-y secondary-divider">
-            <CountUpDatum title="New FENIX" value={burnXENAmount / 10_000} suffix=" FENIX" />
-            <CountUpDatum title="Liquid" value={Number(fenixBalance?.formatted)} suffix=" FENIX" />
+            <CountUpDatum title="New FENIX" value={burnXENAmount / 10_000} suffix=" FENIX" decimals={3} />
+            <CountUpDatum title="Liquid" value={Number(fenixBalance?.formatted)} suffix=" FENIX" decimals={3} />
           </dl>
 
           <div>
