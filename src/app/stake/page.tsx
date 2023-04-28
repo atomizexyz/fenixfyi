@@ -32,12 +32,14 @@ import { FENIX_MAX_STAKE_LENGTH } from "@/utilities/constants";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { CountUpDatum } from "@/components/ui/datum";
+import { AlertError, AlertInfo, AlertType, AlertWarn } from "@/components/ui/Alert";
 
 export default function Stake() {
   const today = new Date();
   const tomorrow = addDays(today, 1);
   const maxStakeLengthDay = addDays(today, FENIX_MAX_STAKE_LENGTH);
 
+  const [alertType, setAlertType] = useState<AlertType | null>();
   const [month, setMonth] = useState<Date>(today);
   const [isLockMonth, setIsLockMonth] = useState<boolean>(true);
   const [disabled, setDisabled] = useState(true);
@@ -48,6 +50,10 @@ export default function Stake() {
   const [totalBonus, setTotalBonus] = useState<number>(0);
   const [shareRate, setShareRate] = useState<BigNumber>(BigNumber.from(0));
   const [shares, setShares] = useState<number>(0);
+  const [cooldownUnlockTs, setCooldownUnlockTs] = useState<number>(0);
+  const [equityPoolSupply, setEquityPoolSupply] = useState<number>(0);
+  const [equityPoolTotalShares, setEquityPoolTotalShares] = useState<number>(0);
+  const [projectedFENIX, setProjectedFENIX] = useState<number>(0);
 
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
@@ -193,6 +199,18 @@ export default function Stake() {
         functionName: "calculateShares",
         args: [ethers.utils.parseUnits(totalBonus.toString())],
       },
+      {
+        ...fenixContract(chain),
+        functionName: "cooldownUnlockTs",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolTotalShares",
+      },
     ],
     onSuccess(data) {
       setShareRate(BigNumber.from(data?.[0] ?? 0));
@@ -200,13 +218,28 @@ export default function Stake() {
       setTimeBonus(Number(ethers.utils.formatUnits(data?.[2] ?? 0)));
       setSubtotalBonus(Number(ethers.utils.formatUnits(data?.[3] ?? 0)));
       setShares(Number(ethers.utils.formatUnits(data?.[4] ?? 0)));
+      setCooldownUnlockTs(Number(data?.[5] ?? 0));
+      setEquityPoolSupply(Number(ethers.utils.formatUnits(data?.[6] ?? 0)));
+      setEquityPoolTotalShares(Number(ethers.utils.formatUnits(data?.[7] ?? 0)));
     },
     watch: true,
   });
 
   useEffect(() => {
+    const startStakeFENIX = Number(startStakeAmount ?? 0);
+    if (equityPoolTotalShares) {
+      const projectedPercentOfPool = shares / equityPoolTotalShares;
+      setProjectedFENIX(equityPoolSupply * projectedPercentOfPool);
+
+      if (startStakeFENIX < projectedFENIX) {
+        setAlertType(AlertType.Info);
+      } else {
+        setAlertType(AlertType.Error);
+      }
+    }
+
     if (subtotalBonus) {
-      const total = Number(startStakeAmount ?? 0) * subtotalBonus;
+      const total = startStakeFENIX * subtotalBonus;
       setTotalBonus(Number(total));
     }
 
@@ -226,7 +259,34 @@ export default function Stake() {
     subtotalBonus,
     totalBonus,
     isValid,
+    equityPoolTotalShares,
+    equityPoolSupply,
+    shares,
+    projectedFENIX,
   ]);
+
+  const toggleAlertView = () => {
+    switch (alertType) {
+      case AlertType.Info:
+        return (
+          <AlertInfo
+            title={`Projected Return ${projectedFENIX.toFixed(5)} FENIX`}
+            description={
+              "Your stake is projected to return your principal but larger stakes in the pool may dilute your share."
+            }
+          />
+        );
+      case AlertType.Error:
+        return (
+          <AlertWarn
+            title={`Projected Return ${projectedFENIX.toFixed(5)} FENIX`}
+            description={
+              "Stake is Short or Small. Stake may not guarantee principal return. You ned to capture reward pools or end stakes to break even."
+            }
+          />
+        );
+    }
+  };
 
   return (
     <Container className="max-w-xl">
@@ -291,6 +351,8 @@ export default function Stake() {
           <dl className="divide-y secondary-divider">
             <CountUpDatum title="You Will Receive" value={shares} decimals={6} suffix=" Shares" />
           </dl>
+
+          {toggleAlertView()}
 
           <button
             type="submit"

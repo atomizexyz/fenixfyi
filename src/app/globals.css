@@ -105,6 +105,47 @@
   @apply text-[#FF5320] hover:text-[#FF3F42];
 }
 
+/* Alerts */
+
+.alert-error-background {
+  @apply bg-red-50 dark:bg-red-950;
+}
+.alert-error-icon {
+  @apply text-red-400 dark:text-red-500;
+}
+.alert-error-title {
+  @apply text-red-800 dark:text-red-400;
+}
+.alert-error-description {
+  @apply text-red-700 dark:text-red-500;
+}
+
+.alert-info-background {
+  @apply bg-blue-50 dark:bg-blue-950;
+}
+.alert-info-icon {
+  @apply text-blue-400 dark:text-blue-500;
+}
+.alert-info-title {
+  @apply text-blue-800 dark:text-blue-400;
+}
+.alert-info-description {
+  @apply text-blue-700 dark:text-blue-500;
+}
+
+.alert-warn-background {
+  @apply bg-yellow-50 dark:bg-yellow-950;
+}
+.alert-warn-icon {
+  @apply text-yellow-400 dark:text-yellow-500;
+}
+.alert-warn-title {
+  @apply text-yellow-800 dark:text-yellow-400;
+}
+.alert-warn-description {
+  @apply text-yellow-700 dark:text-yellow-500;
+}
+
 /* Custom Elements */
 
 .numerical-data {

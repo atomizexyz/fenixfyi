@@ -123,7 +123,7 @@ const BurnXEN = () => {
 
   return (
     <Container className="max-w-xl">
-      <PageHeader title="Burn XEN" subtitle="Burn you XEN and mint brand new FENIX" />
+      <PageHeader title="Burn XEN" subtitle="Burn your XEN and mint brand new FENIX" />
 
       <CardContainer>
         <form onSubmit={handleSubmit(onBurnSubmit)} className="space-y-6">
