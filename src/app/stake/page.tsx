@@ -270,18 +270,18 @@ export default function Stake() {
       case AlertType.Info:
         return (
           <AlertInfo
-            title={`Projected Return ${projectedFENIX.toFixed(5)} FENIX`}
+            title={`Projected return: ${projectedFENIX.toFixed(5)} FENIX`}
             description={
-              "Your stake is projected to return your principal but larger stakes in the pool may dilute your share."
+              "Your stake is currently projected to return your principal; however, larger stakes in the pool may dilute your share."
             }
           />
         );
       case AlertType.Error:
         return (
           <AlertWarn
-            title={`Projected Return ${projectedFENIX.toFixed(5)} FENIX`}
+            title={`Projected return: ${projectedFENIX.toFixed(5)} FENIX`}
             description={
-              "Stake is Short or Small. Stake may not guarantee principal return. You ned to capture reward pools or end stakes to break even."
+              "Small and short stakes may not guarantee principal return. To break even, ensure you capture reward pools or account for penalties."
             }
           />
         );
