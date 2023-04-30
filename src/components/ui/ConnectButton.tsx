@@ -1,7 +1,7 @@
 "use client";
 
 import { chainIcons } from "@/utilities/constants";
-import { Avatar, ConnectKitButton } from "connectkit";
+import { ConnectKitButton } from "connectkit";
 
 export default function ConnectButton() {
   return (
