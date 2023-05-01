@@ -84,7 +84,7 @@ export const FenixProvider = ({ children }: any) => {
   const { data: cooldownUnlockTs } = useContractRead({
     ...fenixContract(chain),
     functionName: "cooldownUnlockTs",
-    watch: true,
+    watch: false,
   });
 
   const cooldownUnlockMs = Number(cooldownUnlockTs);

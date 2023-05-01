@@ -63,7 +63,7 @@ export default function StakeAddressIndexEnd() {
         functionName: "equityPoolTotalShares",
       },
     ],
-    watch: true,
+    watch: false,
     cacheTime: 30_000,
   });
 

@@ -40,7 +40,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
         functionName: "equityPoolTotalShares",
       },
     ],
-    watch: true,
+    watch: false,
   });
 
   useEffect(() => {

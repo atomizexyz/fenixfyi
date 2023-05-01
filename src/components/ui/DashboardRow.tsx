@@ -47,7 +47,7 @@ export const DashboardRow: NextPage<{ chain: Chain }> = ({ chain }) => {
       setRewardPoolSupply(BigNumber.from(data?.[2] ?? 0));
     },
     watch: true,
-    cacheTime: 30_000,
+    cacheTime: 60_000,
   });
 
   useEffect(() => {

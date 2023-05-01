@@ -84,7 +84,7 @@ export default function Reward() {
         functionName: "rewardPoolSupply",
       },
     ],
-    watch: true,
+    watch: false,
     cacheTime: 30_000,
   });
 

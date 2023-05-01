@@ -62,7 +62,7 @@ export default function Stake() {
   const { data: fenixBalance } = useBalance({
     address: address,
     token: fenixContract(chain).address,
-    watch: true,
+    watch: false,
   });
 
   /*** FORM SETUP ***/
@@ -222,7 +222,7 @@ export default function Stake() {
       setEquityPoolSupply(Number(ethers.utils.formatUnits(data?.[6] ?? 0)));
       setEquityPoolTotalShares(Number(ethers.utils.formatUnits(data?.[7] ?? 0)));
     },
-    watch: true,
+    watch: false,
   });
 
   useEffect(() => {

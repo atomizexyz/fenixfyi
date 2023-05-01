@@ -40,13 +40,13 @@ const BurnApprove = () => {
   const { data: xenBalance } = useBalance({
     address: address,
     token: xenContract(chain).address,
-    watch: true,
+    watch: false,
   });
   const { data: allowanceData } = useContractRead({
     ...xenContract(chain),
     functionName: "allowance",
     args: [address, fenixContract(chain).address],
-    watch: true,
+    watch: false,
     cacheTime: 30_000,
   });
 

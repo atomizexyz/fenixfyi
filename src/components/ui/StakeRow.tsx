@@ -44,7 +44,7 @@ export const StakeRow: NextPage<{
         functionName: "equityPoolTotalShares",
       },
     ],
-    watch: true,
+    watch: false,
     cacheTime: 30_000,
   });
 
