@@ -46,8 +46,8 @@ export const DashboardCard: NextPage<{ chain: Chain }> = ({ chain }) => {
       setEquityPoolSupply(BigNumber.from(data?.[1] ?? 0));
       setRewardPoolSupply(BigNumber.from(data?.[2] ?? 0));
     },
-    watch: true,
-    cacheTime: 30_000,
+    watch: false,
+    cacheTime: 60_000,
   });
 
   useEffect(() => {
