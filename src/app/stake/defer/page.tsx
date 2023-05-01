@@ -51,7 +51,7 @@ const StakeAddressIndexDefer = () => {
   const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false });
   const { data: readsData } = useContractReads({
     contracts: [
       {

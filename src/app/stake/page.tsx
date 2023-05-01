@@ -58,7 +58,7 @@ export default function Stake() {
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false });
   const { data: fenixBalance } = useBalance({
     address: address,
     token: fenixContract(chain).address,

@@ -40,7 +40,7 @@ const { chains, provider, webSocketProvider } = configureChains(allChains, [
       if (chain.id === polygon.id) {
         return {
           http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
-          // webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
+          webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
         };
       } else {
         return null;

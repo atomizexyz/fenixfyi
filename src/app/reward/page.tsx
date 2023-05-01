@@ -28,7 +28,7 @@ export default function Reward() {
   const [rewardPoolSupply, setRewardPoolSupply] = useState<number>(0);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false });
 
   const {
     handleSubmit,
