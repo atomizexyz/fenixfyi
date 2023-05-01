@@ -64,7 +64,7 @@ export default function StakeAddressIndexEnd() {
       },
     ],
     watch: true,
-    cacheTime: 10_000,
+    cacheTime: 30_000,
   });
 
   const { data: rewardPayout } = useContractReads({
