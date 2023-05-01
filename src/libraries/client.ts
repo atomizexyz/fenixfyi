@@ -39,6 +39,18 @@ const { chains, provider, webSocketProvider } = configureChains(allChains, [
     rpc: (chain) => {
       if (chain.id === polygon.id) {
         return {
+          http: `https://polygon-rpc.com`,
+        };
+      } else {
+        return null;
+      }
+    },
+    priority: 0,
+  }),
+  jsonRpcProvider({
+    rpc: (chain) => {
+      if (chain.id === polygon.id) {
+        return {
           http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
           webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
         };
