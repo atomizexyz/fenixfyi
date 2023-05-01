@@ -37,7 +37,7 @@ const BurnXEN = () => {
   const router = useRouter();
   const { address } = useAccount() as unknown as { address: Address };
   const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
   const { data: fenixBalance } = useBalance({
     address: address,
     token: fenixContract(chain).address,

@@ -36,7 +36,7 @@ const BurnApprove = () => {
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
   const { data: xenBalance } = useBalance({
     address: address,
     token: xenContract(chain).address,

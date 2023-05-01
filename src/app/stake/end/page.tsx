@@ -46,7 +46,7 @@ export default function StakeAddressIndexEnd() {
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
   const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
   const { data: readsData } = useContractReads({
     contracts: [
       {
