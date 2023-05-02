@@ -25,28 +25,15 @@ switch (chainNetwork) {
   case "mainnet":
     allChains = [polygon];
     break;
-  case "localnet":
-    allChains = [foundry];
+  case "testnet":
+    allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
     break;
   default:
-    allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
+    allChains = [foundry];
     break;
 }
 
 const { chains, provider, webSocketProvider } = configureChains(allChains, [
-  alchemyProvider({ apiKey: alchemyId, priority: 0 }),
-  jsonRpcProvider({
-    rpc: (chain) => {
-      if (chain.id === polygon.id) {
-        return {
-          http: `https://polygon-rpc.com`,
-        };
-      } else {
-        return null;
-      }
-    },
-    priority: 0,
-  }),
   jsonRpcProvider({
     rpc: (chain) => {
       if (chain.id === polygon.id) {
@@ -58,10 +45,11 @@ const { chains, provider, webSocketProvider } = configureChains(allChains, [
         return null;
       }
     },
-    priority: 1,
+    priority: 0,
   }),
+  alchemyProvider({ apiKey: alchemyId, priority: 1 }),
   infuraProvider({ apiKey: infuraId, priority: 1 }),
-  publicProvider({ priority: 3 }),
+  publicProvider({ priority: 2 }),
 ]);
 
 export const client = createClient({
