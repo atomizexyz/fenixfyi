@@ -33,24 +33,28 @@ switch (chainNetwork) {
     break;
 }
 
-const { chains, provider, webSocketProvider } = configureChains(allChains, [
-  jsonRpcProvider({
-    rpc: (chain) => {
-      if (chain.id === polygon.id) {
-        return {
-          http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
-          webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
-        };
-      } else {
-        return null;
-      }
-    },
-    priority: 0,
-  }),
-  alchemyProvider({ apiKey: alchemyId, priority: 1 }),
-  infuraProvider({ apiKey: infuraId, priority: 1 }),
-  publicProvider({ priority: 2 }),
-]);
+const { chains, provider, webSocketProvider } = configureChains(
+  allChains,
+  [
+    jsonRpcProvider({
+      rpc: (chain) => {
+        if (chain.id === polygon.id) {
+          return {
+            http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
+            webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
+          };
+        } else {
+          return null;
+        }
+      },
+      priority: 0,
+    }),
+    alchemyProvider({ apiKey: alchemyId, priority: 1 }),
+    infuraProvider({ apiKey: infuraId, priority: 1 }),
+    publicProvider({ priority: 2 }),
+  ],
+  { pollingInterval: 10_000, stallTimeout: 5_000 }
+);
 
 export const client = createClient({
   autoConnect: true,
