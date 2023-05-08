@@ -43,6 +43,14 @@ const { chains, provider, webSocketProvider } = configureChains(
             http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
             webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
           };
+        } else if (chain.id === goerli.id) {
+          return {
+            http: `https://rpc.ankr.com/eth_goerli`,
+          };
+        } else if (chain.id === polygonMumbai.id) {
+          return {
+            http: `https://rpc.ankr.com/polygon`,
+          };
         } else {
           return null;
         }
@@ -51,7 +59,7 @@ const { chains, provider, webSocketProvider } = configureChains(
     }),
     alchemyProvider({ apiKey: alchemyId, priority: 1 }),
     infuraProvider({ apiKey: infuraId, priority: 1 }),
-    publicProvider({ priority: 2 }),
+    publicProvider({ priority: 1 }),
   ],
   { pollingInterval: 10_000, stallTimeout: 5_000 }
 );
