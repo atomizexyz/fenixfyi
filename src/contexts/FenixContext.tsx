@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { Address } from "@wagmi/core";
 import { BigNumber } from "ethers";
 import { Chain, useContractRead, useNetwork } from "wagmi";
@@ -87,11 +87,15 @@ export const FenixProvider = ({ children }: any) => {
     watch: false,
   });
 
-  const cooldownUnlockMs = Number(cooldownUnlockTs);
-  const differenceTs = differenceInSeconds(new Date(cooldownUnlockMs * 1000), new Date());
-  if (differenceTs < 120) {
-    setShowConfetti(true);
-  }
+  useEffect(() => {
+    const cooldownUnlockMs = Number(cooldownUnlockTs);
+    const differenceTs = differenceInSeconds(new Date(cooldownUnlockMs * 1000), new Date());
+    if (differenceTs > 0 && differenceTs < 120) {
+      setShowConfetti(true);
+    } else {
+      setShowConfetti(false);
+    }
+  }, [cooldownUnlockTs]);
 
   return <FenixContext.Provider value={{ showConfetti }}>{children}</FenixContext.Provider>;
 };

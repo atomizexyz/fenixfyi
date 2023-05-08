@@ -163,7 +163,7 @@ export default function StakeAddressIndexEnd() {
       setPayout(Number(ethers.utils.formatUnits(stake.payout)));
     }
     setDisabled(!isValid);
-  }, [clampedProgress, data, isValid, penalty, readsData, rewardPayout]);
+  }, [clampedProgress, data, isValid, penalty, readsData, rewardPayout, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
