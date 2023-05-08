@@ -47,10 +47,6 @@ const { chains, provider, webSocketProvider } = configureChains(
           return {
             http: `https://rpc.ankr.com/eth_goerli`,
           };
-        } else if (chain.id === polygonMumbai.id) {
-          return {
-            http: `https://rpc.ankr.com/polygon`,
-          };
         } else {
           return null;
         }
