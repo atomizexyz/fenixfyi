@@ -17,6 +17,7 @@ import { foundry } from "wagmi/chains";
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID as string;
 const quickNodeId = process.env.NEXT_PUBLIC_QUICK_NODE_ID as string;
+const quickNodeId1 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_1 as string;
 const chainNetwork = process.env.NEXT_PUBLIC_CHAIN_NETWORK as string;
 
 export let allChains: Chain[];
@@ -38,7 +39,12 @@ const { chains, provider, webSocketProvider } = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => {
-        if (chain.id === polygon.id) {
+        if (chain.id === mainnet.id) {
+          return {
+            http: `https://prettiest-powerful-sanctuary.quiknode.pro/${quickNodeId1}/`,
+            webSocket: `wss://prettiest-powerful-sanctuary.quiknode.pro/${quickNodeId1}/`,
+          };
+        } else if (chain.id === polygon.id) {
           return {
             http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
             webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
