@@ -9,7 +9,7 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { polygonMumbai, goerli, polygon } from "wagmi/chains";
+import { polygonMumbai, goerli, polygon, mainnet } from "wagmi/chains";
 
 import { pulseChain, x1Devnet } from "./chains";
 import { foundry } from "wagmi/chains";
@@ -23,7 +23,7 @@ export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [polygon];
+    allChains = [polygon, mainnet];
     break;
   case "testnet":
     allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
