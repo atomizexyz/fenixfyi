@@ -174,6 +174,8 @@ const BurnApprove = () => {
           />
 
           <dl className="divide-y secondary-divider">
+            <CountUpDatum title="Approve Amount" value={approveXENAmount} suffix=" XEN" decimals={4} />
+
             {allowanceData && allowanceData.gte(ethers.constants.MaxUint256) ? (
               <TextDatum title="Spend Allowance" value="Unlimited" />
             ) : (
