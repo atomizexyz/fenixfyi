@@ -24,7 +24,7 @@ export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [polygon];
+    allChains = [polygon, mainnet];
     break;
   case "testnet":
     allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];

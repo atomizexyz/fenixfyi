@@ -67,7 +67,6 @@ export const fenixContract = (contractChain?: Chain) => {
       return {
         address: "" as Address,
         abi: FENIX_ABI,
-        chainId: mainnet.id,
       };
   }
 };
