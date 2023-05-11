@@ -62,13 +62,13 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html className="h-full primary-background" lang="en">
-      <GlobalContainer>
-        <body className="h-full">
+      <body className="h-full">
+        <GlobalContainer>
           <Header />
           {children}
           <Footer />
-        </body>
-      </GlobalContainer>
+        </GlobalContainer>
+      </body>
     </html>
   );
 }

@@ -33,6 +33,10 @@ const BurnApprove = () => {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [allowance, setAllowance] = useState<number>(0);
+  const [gasPrice, setGasPrice] = useState<BigNumber | null>();
+  const [gasLimitFixed, setGasLimitFixed] = useState<BigNumber | null>();
+  const [gasLimitUnlimited, setGasLimitUnlimited] = useState<BigNumber | null>();
+
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
@@ -141,8 +145,17 @@ const BurnApprove = () => {
     if (allowanceData) {
       setAllowance(Number(ethers.utils.formatUnits(allowanceData)));
     }
+    if (feeData?.gasPrice) {
+      setGasPrice(feeData.gasPrice);
+    }
+    if (fixedConfig?.request?.gasLimit) {
+      setGasLimitFixed(fixedConfig.request.gasLimit);
+    }
+    if (unlimitedConfig?.request?.gasLimit) {
+      setGasLimitUnlimited(unlimitedConfig.request.gasLimit);
+    }
     setDisabled(!isValid);
-  }, [allowanceData, isValid]);
+  }, [allowanceData, feeData, fixedConfig, isValid, unlimitedConfig]);
 
   return (
     <Container className="max-w-xl">
@@ -178,7 +191,7 @@ const BurnApprove = () => {
             {`Approve Limited Burn ${approveXENAmount} XEN`}
           </button>
 
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={fixedConfig?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimitFixed} />
         </form>
       </CardContainer>
 
@@ -199,7 +212,7 @@ const BurnApprove = () => {
           >
             Approved Unlimited Burn
           </button>
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={unlimitedConfig?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimitUnlimited} />
         </form>
       </CardContainer>
     </Container>

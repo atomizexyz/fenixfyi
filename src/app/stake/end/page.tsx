@@ -40,6 +40,8 @@ export default function StakeAddressIndexEnd() {
   const [clampedProgress, setClampedProgress] = useState<number>(0);
   const [status, setStatus] = useState(0);
   const [stake, setStake] = useState<any>();
+  const [gasPrice, setGasPrice] = useState<BigNumber | null>();
+  const [gasLimit, setGasLimit] = useState<BigNumber | null>();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -162,8 +164,14 @@ export default function StakeAddressIndexEnd() {
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)));
     }
+    if (feeData?.gasPrice) {
+      setGasPrice(feeData.gasPrice);
+    }
+    if (config?.request?.gasLimit) {
+      setGasLimit(config.request.gasLimit);
+    }
     setDisabled(!isValid);
-  }, [clampedProgress, data, isValid, penalty, readsData, rewardPayout, stake]);
+  }, [clampedProgress, config, data, feeData, isValid, penalty, readsData, rewardPayout, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -240,7 +248,7 @@ export default function StakeAddressIndexEnd() {
               End Stake
             </button>
           </div>
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimit} />
         </form>
       </CardContainer>
     </Container>

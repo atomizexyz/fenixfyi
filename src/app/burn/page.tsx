@@ -33,6 +33,8 @@ const BurnXEN = () => {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [burnMaximum, setBurnMaximum] = useState<BigNumber>(BigNumber.from(0));
+  const [gasPrice, setGasPrice] = useState<BigNumber | null>();
+  const [gasLimit, setGasLimit] = useState<BigNumber | null>();
 
   const router = useRouter();
   const { address } = useAccount() as unknown as { address: Address };
@@ -118,8 +120,14 @@ const BurnXEN = () => {
     } else {
       setBurnMaximum(xenBalance?.value ?? BigNumber.from(0));
     }
+    if (feeData?.gasPrice) {
+      setGasPrice(feeData.gasPrice);
+    }
+    if (config?.request?.gasLimit) {
+      setGasLimit(config.request.gasLimit);
+    }
     setDisabled(!isValid);
-  }, [allowance, burnMaximum, isValid, xenBalance]);
+  }, [allowance, burnMaximum, config, feeData, isValid, xenBalance]);
 
   return (
     <Container className="max-w-xl">
@@ -152,7 +160,7 @@ const BurnXEN = () => {
               Burn XEN
             </button>
           </div>
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimit} />
         </form>
       </CardContainer>
     </Container>

@@ -44,6 +44,8 @@ const StakeAddressIndexDefer = () => {
   const [clampedProgress, setClampedProgress] = useState<number>(0);
   const [status, setStatus] = useState(0);
   const [stake, setStake] = useState<any>();
+  const [gasPrice, setGasPrice] = useState<BigNumber | null>();
+  const [gasLimit, setGasLimit] = useState<BigNumber | null>();
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -186,8 +188,14 @@ const StakeAddressIndexDefer = () => {
     if (address) {
       setValue("deferAddress", address);
     }
+    if (feeData?.gasPrice) {
+      setGasPrice(feeData.gasPrice);
+    }
+    if (config?.request?.gasLimit) {
+      setGasLimit(config.request.gasLimit);
+    }
     setDisabled(!isValid);
-  }, [address, clampedProgress, isValid, penalty, readsData, rewardPayout, setValue, stake]);
+  }, [address, clampedProgress, config, feeData, isValid, penalty, readsData, rewardPayout, setValue, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -274,7 +282,7 @@ const StakeAddressIndexDefer = () => {
               Defer Stake
             </button>
           </div>
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimit} />
         </form>
       </CardContainer>
     </Container>

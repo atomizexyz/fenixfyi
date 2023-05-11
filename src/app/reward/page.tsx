@@ -16,16 +16,18 @@ import {
 } from "wagmi";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
 import { DateDatum, CountUpDatum, CountDownDatum } from "@/components/ui/datum";
 
 export default function Reward() {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [matureDate, setMatureDate] = useState<Date>(new Date());
+  const [matureDate, setMatureDate] = useState<Date>();
   const [stakePoolSupply, setStakePoolSupply] = useState<number>(0);
   const [rewardPoolSupply, setRewardPoolSupply] = useState<number>(0);
+  const [gasPrice, setGasPrice] = useState<BigNumber | null>();
+  const [gasLimit, setGasLimit] = useState<BigNumber | null>();
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
@@ -102,8 +104,14 @@ export default function Reward() {
       const rewardPoolSupply = ethers.utils.formatUnits(readData?.[2] ?? 0);
       setRewardPoolSupply(Number(rewardPoolSupply));
     }
+    if (feeData?.gasPrice) {
+      setGasPrice(feeData.gasPrice);
+    }
+    if (config?.request?.gasLimit) {
+      setGasLimit(config.request.gasLimit);
+    }
     setDisabled(!isValid);
-  }, [isValid, readData]);
+  }, [config, feeData, isValid, readData]);
 
   return (
     <Container className="max-w-xl">
@@ -113,8 +121,13 @@ export default function Reward() {
         <form onSubmit={handleSubmit(handleEndSubmit)} className="space-y-6">
           <div className="mt-5">
             <dl className="divide-y secondary-divider">
-              <DateDatum title="Maturity Date" value={matureDate} />
-              <CountDownDatum title="Count Down" value={matureDate} />
+              {matureDate && (
+                <>
+                  <DateDatum title="Maturity Date" value={matureDate} />
+                  <CountDownDatum title="Count Down" value={matureDate} />
+                </>
+              )}
+
               <CountUpDatum title="Reward Pool Supply" value={rewardPoolSupply} suffix=" FENIX" />
               <CountUpDatum title="Stake Pool Supply" value={stakePoolSupply} suffix=" FENIX" />
             </dl>
@@ -131,7 +144,7 @@ export default function Reward() {
               Claim Reward
             </button>
           </div>
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimit} />
         </form>
       </CardContainer>
     </Container>
