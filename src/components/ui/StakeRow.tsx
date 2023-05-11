@@ -3,10 +3,9 @@
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { calculateProgress } from "@/utilities/helpers";
-import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
-import { BigNumber, ethers } from "ethers";
-import { fenixContract } from "@/libraries/fenixContract";
+import { calculateEarlyPayout, calculateLatePayout, calculateProgress } from "@/utilities/helpers";
+import { Address, useAccount } from "wagmi";
+import { ethers } from "ethers";
 import { StakeStatus } from "@/models/stake";
 import CountUp from "react-countup";
 
@@ -27,35 +26,21 @@ export const StakeRow: NextPage<{
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
 
-  const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
 
-  const { data: rewardPayout } = useContractReads({
-    contracts: [
-      {
-        ...fenixContract(chain),
-        functionName: "calculateEarlyPayout",
-        args: [stake],
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "calculateLatePayout",
-        args: [stake],
-      },
-    ],
-    cacheTime: 30_000,
-  });
-
   useEffect(() => {
-    if (rewardPayout?.[0]) {
-      const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
-      const penalty = 1 - earlyReward;
+    const currentTs = Math.floor(Date.now() / 1000);
+
+    console.log(currentTs);
+    const earlyPayout = calculateEarlyPayout(stake, currentTs);
+    if (earlyPayout) {
+      const penalty = 1 - earlyPayout;
       setPenalty(penalty);
     }
 
-    if (rewardPayout?.[1]) {
-      const lateReward = Number(ethers.utils.formatUnits(rewardPayout?.[1] ?? 0));
-      const penalty = 1 - lateReward;
+    const latePayout = calculateLatePayout(stake, new Date().getMilliseconds());
+    if (latePayout) {
+      const penalty = 1 - latePayout;
       setPenalty(penalty);
     }
 
@@ -78,7 +63,7 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, rewardPayout, stake]);
+  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
