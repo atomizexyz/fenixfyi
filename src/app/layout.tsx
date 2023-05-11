@@ -61,8 +61,8 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html className="h-full primary-background" lang="en">
-      <body className="h-full">
+    <html className="primary-background" lang="en">
+      <body>
         <GlobalContainer>
           <Header />
           {children}
