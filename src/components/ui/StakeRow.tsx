@@ -12,8 +12,10 @@ import CountUp from "react-countup";
 
 export const StakeRow: NextPage<{
   stakeIndex: number;
-  stakeStatus: StakeStatus;
-}> = ({ stakeIndex, stakeStatus }) => {
+  stake: any;
+  equityPoolSupply: number;
+  equityPoolTotalShares: number;
+}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares }) => {
   const [startString, setStartString] = useState("-");
   const [endString, setEndString] = useState("-");
   const [principal, setPrincipal] = useState("-");
@@ -24,29 +26,9 @@ export const StakeRow: NextPage<{
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
-  const [stake, setStake] = useState<any>();
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data: readsData } = useContractReads({
-    contracts: [
-      {
-        ...fenixContract(chain),
-        functionName: "stakeFor",
-        args: [address, BigNumber.from(stakeIndex)],
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "equityPoolSupply",
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "equityPoolTotalShares",
-      },
-    ],
-    watch: false,
-    cacheTime: 30_000,
-  });
 
   const { data: rewardPayout } = useContractReads({
     contracts: [
@@ -65,13 +47,6 @@ export const StakeRow: NextPage<{
   });
 
   useEffect(() => {
-    if (readsData?.[0]) {
-      setStake(readsData[0]);
-    }
-
-    const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
-    const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
-
     if (rewardPayout?.[0]) {
       const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
       const penalty = 1 - earlyReward;
@@ -103,9 +78,7 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [clampedProgress, penalty, readsData, rewardPayout, stake]);
-
-  if (readsData?.[0] && readsData?.[0].status != stakeStatus) return null;
+  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, rewardPayout, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
