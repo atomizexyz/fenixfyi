@@ -24,7 +24,7 @@ export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [polygon, mainnet];
+    allChains = [polygon];
     break;
   case "testnet":
     allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
@@ -61,7 +61,7 @@ const { chains, provider, webSocketProvider } = configureChains(
     }),
     alchemyProvider({ apiKey: alchemyId, priority: 1 }),
     infuraProvider({ apiKey: infuraId, priority: 1 }),
-    publicProvider({ priority: 1 }),
+    publicProvider({ priority: 0 }),
   ],
   { pollingInterval: 10_000, stallTimeout: 5_000 }
 );
