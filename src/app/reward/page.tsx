@@ -21,7 +21,7 @@ import { toast } from "react-hot-toast";
 import { DateDatum, CountUpDatum, CountDownDatum } from "@/components/ui/datum";
 
 export default function Reward() {
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [matureDate, setMatureDate] = useState<Date>();
   const [stakePoolSupply, setStakePoolSupply] = useState<number>(0);
@@ -44,7 +44,7 @@ export default function Reward() {
     abi: FENIX_ABI,
     functionName: "flushRewardPool",
     enabled: !disabled,
-    onError(err) {
+    onError(_error) {
       setDisabled(true);
     },
   });
@@ -110,7 +110,6 @@ export default function Reward() {
     if (config?.request?.gasLimit) {
       setGasLimit(config.request.gasLimit);
     }
-    setDisabled(!isValid);
   }, [config, feeData, isValid, readData]);
 
   return (
