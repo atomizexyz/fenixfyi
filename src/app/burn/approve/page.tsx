@@ -165,7 +165,7 @@ const BurnApprove = () => {
 
   return (
     <Container className="max-w-xl">
-      <PageHeader title="Approve Limited Burn" subtitle="Approve the FENIX contract to burn an limited amount of XEN" />
+      <PageHeader title="Approve Limited Burn" subtitle="Approve the FENIX contract to burn a limited amount of XEN" />
 
       <CardContainer>
         <form onSubmit={handleSubmit(onFixedSubmit)} className="space-y-6">
