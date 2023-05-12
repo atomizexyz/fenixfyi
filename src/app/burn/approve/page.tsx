@@ -36,6 +36,7 @@ const BurnApprove = () => {
   const [gasPrice, setGasPrice] = useState<BigNumber | null>();
   const [gasLimitFixed, setGasLimitFixed] = useState<BigNumber | null>();
   const [gasLimitUnlimited, setGasLimitUnlimited] = useState<BigNumber | null>();
+  const [approveBurnBn, setApproveBurnBn] = useState<BigNumber>(BigNumber.from(0));
 
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
@@ -80,13 +81,13 @@ const BurnApprove = () => {
     resolver: yupResolver(schema),
   });
 
-  const { approveXENAmount } = watch() as { approveXENAmount: number };
+  const { approveXENAmount } = watch();
 
   const { config: fixedConfig } = usePrepareContractWrite({
     address: xenContract(chain).address,
     abi: XENCryptoABI,
     functionName: "approve",
-    args: [fenixContract(chain).address, ethers.utils.parseUnits(Number(approveXENAmount ?? 0).toString())],
+    args: [fenixContract(chain).address, approveBurnBn],
     enabled: !disabled,
   });
   const { data: fixedApproveData, write: fixedWrite } = useContractWrite({
@@ -142,6 +143,11 @@ const BurnApprove = () => {
   };
 
   useEffect(() => {
+    const floatApproveXENAmount = parseFloat(approveXENAmount);
+    if (!isNaN(floatApproveXENAmount) && floatApproveXENAmount > 1e-18) {
+      setApproveBurnBn(ethers.utils.parseUnits(floatApproveXENAmount.toFixed(18)));
+    }
+
     if (allowanceData) {
       setAllowance(Number(ethers.utils.formatUnits(allowanceData)));
     }
@@ -155,7 +161,7 @@ const BurnApprove = () => {
       setGasLimitUnlimited(unlimitedConfig.request.gasLimit);
     }
     setDisabled(!isValid);
-  }, [allowanceData, feeData, fixedConfig, isValid, unlimitedConfig]);
+  }, [allowanceData, approveXENAmount, feeData, fixedConfig, isValid, unlimitedConfig]);
 
   return (
     <Container className="max-w-xl">

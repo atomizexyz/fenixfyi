@@ -218,7 +218,6 @@ export default function Stake() {
   });
 
   useEffect(() => {
-    // Create start stake amount string that is not less than 0.00000000000000001
     const floatStartStakeAmount = parseFloat(startStakeAmount);
     if (!isNaN(floatStartStakeAmount) && floatStartStakeAmount > 1e-18) {
       setStartStakeBn(ethers.utils.parseUnits(floatStartStakeAmount.toFixed(18)));
