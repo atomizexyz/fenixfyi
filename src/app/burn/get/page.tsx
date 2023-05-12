@@ -11,7 +11,7 @@ const BurnGet = () => {
     <Container className="max-w-xl">
       <PageHeader
         title="Get XEN"
-        subtitle="You need to have some XEN to burn. You can get XEN by minting it for free + GAS fee or by buying XEN on a DEX."
+        subtitle="You need to have liquid XEN to burn. You can get XEN by minting it for free + GAS fee or by buying XEN on a DEX."
       />
       <CardContainer>
         <Link href="https://xen.fyi" className="flex w-full justify-center  primary-button">
