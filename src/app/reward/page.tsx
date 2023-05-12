@@ -114,7 +114,7 @@ export default function Reward() {
 
   return (
     <Container className="max-w-xl">
-      <PageHeader title="Reward" subtitle="Any user can flush the the reward once the cooldown has elapses." />
+      <PageHeader title="Reward" subtitle="Any user can flush the the reward once the cooldown elapses." />
 
       <CardContainer>
         <form onSubmit={handleSubmit(handleEndSubmit)} className="space-y-6">
