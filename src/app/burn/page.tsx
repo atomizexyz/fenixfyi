@@ -35,6 +35,7 @@ const BurnXEN = () => {
   const [burnMaximum, setBurnMaximum] = useState<BigNumber>(BigNumber.from(0));
   const [gasPrice, setGasPrice] = useState<BigNumber | null>();
   const [gasLimit, setGasLimit] = useState<BigNumber | null>();
+  const [burnBn, setBurnBn] = useState<BigNumber>(BigNumber.from(0));
 
   const router = useRouter();
   const { address } = useAccount() as unknown as { address: Address };
@@ -84,13 +85,13 @@ const BurnXEN = () => {
     resolver: yupResolver(schema),
   });
 
-  const { burnXENAmount } = watch() as { burnXENAmount: number };
+  const { burnXENAmount } = watch();
 
   const { config } = usePrepareContractWrite({
     address: fenixContract(chain).address,
     abi: FENIX_ABI,
     functionName: "burnXEN",
-    args: [ethers.utils.parseUnits((burnXENAmount || 0).toString(), fenixBalance?.decimals ?? 0)],
+    args: [burnBn],
     enabled: !disabled,
   });
   const { data, write } = useContractWrite({
@@ -115,6 +116,11 @@ const BurnXEN = () => {
   };
 
   useEffect(() => {
+    const floatBurnXENAmount = parseFloat(burnXENAmount);
+    if (!isNaN(floatBurnXENAmount) && floatBurnXENAmount > 1e-18) {
+      setBurnBn(ethers.utils.parseUnits(floatBurnXENAmount.toFixed(18)));
+    }
+
     if (xenBalance && allowance && xenBalance.value.gt(allowance)) {
       setBurnMaximum(allowance);
     } else {
@@ -127,7 +133,7 @@ const BurnXEN = () => {
       setGasLimit(config.request.gasLimit);
     }
     setDisabled(!isValid);
-  }, [allowance, burnMaximum, config, feeData, isValid, xenBalance]);
+  }, [allowance, burnMaximum, burnXENAmount, config, feeData, isValid, xenBalance]);
 
   return (
     <Container className="max-w-xl">
