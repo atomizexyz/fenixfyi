@@ -26,7 +26,7 @@ import { BigNumber, ethers } from "ethers";
 import toast from "react-hot-toast";
 import { WalletAddressField } from "@/components/ui/forms";
 import { TextDatum, CountUpDatum, DateDatum } from "@/components/ui/datum";
-import { StakeStatus } from "@/models/stake";
+import { StakeStatus } from "@/models/stakeStatus";
 import { calculateProgress } from "@/utilities/helpers";
 import CountUp from "react-countup";
 
@@ -49,8 +49,8 @@ const StakeAddressIndexDefer = () => {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const address = searchParams.get("address") as unknown as Address;
-  const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
+  const address = searchParams?.get("address") as unknown as Address;
+  const stakeIndex = searchParams?.get("stakeIndex") as unknown as number;
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });

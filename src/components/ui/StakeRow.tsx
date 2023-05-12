@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { calculateEarlyPayout, calculateLatePayout, calculateProgress } from "@/utilities/helpers";
 import { Address, useAccount } from "wagmi";
 import { ethers } from "ethers";
-import { StakeStatus } from "@/models/stake";
+import { StakeStatus } from "@/models/stakeStatus";
 import CountUp from "react-countup";
 
 export const StakeRow: NextPage<{

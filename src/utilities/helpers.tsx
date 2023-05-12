@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import { UTC_TIME, ONE_DAY_TS, ONE_EIGHTY_DAYS_TS, FENIX_MAX_STAKE_LENGTH } from "./constants";
-import { StakeStatus } from "@/models/stake";
+import { StakeStatus } from "@/models/stakeStatus";
 
 export const truncateAddress = (address: string) => {
   if (address == undefined) return "";

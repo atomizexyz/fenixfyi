@@ -5,8 +5,7 @@ import { PageHeader, StakeRow, StakeCard, StakeRowHeaderFooter } from "@/compone
 import { Container, CardContainer } from "@/components/containers";
 import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
 import { fenixContract } from "@/libraries/fenixContract";
-import FENIX_ABI from "@/models/abi/FENIX_ABI";
-import { StakeStatus } from "@/models/stake";
+import { StakeStatus } from "@/models/stakeStatus";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 

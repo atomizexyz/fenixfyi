@@ -22,7 +22,7 @@ import { fenixContract } from "@/libraries/fenixContract";
 import { BigNumber, ethers } from "ethers";
 import toast from "react-hot-toast";
 import { calculateProgress } from "@/utilities/helpers";
-import { StakeStatus } from "@/models/stake";
+import { StakeStatus } from "@/models/stakeStatus";
 import { CountUpDatum, DateDatum, TextDatum } from "@/components/ui/datum";
 import CountUp from "react-countup";
 
@@ -47,7 +47,7 @@ export default function StakeAddressIndexEnd() {
   const searchParams = useSearchParams();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const stakeIndex = searchParams.get("stakeIndex") as unknown as number;
+  const stakeIndex = searchParams?.get("stakeIndex") as unknown as number;
   const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
   const { data: readsData } = useContractReads({
     contracts: [
