@@ -56,13 +56,17 @@ export const fenixContract = (contractChain?: Chain) => {
         abi: FENIX_ABI,
         chainId: contractChain.id,
       };
+    case mainnet.id:
+      return {
+        address: "0xc3e8abfa04b0ec442c2a4d65699a40f7fced8055" as Address,
+        abi: FENIX_ABI,
+      };
     case dogechain.id:
     case fantom.id:
     case avalanche.id:
     case bsc.id:
     case evmos.id:
     case moonbeam.id:
-    case mainnet.id:
     default:
       return {
         address: "" as Address,
