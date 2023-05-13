@@ -59,11 +59,11 @@ const { chains, provider, webSocketProvider } = configureChains(
       },
       priority: 0,
     }),
-    alchemyProvider({ apiKey: alchemyId, priority: 1 }),
+    alchemyProvider({ apiKey: alchemyId, priority: 0 }),
     infuraProvider({ apiKey: infuraId, priority: 1 }),
     publicProvider({ priority: 2 }),
   ],
-  { pollingInterval: 10_000, stallTimeout: 5_000 }
+  { pollingInterval: 10_000 }
 );
 
 export const client = createClient({
