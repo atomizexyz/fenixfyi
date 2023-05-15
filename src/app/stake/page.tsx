@@ -63,7 +63,7 @@ export default function Stake() {
   const { data: fenixBalance } = useBalance({
     address: address,
     token: fenixContract(chain).address,
-    watch: false,
+    staleTime: 20_000,
   });
 
   /*** FORM SETUP ***/

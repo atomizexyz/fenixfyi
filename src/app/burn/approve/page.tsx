@@ -45,14 +45,13 @@ const BurnApprove = () => {
   const { data: xenBalance } = useBalance({
     address: address,
     token: xenContract(chain).address,
-    watch: false,
+    staleTime: 20_000,
   });
   const { data: allowanceData } = useContractRead({
     ...xenContract(chain),
     functionName: "allowance",
     args: [address, fenixContract(chain).address],
-    watch: false,
-    cacheTime: 30_000,
+    cacheOnBlock: true,
   });
 
   const schema = yup
