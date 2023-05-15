@@ -19,6 +19,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
   const [stakeCount, setStakeCount] = useState<number>(0);
   const [allStakes, setAllStakes] = useState<any[]>([]);
   const [equityPoolSupply, setEquityPoolSupply] = useState<number>(0);
+  const [rewardPoolSupply, setRewardPoolSupply] = useState<number>(0);
   const [equityPoolTotalShares, setEquityPoolTotalShares] = useState<number>(0);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
@@ -38,6 +39,10 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
       {
         ...fenixContract(chain),
         functionName: "equityPoolTotalShares",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "rewardPoolSupply",
       },
     ],
     watch: false,
@@ -62,6 +67,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
       setStakeCount(readData[0].toNumber());
       setEquityPoolSupply(Number(ethers.utils.formatUnits(readData[1] ?? 0)));
       setEquityPoolTotalShares(Number(ethers.utils.formatUnits(readData[2] ?? 0)));
+      setRewardPoolSupply(Number(ethers.utils.formatUnits(readData[3] ?? 0)));
     }
   }, [allStakes, allStakesData, readData]);
 
@@ -80,6 +86,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
                     stakeIndex={index}
                     equityPoolSupply={equityPoolSupply}
                     equityPoolTotalShares={equityPoolTotalShares}
+                    rewardPoolSupply={rewardPoolSupply}
                   />
                 )}
               </>
@@ -103,6 +110,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
                       stakeIndex={index}
                       equityPoolSupply={equityPoolSupply}
                       equityPoolTotalShares={equityPoolTotalShares}
+                      rewardPoolSupply={rewardPoolSupply}
                     />
                   )}
                 </>

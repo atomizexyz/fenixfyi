@@ -15,12 +15,14 @@ export const StakeCard: NextPage<{
   stake: any;
   equityPoolSupply: number;
   equityPoolTotalShares: number;
-}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares }) => {
+  rewardPoolSupply: number;
+}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0 }) => {
   const [startMs, setStartMs] = useState<Date>(new Date());
   const [endMs, setEndMs] = useState<Date>(new Date());
   const [principal, setPrincipal] = useState<number>(0);
   const [shares, setShares] = useState<number>(0);
   const [payout, setPayout] = useState<number>(0);
+  const [futurePayout, setFuturePayout] = useState<number>(0);
   const [projectedPayout, setProjectedPayout] = useState<number>(0);
   const [penalty, setPenalty] = useState<number>(0);
   const [progress, setProgress] = useState<string>("0%");
@@ -35,13 +37,15 @@ export const StakeCard: NextPage<{
     setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)));
     setShares(Number(ethers.utils.formatUnits(stake.shares)));
 
-    const earlyPayout = calculateEarlyPayout(stake, new Date().getSeconds());
+    const currentTs = Math.floor(Date.now() / 1000);
+
+    const earlyPayout = calculateEarlyPayout(stake, currentTs);
     if (earlyPayout) {
       const penalty = 1 - earlyPayout;
       setPenalty(penalty);
     }
 
-    const latePayout = calculateLatePayout(stake, new Date().getSeconds());
+    const latePayout = calculateLatePayout(stake, currentTs);
     if (latePayout) {
       const penalty = 1 - latePayout;
       setPenalty(penalty);
@@ -52,6 +56,9 @@ export const StakeCard: NextPage<{
       const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
       const payout = equityPayout * (1 - penalty);
       setProjectedPayout(payout);
+
+      const poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
+      setFuturePayout(equityPayout + poolPayout);
     }
 
     const progressPct = calculateProgress(stake.startTs, stake.endTs);
@@ -59,7 +66,7 @@ export const StakeCard: NextPage<{
     setProgress(clampedProgress.toFixed(2) + "%");
     setStatus(stake.status);
     setPayout(Number(ethers.utils.formatUnits(stake.payout)));
-  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, stake]);
+  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -75,9 +82,19 @@ export const StakeCard: NextPage<{
     switch (status) {
       case StakeStatus.END:
       case StakeStatus.DEFER:
-        return <CountUpDatum title="Payout" value={payout} description="FENIX" decimals={2} />;
+        return <CountUpDatum title="Payout Now" value={payout} description="FENIX" decimals={2} />;
       default:
-        return <CountUpDatum title="Payout" value={projectedPayout} description="FENIX" decimals={2} />;
+        return <CountUpDatum title="Payout Now" value={projectedPayout} description="FENIX" decimals={2} />;
+    }
+  };
+
+  const renderFuturePayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <CountUpDatum title="Future Payout" value={payout} description="FENIX" decimals={2} />;
+      default:
+        return <CountUpDatum title="Future Payout" value={futurePayout} description="FENIX" decimals={2} />;
     }
   };
 
@@ -117,7 +134,7 @@ export const StakeCard: NextPage<{
         <CountUpDatum title="Shares" value={shares} decimals={2} />
         {renderPenalty(status)}
         {renderPayout(status)}
-
+        {renderFuturePayout(status)}
         <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Progress</dt>
           <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{renderProgress(status)}</dd>

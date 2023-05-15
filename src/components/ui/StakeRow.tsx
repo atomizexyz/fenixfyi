@@ -14,12 +14,14 @@ export const StakeRow: NextPage<{
   stake: any;
   equityPoolSupply: number;
   equityPoolTotalShares: number;
-}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares }) => {
+  rewardPoolSupply: number;
+}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0 }) => {
   const [startString, setStartString] = useState("-");
   const [endString, setEndString] = useState("-");
   const [principal, setPrincipal] = useState("-");
   const [shares, setShares] = useState("-");
   const [payout, setPayout] = useState("-");
+  const [futurePayout, setFuturePayout] = useState("-");
   const [projectedPayout, setProjectedPayout] = useState("-");
   const [penalty, setPenalty] = useState(0);
   const [progress, setProgress] = useState<string>("0%");
@@ -31,14 +33,13 @@ export const StakeRow: NextPage<{
   useEffect(() => {
     const currentTs = Math.floor(Date.now() / 1000);
 
-    console.log(currentTs);
     const earlyPayout = calculateEarlyPayout(stake, currentTs);
     if (earlyPayout) {
       const penalty = 1 - earlyPayout;
       setPenalty(penalty);
     }
 
-    const latePayout = calculateLatePayout(stake, new Date().getMilliseconds());
+    const latePayout = calculateLatePayout(stake, currentTs);
     if (latePayout) {
       const penalty = 1 - latePayout;
       setPenalty(penalty);
@@ -55,6 +56,9 @@ export const StakeRow: NextPage<{
         const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
         const payout = equityPayout * (1 - penalty);
         setProjectedPayout(payout.toFixed(2));
+
+        const poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
+        setFuturePayout((equityPayout + poolPayout).toFixed(2));
       }
 
       const progressPct = calculateProgress(stake.startTs, stake.endTs);
@@ -63,7 +67,7 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, stake]);
+  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -116,6 +120,16 @@ export const StakeRow: NextPage<{
     }
   };
 
+  const renderFuturePayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <>{payout}</>;
+      default:
+        return <>{futurePayout}</>;
+    }
+  };
+
   return (
     <tr>
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">{startString}</td>
@@ -124,6 +138,9 @@ export const StakeRow: NextPage<{
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{shares}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPenalty(status)}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPayout(status)}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">
+        {renderFuturePayout(status)}
+      </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text font-mono">{renderProgress(status)}</td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex space-x-4">
