@@ -64,7 +64,6 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
   });
 
   useEffect(() => {
-    console.log(allStakesData);
     if (allStakesData) {
       setAllStakes(allStakesData);
     }
