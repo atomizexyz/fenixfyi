@@ -34,6 +34,7 @@ export default function StakeAddressIndexEnd() {
   const [principal, setPrincipal] = useState<number>(0);
   const [shares, setShares] = useState<number>(0);
   const [payout, setPayout] = useState<number>(0);
+  const [futurePayout, setFuturePayout] = useState<number>(0);
   const [projectedPayout, setProjectedPayout] = useState<number>(0);
   const [penalty, setPenalty] = useState<number>(0);
   const [progress, setProgress] = useState<string>("0%");
@@ -63,6 +64,14 @@ export default function StakeAddressIndexEnd() {
       {
         ...fenixContract(chain),
         functionName: "equityPoolTotalShares",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "rewardPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "cooldownUnlockTs",
       },
     ],
     watch: false,
@@ -133,6 +142,8 @@ export default function StakeAddressIndexEnd() {
 
     const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
     const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
+    const rewardPoolSupply = Number(ethers.utils.formatUnits(readsData?.[3] ?? 0));
+    const cooldownUnlockTs = Number(readsData?.[4] ?? 0);
     if (stake && equityPoolTotalShares && equityPoolSupply) {
       setStartMs(new Date(stake.startTs * 1000));
       setEndMs(new Date(stake.endTs * 1000));
@@ -156,6 +167,12 @@ export default function StakeAddressIndexEnd() {
         const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
         const payout = equityPayout * (1 - penalty);
         setProjectedPayout(payout);
+
+        let poolPayout = 0;
+        if (stake.endTs > cooldownUnlockTs) {
+          poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
+        }
+        setFuturePayout(equityPayout + poolPayout);
       }
 
       const progressPct = calculateProgress(stake.startTs, stake.endTs);
@@ -187,9 +204,19 @@ export default function StakeAddressIndexEnd() {
     switch (status) {
       case StakeStatus.END:
       case StakeStatus.DEFER:
-        return <CountUpDatum title="Payout" value={payout} decimals={2} suffix=" FENIX" />;
+        return <CountUpDatum title="Payout" value={payout} decimals={2} description="FENIX" />;
       default:
-        return <CountUpDatum title="Payout" value={projectedPayout} decimals={2} suffix=" FENIX" />;
+        return <CountUpDatum title="Payout" value={projectedPayout} decimals={2} description="FENIX" />;
+    }
+  };
+
+  const renderFuturePayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <CountUpDatum title="Future Payout" value={payout} description="FENIX" decimals={2} />;
+      default:
+        return <CountUpDatum title="Future Payout" value={futurePayout} description="FENIX" decimals={2} />;
     }
   };
 
@@ -227,10 +254,11 @@ export default function StakeAddressIndexEnd() {
         <dl className="divide-y secondary-divider">
           <DateDatum title="Start" value={startMs} />
           <DateDatum title="End" value={endMs} />
-          <CountUpDatum title="Principal" value={principal} decimals={2} suffix=" FENIX" />
+          <CountUpDatum title="Principal" value={principal} decimals={2} description="FENIX" />
           <CountUpDatum title="Shares" value={shares} decimals={2} />
           {renderPenalty(status)}
           {renderPayout(status)}
+          {renderFuturePayout(status)}
           <div className="py-2 flex justify-between">
             <dt className="text-sm font-medium primary-text">Progress</dt>
             <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{renderProgress(status)}</dd>

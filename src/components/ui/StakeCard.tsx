@@ -70,7 +70,7 @@ export const StakeCard: NextPage<{
     setProgress(clampedProgress.toFixed(2) + "%");
     setStatus(stake.status);
     setPayout(Number(ethers.utils.formatUnits(stake.payout)));
-  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
+  }, [clampedProgress, cooldownUnlockTs, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
