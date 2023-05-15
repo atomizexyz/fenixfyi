@@ -33,6 +33,7 @@ import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { CountUpDatum } from "@/components/ui/datum";
 import { AlertInfo, AlertType, AlertWarn } from "@/components/ui/Alert";
+import { roundDown } from "@/utilities/helpers";
 
 export default function Stake() {
   const today = new Date();
@@ -219,8 +220,8 @@ export default function Stake() {
 
   useEffect(() => {
     const floatStartStakeAmount = parseFloat(startStakeAmount);
-    if (!isNaN(floatStartStakeAmount) && floatStartStakeAmount > 1e-18) {
-      setStartStakeBn(ethers.utils.parseUnits(floatStartStakeAmount.toFixed(18)));
+    if (!isNaN(floatStartStakeAmount) && floatStartStakeAmount > 1e-12) {
+      setStartStakeBn(ethers.utils.parseUnits(floatStartStakeAmount.toFixed(12)));
     }
 
     const startStakeFENIX = Number(startStakeAmount ?? 0);
@@ -300,7 +301,7 @@ export default function Stake() {
             title="FENIX"
             description="Number of FENIX to stake"
             decimals={0}
-            value={ethers.utils.formatUnits(fenixBalance?.value ?? BigNumber.from(0))}
+            value={roundDown(Number(ethers.utils.formatUnits(fenixBalance?.value ?? BigNumber.from(0))), 12)}
             errorMessage={<ErrorMessage errors={errors} name="startStakeAmount" />}
             register={register("startStakeAmount")}
             setValue={setValue}

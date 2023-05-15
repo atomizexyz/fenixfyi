@@ -55,3 +55,8 @@ export const calculateLatePayout = (stake: any, blockTs: number) => {
   const ratio = termDelta / ONE_EIGHTY_DAYS_TS;
   return 1 - Math.pow(ratio, 3);
 };
+
+export const roundDown = (num: number, decimalPlaces: number = 18): number => {
+  const factor: number = Math.pow(10, decimalPlaces);
+  return Math.floor(num * factor) / factor;
+};
