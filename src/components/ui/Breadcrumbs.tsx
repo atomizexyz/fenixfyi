@@ -20,7 +20,7 @@ export default function Breadcrumbs() {
   const { data: fenixData } = useBalance({
     address: address,
     token: fenixContract(chain).address,
-    staleTime: 20_000,
+    staleTime: 120_000,
   });
 
   const { data: tokenData } = useToken({
