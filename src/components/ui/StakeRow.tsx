@@ -15,7 +15,8 @@ export const StakeRow: NextPage<{
   equityPoolSupply: number;
   equityPoolTotalShares: number;
   rewardPoolSupply: number;
-}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0 }) => {
+  cooldownUnlockTs: number;
+}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0, cooldownUnlockTs }) => {
   const [startString, setStartString] = useState("-");
   const [endString, setEndString] = useState("-");
   const [principal, setPrincipal] = useState("-");
@@ -57,7 +58,10 @@ export const StakeRow: NextPage<{
         const payout = equityPayout * (1 - penalty);
         setProjectedPayout(payout.toFixed(2));
 
-        const poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
+        let poolPayout = 0;
+        if (stake.endTs > cooldownUnlockTs) {
+          poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
+        }
         setFuturePayout((equityPayout + poolPayout).toFixed(2));
       }
 

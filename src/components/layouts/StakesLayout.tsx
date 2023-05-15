@@ -21,6 +21,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
   const [equityPoolSupply, setEquityPoolSupply] = useState<number>(0);
   const [rewardPoolSupply, setRewardPoolSupply] = useState<number>(0);
   const [equityPoolTotalShares, setEquityPoolTotalShares] = useState<number>(0);
+  const [cooldownUnlockTs, setCooldownUnlockTs] = useState<number>(0);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
@@ -43,6 +44,10 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
       {
         ...fenixContract(chain),
         functionName: "rewardPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "cooldownUnlockTs",
       },
     ],
     watch: false,
@@ -68,6 +73,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
       setEquityPoolSupply(Number(ethers.utils.formatUnits(readData[1] ?? 0)));
       setEquityPoolTotalShares(Number(ethers.utils.formatUnits(readData[2] ?? 0)));
       setRewardPoolSupply(Number(ethers.utils.formatUnits(readData[3] ?? 0)));
+      setCooldownUnlockTs(Number(readData[4] ?? 0));
     }
   }, [allStakes, allStakesData, readData]);
 
@@ -87,6 +93,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
                     equityPoolSupply={equityPoolSupply}
                     equityPoolTotalShares={equityPoolTotalShares}
                     rewardPoolSupply={rewardPoolSupply}
+                    cooldownUnlockTs={cooldownUnlockTs}
                   />
                 )}
               </>
@@ -111,6 +118,7 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
                       equityPoolSupply={equityPoolSupply}
                       equityPoolTotalShares={equityPoolTotalShares}
                       rewardPoolSupply={rewardPoolSupply}
+                      cooldownUnlockTs={cooldownUnlockTs}
                     />
                   )}
                 </>
