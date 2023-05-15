@@ -49,20 +49,32 @@ export const StakeRow: NextPage<{
     if (stake && equityPoolTotalShares && equityPoolSupply) {
       setStartString(new Date(stake.startTs * 1000).toLocaleDateString());
       setEndString(new Date(stake.endTs * 1000).toLocaleDateString());
-      setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)).toFixed(2));
-      setShares(Number(ethers.utils.formatUnits(stake.shares)).toFixed(2));
+      setPrincipal(
+        Number(ethers.utils.formatUnits(stake.fenix)).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+      setShares(
+        Number(ethers.utils.formatUnits(stake.shares)).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
 
       if (equityPoolTotalShares > 0) {
         const shares = Number(ethers.utils.formatUnits(stake.shares));
         const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
         const payout = equityPayout * (1 - penalty);
-        setProjectedPayout(payout.toFixed(2));
+        setProjectedPayout(payout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
         let poolPayout = 0;
         if (stake.endTs > cooldownUnlockTs) {
           poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
         }
-        setFuturePayout((equityPayout + poolPayout).toFixed(2));
+        setFuturePayout(
+          (equityPayout + poolPayout).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        );
       }
 
       const progressPct = calculateProgress(stake.startTs, stake.endTs);
@@ -71,7 +83,7 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [clampedProgress, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
+  }, [clampedProgress, cooldownUnlockTs, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
