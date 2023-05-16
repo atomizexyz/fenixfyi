@@ -3,108 +3,74 @@
 import Link from "next/link";
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
-import { calculateProgress } from "@/utilities/helpers";
-import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
-import { BigNumber, ethers } from "ethers";
-import { fenixContract } from "@/libraries/fenixContract";
-import { StakeStatus } from "@/models/stake";
+import { calculateEarlyPayout, calculateLatePayout, calculateProgress } from "@/utilities/helpers";
+import { Address, useAccount } from "wagmi";
+import { ethers } from "ethers";
+import { StakeStatus } from "@/models/stakeStatus";
 import { CountUpDatum, DateDatum, TextDatum } from "./datum";
 import CountUp from "react-countup";
 
 export const StakeCard: NextPage<{
   stakeIndex: number;
-  stakeStatus: StakeStatus;
-}> = ({ stakeIndex, stakeStatus }) => {
+  stake: any;
+  equityPoolSupply: number;
+  equityPoolTotalShares: number;
+  rewardPoolSupply: number;
+  cooldownUnlockTs: number;
+}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0, cooldownUnlockTs }) => {
   const [startMs, setStartMs] = useState<Date>(new Date());
   const [endMs, setEndMs] = useState<Date>(new Date());
   const [principal, setPrincipal] = useState<number>(0);
   const [shares, setShares] = useState<number>(0);
   const [payout, setPayout] = useState<number>(0);
+  const [futurePayout, setFuturePayout] = useState<number>(0);
   const [projectedPayout, setProjectedPayout] = useState<number>(0);
   const [penalty, setPenalty] = useState<number>(0);
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
-  const [stake, setStake] = useState<any>();
 
-  const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
 
-  const { data: readsData } = useContractReads({
-    contracts: [
-      {
-        ...fenixContract(chain),
-        functionName: "stakeFor",
-        args: [address, BigNumber.from(stakeIndex)],
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "equityPoolSupply",
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "equityPoolTotalShares",
-      },
-    ],
-    watch: true,
-  });
-
-  const { data: rewardPayout } = useContractReads({
-    contracts: [
-      {
-        ...fenixContract(chain),
-        functionName: "calculateEarlyPayout",
-        args: [stake],
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "calculateLatePayout",
-        args: [stake],
-      },
-    ],
-  });
-
   useEffect(() => {
-    if (readsData?.[0]) {
-      setStake(readsData[0]);
+    setStartMs(new Date(stake.startTs * 1000));
+    setEndMs(new Date(stake.endTs * 1000));
+    setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)));
+    setShares(Number(ethers.utils.formatUnits(stake.shares)));
+
+    const currentTs = Math.floor(Date.now() / 1000);
+
+    const earlyPayout = calculateEarlyPayout(stake, currentTs);
+    if (earlyPayout) {
+      const penalty = 1 - earlyPayout;
+      setPenalty(penalty);
     }
 
-    const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
-    const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
-    if (stake && equityPoolTotalShares && equityPoolSupply) {
-      setStartMs(new Date(stake.startTs * 1000));
-      setEndMs(new Date(stake.endTs * 1000));
-      setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)));
-      setShares(Number(ethers.utils.formatUnits(stake.shares)));
-
-      if (rewardPayout?.[0]) {
-        const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
-        const penalty = 1 - earlyReward;
-        setPenalty(penalty);
-      }
-
-      if (rewardPayout?.[1]) {
-        const lateReward = Number(ethers.utils.formatUnits(rewardPayout?.[1] ?? 0));
-        const penalty = 1 - lateReward;
-        setPenalty(penalty);
-      }
-
-      if (equityPoolTotalShares > 0) {
-        const shares = Number(ethers.utils.formatUnits(stake.shares));
-        const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
-        const payout = equityPayout * (1 - penalty);
-        setProjectedPayout(payout);
-      }
-
-      const progressPct = calculateProgress(stake.startTs, stake.endTs);
-      setClampedProgress(progressPct * 100);
-      setProgress(clampedProgress.toFixed(2) + "%");
-      setStatus(stake.status);
-      setPayout(Number(ethers.utils.formatUnits(stake.payout)));
+    const latePayout = calculateLatePayout(stake, currentTs);
+    if (latePayout) {
+      const penalty = 1 - latePayout;
+      setPenalty(penalty);
     }
-  }, [clampedProgress, penalty, readsData, rewardPayout, stake]);
 
-  if (readsData?.[0] && readsData?.[0].status != stakeStatus && stakeStatus != StakeStatus.ALL) return null;
+    if (equityPoolTotalShares > 0) {
+      const shares = Number(ethers.utils.formatUnits(stake.shares));
+      const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
+      const payout = equityPayout * (1 - penalty);
+      setProjectedPayout(payout);
+
+      let poolPayout = 0;
+      if (stake.endTs > cooldownUnlockTs) {
+        poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
+      }
+      setFuturePayout(equityPayout + poolPayout);
+    }
+
+    const progressPct = calculateProgress(stake.startTs, stake.endTs);
+    setClampedProgress(progressPct * 100);
+    setProgress(clampedProgress.toFixed(2) + "%");
+    setStatus(stake.status);
+    setPayout(Number(ethers.utils.formatUnits(stake.payout)));
+  }, [clampedProgress, cooldownUnlockTs, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -120,9 +86,19 @@ export const StakeCard: NextPage<{
     switch (status) {
       case StakeStatus.END:
       case StakeStatus.DEFER:
-        return <CountUpDatum title="Payout" value={payout} description="FENIX" decimals={2} />;
+        return <CountUpDatum title="Payout Now" value={payout} description="FENIX" decimals={2} />;
       default:
-        return <CountUpDatum title="Payout" value={projectedPayout} description="FENIX" decimals={2} />;
+        return <CountUpDatum title="Payout Now" value={projectedPayout} description="FENIX" decimals={2} />;
+    }
+  };
+
+  const renderFuturePayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <CountUpDatum title="Future Payout" value={payout} description="FENIX" decimals={2} />;
+      default:
+        return <CountUpDatum title="Future Payout" value={futurePayout} description="FENIX" decimals={2} />;
     }
   };
 
@@ -162,18 +138,18 @@ export const StakeCard: NextPage<{
         <CountUpDatum title="Shares" value={shares} decimals={2} />
         {renderPenalty(status)}
         {renderPayout(status)}
-
+        {renderFuturePayout(status)}
         <div className="py-2 flex justify-between">
           <dt className="text-sm font-medium primary-text">Progress</dt>
           <dd className="mt-1 text-sm sm:col-span-2 sm:mt-0 secondary-text font-mono">{renderProgress(status)}</dd>
         </div>
         <div className="py-2 flex justify-between">
-          {(status !== StakeStatus.END || stakeStatus == StakeStatus.ALL) && (
+          {(status === StakeStatus.ALL || status !== StakeStatus.END) && (
             <Link href={`/stake/end?stakeIndex=${stakeIndex}`} className="primary-link">
               End
             </Link>
           )}
-          {((clampedProgress == 100 && status === StakeStatus.ACTIVE) || stakeStatus == StakeStatus.ALL) && (
+          {((clampedProgress == 100 && status === StakeStatus.ACTIVE) || status == StakeStatus.ALL) && (
             <Link href={`/stake/defer?address=${address}&stakeIndex=${stakeIndex}`} className="primary-link">
               Defer
             </Link>

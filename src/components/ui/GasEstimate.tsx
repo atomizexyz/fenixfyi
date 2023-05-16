@@ -4,7 +4,7 @@ import { formatDecimals, toGwei } from "@/utilities/helpers";
 
 interface GasEstimateProps {
   gasPrice?: BigNumber | null;
-  gasLimit?: BigNumber;
+  gasLimit?: BigNumber | null;
 }
 
 const GasEstimate: NextPage<GasEstimateProps> = ({ gasPrice, gasLimit }) => {

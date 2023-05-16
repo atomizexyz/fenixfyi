@@ -33,20 +33,25 @@ const BurnApprove = () => {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [allowance, setAllowance] = useState<number>(0);
+  const [gasPrice, setGasPrice] = useState<BigNumber | null>();
+  const [gasLimitFixed, setGasLimitFixed] = useState<BigNumber | null>();
+  const [gasLimitUnlimited, setGasLimitUnlimited] = useState<BigNumber | null>();
+  const [approveBurnBn, setApproveBurnBn] = useState<BigNumber>(BigNumber.from(0));
+
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
   const { data: xenBalance } = useBalance({
     address: address,
     token: xenContract(chain).address,
-    watch: true,
+    staleTime: 20_000,
   });
   const { data: allowanceData } = useContractRead({
     ...xenContract(chain),
     functionName: "allowance",
     args: [address, fenixContract(chain).address],
-    watch: true,
+    cacheOnBlock: true,
   });
 
   const schema = yup
@@ -75,13 +80,13 @@ const BurnApprove = () => {
     resolver: yupResolver(schema),
   });
 
-  const { approveXENAmount } = watch() as { approveXENAmount: number };
+  const { approveXENAmount } = watch();
 
   const { config: fixedConfig } = usePrepareContractWrite({
     address: xenContract(chain).address,
     abi: XENCryptoABI,
     functionName: "approve",
-    args: [fenixContract(chain).address, ethers.utils.parseUnits(Number(approveXENAmount ?? 0).toString())],
+    args: [fenixContract(chain).address, approveBurnBn],
     enabled: !disabled,
   });
   const { data: fixedApproveData, write: fixedWrite } = useContractWrite({
@@ -137,15 +142,29 @@ const BurnApprove = () => {
   };
 
   useEffect(() => {
+    const floatApproveXENAmount = parseFloat(approveXENAmount);
+    if (!isNaN(floatApproveXENAmount) && floatApproveXENAmount > 1e-18) {
+      setApproveBurnBn(ethers.utils.parseUnits(floatApproveXENAmount.toFixed(18)));
+    }
+
     if (allowanceData) {
       setAllowance(Number(ethers.utils.formatUnits(allowanceData)));
     }
+    if (feeData?.gasPrice) {
+      setGasPrice(feeData.gasPrice);
+    }
+    if (fixedConfig?.request?.gasLimit) {
+      setGasLimitFixed(fixedConfig.request.gasLimit);
+    }
+    if (unlimitedConfig?.request?.gasLimit) {
+      setGasLimitUnlimited(unlimitedConfig.request.gasLimit);
+    }
     setDisabled(!isValid);
-  }, [allowanceData, isValid]);
+  }, [allowanceData, approveXENAmount, feeData, fixedConfig, isValid, unlimitedConfig]);
 
   return (
     <Container className="max-w-xl">
-      <PageHeader title="Approve Limited Burn" subtitle="Approve the FENIX contract to burn an limited amount of XEN" />
+      <PageHeader title="Approve Limited Burn" subtitle="Approve the FENIX contract to burn a limited amount of XEN" />
 
       <CardContainer>
         <form onSubmit={handleSubmit(onFixedSubmit)} className="space-y-6">
@@ -160,6 +179,8 @@ const BurnApprove = () => {
           />
 
           <dl className="divide-y secondary-divider">
+            <CountUpDatum title="Approve Amount" value={approveXENAmount} suffix=" XEN" decimals={4} />
+
             {allowanceData && allowanceData.gte(ethers.constants.MaxUint256) ? (
               <TextDatum title="Spend Allowance" value="Unlimited" />
             ) : (
@@ -177,7 +198,7 @@ const BurnApprove = () => {
             {`Approve Limited Burn ${approveXENAmount} XEN`}
           </button>
 
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={fixedConfig?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimitFixed} />
         </form>
       </CardContainer>
 
@@ -198,7 +219,7 @@ const BurnApprove = () => {
           >
             Approved Unlimited Burn
           </button>
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={unlimitedConfig?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimitUnlimited} />
         </form>
       </CardContainer>
     </Container>

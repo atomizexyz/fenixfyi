@@ -2,15 +2,13 @@
 
 import { clsx } from "clsx";
 import { Breadcrumbs } from "@/components/ui";
-import { Fragment, useContext, useState } from "react";
-import { Transition } from "@headlessui/react";
+import { useContext } from "react";
 import FenixContext from "@/contexts/FenixContext";
 import ConfettiLayout from "@/components/layouts/ConfettiLayout";
 import { toast, resolveValue, Toaster } from "react-hot-toast";
 import { IconCircleCheck, IconExclamationCircle, IconX } from "@tabler/icons-react";
 
 export default function Container({ className, ...props }: any) {
-  const [show, setShow] = useState(true);
   const { showConfetti } = useContext(FenixContext);
 
   return (

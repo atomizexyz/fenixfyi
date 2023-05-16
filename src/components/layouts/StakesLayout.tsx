@@ -5,9 +5,8 @@ import { PageHeader, StakeRow, StakeCard, StakeRowHeaderFooter } from "@/compone
 import { Container, CardContainer } from "@/components/containers";
 import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
 import { fenixContract } from "@/libraries/fenixContract";
-import FENIX_ABI from "@/models/abi/FENIX_ABI";
-import { StakeStatus } from "@/models/stake";
-import { BigNumber } from "ethers";
+import { StakeStatus } from "@/models/stakeStatus";
+import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 
 export interface StakeLayoutDatum {
@@ -18,8 +17,11 @@ export interface StakeLayoutDatum {
 
 export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stakeStatus }) => {
   const [stakeCount, setStakeCount] = useState<number>(0);
-  const [equityPoolSupply, setEquityPoolSupply] = useState<BigNumber>(BigNumber.from(0));
-  const [equityPoolTotalShares, setEquityPoolTotalShares] = useState<BigNumber>(BigNumber.from(0));
+  const [allStakes, setAllStakes] = useState<any[]>([]);
+  const [equityPoolSupply, setEquityPoolSupply] = useState<number>(0);
+  const [rewardPoolSupply, setRewardPoolSupply] = useState<number>(0);
+  const [equityPoolTotalShares, setEquityPoolTotalShares] = useState<number>(0);
+  const [cooldownUnlockTs, setCooldownUnlockTs] = useState<number>(0);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
@@ -39,17 +41,40 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
         ...fenixContract(chain),
         functionName: "equityPoolTotalShares",
       },
+      {
+        ...fenixContract(chain),
+        functionName: "rewardPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "cooldownUnlockTs",
+      },
     ],
-    watch: true,
+    watch: false,
+  });
+
+  const { data: allStakesData } = useContractReads({
+    contracts: Array.from(Array(stakeCount).keys()).map((stakeIndex) => ({
+      ...fenixContract(chain),
+      functionName: "stakeFor",
+      args: [address, BigNumber.from(stakeIndex)],
+    })),
+    cacheTime: 30_000,
+    watch: false,
   });
 
   useEffect(() => {
+    if (allStakesData) {
+      setAllStakes(allStakesData);
+    }
     if (readData?.[0] && readData?.[1] && readData?.[2]) {
       setStakeCount(readData[0].toNumber());
-      setEquityPoolSupply(readData[1]);
-      setEquityPoolTotalShares(readData[2]);
+      setEquityPoolSupply(Number(ethers.utils.formatUnits(readData[1] ?? 0)));
+      setEquityPoolTotalShares(Number(ethers.utils.formatUnits(readData[2] ?? 0)));
+      setRewardPoolSupply(Number(ethers.utils.formatUnits(readData[3] ?? 0)));
+      setCooldownUnlockTs(Number(readData[4] ?? 0));
     }
-  }, [readData]);
+  }, [allStakes, allStakesData, readData]);
 
   return (
     <Container>
@@ -57,8 +82,20 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
       <div className="md:hidden">
         <CardContainer className="max-w-2xl">
           <div className="flex flex-col space-y-4 primary-divider">
-            {Array.from(Array(stakeCount).keys()).map((stakeIndex) => (
-              <StakeCard key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
+            {allStakes.map((stake, index) => (
+              <>
+                {stake.status === stakeStatus && (
+                  <StakeCard
+                    key={index}
+                    stake={stake}
+                    stakeIndex={index}
+                    equityPoolSupply={equityPoolSupply}
+                    equityPoolTotalShares={equityPoolTotalShares}
+                    rewardPoolSupply={rewardPoolSupply}
+                    cooldownUnlockTs={cooldownUnlockTs}
+                  />
+                )}
+              </>
             ))}
           </div>
         </CardContainer>
@@ -70,8 +107,20 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
               <StakeRowHeaderFooter />
             </thead>
             <tbody className="divide-y secondary-divider">
-              {Array.from(Array(stakeCount).keys()).map((stakeIndex) => (
-                <StakeRow key={stakeIndex} stakeIndex={stakeIndex} stakeStatus={stakeStatus} />
+              {allStakes.map((stake, index) => (
+                <>
+                  {stake.status === stakeStatus && (
+                    <StakeRow
+                      key={index}
+                      stake={stake}
+                      stakeIndex={index}
+                      equityPoolSupply={equityPoolSupply}
+                      equityPoolTotalShares={equityPoolTotalShares}
+                      rewardPoolSupply={rewardPoolSupply}
+                      cooldownUnlockTs={cooldownUnlockTs}
+                    />
+                  )}
+                </>
               ))}
             </tbody>
           </table>

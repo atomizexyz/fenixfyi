@@ -3,39 +3,68 @@ import { createClient, configureChains, Chain } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { polygonMumbai, goerli, polygon } from "wagmi/chains";
+import { polygonMumbai, goerli, polygon, mainnet } from "wagmi/chains";
 
 import { pulseChain, x1Devnet } from "./chains";
 import { foundry } from "wagmi/chains";
 
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID as string;
+const quickNodeId = process.env.NEXT_PUBLIC_QUICK_NODE_ID as string;
+const quickNodeId1 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_1 as string;
 const chainNetwork = process.env.NEXT_PUBLIC_CHAIN_NETWORK as string;
 
 export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [polygon];
+    allChains = [polygon, mainnet];
     break;
-  case "localnet":
-    allChains = [foundry];
+  case "testnet":
+    allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
     break;
   default:
-    allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
+    allChains = [foundry];
     break;
 }
 
-const { chains, provider, webSocketProvider } = configureChains(allChains, [
-  alchemyProvider({ apiKey: alchemyId, priority: 0 }),
-  infuraProvider({ apiKey: infuraId, priority: 1 }),
-  publicProvider({ priority: 3 }),
-]);
+const { chains, provider, webSocketProvider } = configureChains(
+  allChains,
+  [
+    jsonRpcProvider({
+      rpc: (chain) => {
+        if (chain.id === mainnet.id) {
+          return {
+            http: `https://prettiest-powerful-sanctuary.quiknode.pro/${quickNodeId1}/`,
+            webSocket: `wss://prettiest-powerful-sanctuary.quiknode.pro/${quickNodeId1}/`,
+          };
+        } else if (chain.id === polygon.id) {
+          return {
+            http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
+            webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
+          };
+        } else if (chain.id === goerli.id) {
+          return {
+            http: `https://rpc.ankr.com/eth_goerli`,
+          };
+        } else {
+          return null;
+        }
+      },
+      priority: 0,
+    }),
+    infuraProvider({ apiKey: infuraId, priority: 1 }),
+    alchemyProvider({ apiKey: alchemyId, priority: 1 }),
+    publicProvider({ priority: 2 }),
+  ],
+  { pollingInterval: 10_000 }
+);
 
 export const client = createClient({
   autoConnect: true,

@@ -85,17 +85,21 @@ export const xenContract = (contractChain?: Chain) => {
 
     case localhost.id:
       return {
-        address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9" as Address,
+        address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" as Address,
         abi: XENCryptoABI,
         chainId: contractChain.id,
       };
     case mainnet.id:
     case pulseChain.id:
-    default:
       return {
         address: "0x06450dEe7FD2Fb8E39061434BAbCFC05599a6Fb8" as Address,
         abi: XENCryptoABI,
-        chainId: mainnet.id,
+        chainId: contractChain.id,
+      };
+    default:
+      return {
+        address: "" as Address,
+        abi: XENCryptoABI,
       };
   }
 };

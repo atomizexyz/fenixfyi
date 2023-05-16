@@ -33,26 +33,29 @@ const BurnXEN = () => {
   const [disabled, setDisabled] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [burnMaximum, setBurnMaximum] = useState<BigNumber>(BigNumber.from(0));
+  const [gasPrice, setGasPrice] = useState<BigNumber | null>();
+  const [gasLimit, setGasLimit] = useState<BigNumber | null>();
+  const [burnBn, setBurnBn] = useState<BigNumber>(BigNumber.from(0));
 
   const router = useRouter();
   const { address } = useAccount() as unknown as { address: Address };
   const { chain } = useNetwork() as unknown as { chain: Chain };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
   const { data: fenixBalance } = useBalance({
     address: address,
     token: fenixContract(chain).address,
-    watch: true,
+    staleTime: 20_000,
   });
   const { data: xenBalance } = useBalance({
     address: address,
     token: xenContract(chain).address,
-    watch: true,
+    staleTime: 20_000,
   });
   const { data: allowance } = useContractRead({
     ...xenContract(chain),
     functionName: "allowance",
     args: [address, fenixContract(chain).address],
-    watch: true,
+    cacheOnBlock: true,
   });
 
   const schema = yup
@@ -81,13 +84,13 @@ const BurnXEN = () => {
     resolver: yupResolver(schema),
   });
 
-  const { burnXENAmount } = watch() as { burnXENAmount: number };
+  const { burnXENAmount } = watch();
 
   const { config } = usePrepareContractWrite({
     address: fenixContract(chain).address,
     abi: FENIX_ABI,
     functionName: "burnXEN",
-    args: [ethers.utils.parseUnits((burnXENAmount || 0).toString(), fenixBalance?.decimals ?? 0)],
+    args: [burnBn],
     enabled: !disabled,
   });
   const { data, write } = useContractWrite({
@@ -112,17 +115,28 @@ const BurnXEN = () => {
   };
 
   useEffect(() => {
+    const floatBurnXENAmount = parseFloat(burnXENAmount);
+    if (!isNaN(floatBurnXENAmount) && floatBurnXENAmount > 1e-18) {
+      setBurnBn(ethers.utils.parseUnits(floatBurnXENAmount.toFixed(18)));
+    }
+
     if (xenBalance && allowance && xenBalance.value.gt(allowance)) {
       setBurnMaximum(allowance);
     } else {
       setBurnMaximum(xenBalance?.value ?? BigNumber.from(0));
     }
+    if (feeData?.gasPrice) {
+      setGasPrice(feeData.gasPrice);
+    }
+    if (config?.request?.gasLimit) {
+      setGasLimit(config.request.gasLimit);
+    }
     setDisabled(!isValid);
-  }, [allowance, burnMaximum, isValid, xenBalance]);
+  }, [allowance, burnMaximum, burnXENAmount, config, feeData, isValid, xenBalance]);
 
   return (
     <Container className="max-w-xl">
-      <PageHeader title="Burn XEN" subtitle="Burn you XEN and mint brand new FENIX" />
+      <PageHeader title="Burn XEN" subtitle="Burn your XEN and mint brand new FENIX" />
 
       <CardContainer>
         <form onSubmit={handleSubmit(onBurnSubmit)} className="space-y-6">
@@ -136,8 +150,8 @@ const BurnXEN = () => {
             setValue={setValue}
           />
           <dl className="divide-y secondary-divider">
-            <CountUpDatum title="New FENIX" value={burnXENAmount / 10_000} suffix=" FENIX" />
-            <CountUpDatum title="Liquid" value={Number(fenixBalance?.formatted)} suffix=" FENIX" />
+            <CountUpDatum title="New FENIX" value={burnXENAmount / 10_000} suffix=" FENIX" decimals={3} />
+            <CountUpDatum title="Liquid" value={Number(fenixBalance?.formatted)} suffix=" FENIX" decimals={3} />
           </dl>
 
           <div>
@@ -151,7 +165,7 @@ const BurnXEN = () => {
               Burn XEN
             </button>
           </div>
-          <GasEstimate gasPrice={feeData?.gasPrice} gasLimit={config?.request?.gasLimit} />
+          <GasEstimate gasPrice={gasPrice} gasLimit={gasLimit} />
         </form>
       </CardContainer>
     </Container>

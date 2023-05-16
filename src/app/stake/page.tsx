@@ -4,7 +4,7 @@ import "react-day-picker/dist/style.css";
 
 import { clsx } from "clsx";
 import { ErrorMessage } from "@hookform/error-message";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers, utils } from "ethers";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PageHeader, GasEstimate, BonusCalculator } from "@/components/ui";
 import { CardContainer, Container } from "@/components/containers";
@@ -32,12 +32,15 @@ import { FENIX_MAX_STAKE_LENGTH } from "@/utilities/constants";
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
 import { fenixContract } from "@/libraries/fenixContract";
 import { CountUpDatum } from "@/components/ui/datum";
+import { AlertInfo, AlertType, AlertWarn } from "@/components/ui/Alert";
+import { roundDown } from "@/utilities/helpers";
 
 export default function Stake() {
   const today = new Date();
   const tomorrow = addDays(today, 1);
   const maxStakeLengthDay = addDays(today, FENIX_MAX_STAKE_LENGTH);
 
+  const [alertType, setAlertType] = useState<AlertType | null>();
   const [month, setMonth] = useState<Date>(today);
   const [isLockMonth, setIsLockMonth] = useState<boolean>(true);
   const [disabled, setDisabled] = useState(true);
@@ -45,18 +48,22 @@ export default function Stake() {
   const [sizeBonus, setSizeBonus] = useState<number>(0);
   const [timeBonus, setTimeBonus] = useState<number>(0);
   const [subtotalBonus, setSubtotalBonus] = useState<number>(0);
-  const [totalBonus, setTotalBonus] = useState<number>(0);
   const [shareRate, setShareRate] = useState<BigNumber>(BigNumber.from(0));
   const [shares, setShares] = useState<number>(0);
+  const [equityPoolSupply, setEquityPoolSupply] = useState<number>(0);
+  const [equityPoolTotalShares, setEquityPoolTotalShares] = useState<number>(0);
+  const [projectedFENIX, setProjectedFENIX] = useState<number>(0);
+  const [totalBonusBn, setTotalBonusBn] = useState<BigNumber>(BigNumber.from(0));
+  const [startStakeBn, setStartStakeBn] = useState<BigNumber>(BigNumber.from(0));
 
   const router = useRouter();
   const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: true });
+  const { data: feeData } = useFeeData({ formatUnits: "gwei", watch: false, cacheTime: 60_000 });
   const { data: fenixBalance } = useBalance({
     address: address,
     token: fenixContract(chain).address,
-    watch: true,
+    staleTime: 20_000,
   });
 
   /*** FORM SETUP ***/
@@ -101,10 +108,7 @@ export default function Stake() {
     address: fenixContract(chain).address,
     abi: FENIX_ABI,
     functionName: "startStake",
-    args: [
-      ethers.utils.parseUnits(Number(startStakeAmount ?? 0).toString(), fenixBalance?.decimals),
-      startStakeDays ?? 0,
-    ],
+    args: [startStakeBn, startStakeDays ?? 0],
     enabled: !disabled,
   });
 
@@ -176,7 +180,7 @@ export default function Stake() {
       {
         ...fenixContract(chain),
         functionName: "calculateSizeBonus",
-        args: [ethers.utils.parseUnits(Number(startStakeAmount ?? 0).toString())],
+        args: [startStakeBn],
       },
       {
         ...fenixContract(chain),
@@ -186,12 +190,20 @@ export default function Stake() {
       {
         ...fenixContract(chain),
         functionName: "calculateBonus",
-        args: [ethers.utils.parseUnits(Number(startStakeAmount ?? 0).toString()), startStakeDays ?? 0],
+        args: [startStakeBn, startStakeDays ?? 0],
       },
       {
         ...fenixContract(chain),
         functionName: "calculateShares",
-        args: [ethers.utils.parseUnits(totalBonus.toString())],
+        args: [totalBonusBn],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolSupply",
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "equityPoolTotalShares",
       },
     ],
     onSuccess(data) {
@@ -200,14 +212,35 @@ export default function Stake() {
       setTimeBonus(Number(ethers.utils.formatUnits(data?.[2] ?? 0)));
       setSubtotalBonus(Number(ethers.utils.formatUnits(data?.[3] ?? 0)));
       setShares(Number(ethers.utils.formatUnits(data?.[4] ?? 0)));
+      setEquityPoolSupply(Number(ethers.utils.formatUnits(data?.[5] ?? 0)));
+      setEquityPoolTotalShares(Number(ethers.utils.formatUnits(data?.[6] ?? 0)));
     },
-    watch: true,
+    watch: false,
   });
 
   useEffect(() => {
+    const floatStartStakeAmount = parseFloat(startStakeAmount);
+    if (!isNaN(floatStartStakeAmount) && floatStartStakeAmount > 1e-12) {
+      setStartStakeBn(ethers.utils.parseUnits(floatStartStakeAmount.toFixed(12)));
+    }
+
+    const startStakeFENIX = Number(startStakeAmount ?? 0);
+    if (equityPoolTotalShares) {
+      const projectedPercentOfPool = shares / equityPoolTotalShares;
+      setProjectedFENIX(equityPoolSupply * projectedPercentOfPool);
+
+      if (startStakeFENIX < projectedFENIX) {
+        setAlertType(AlertType.Info);
+      } else {
+        setAlertType(AlertType.Error);
+      }
+    }
+
     if (subtotalBonus) {
-      const total = Number(startStakeAmount ?? 0) * subtotalBonus;
-      setTotalBonus(Number(total));
+      const startFENIX = parseFloat(ethers.utils.formatUnits(startStakeBn));
+      const total = startFENIX * subtotalBonus;
+      const totalBn = ethers.utils.parseUnits(total.toFixed(18));
+      setTotalBonusBn(totalBn);
     }
 
     if (isLockMonth && !isSameMonth(selectedFromDay(), month)) {
@@ -224,9 +257,36 @@ export default function Stake() {
     sizeBonus,
     timeBonus,
     subtotalBonus,
-    totalBonus,
     isValid,
+    equityPoolTotalShares,
+    equityPoolSupply,
+    shares,
+    projectedFENIX,
+    startStakeBn,
   ]);
+
+  const toggleAlertView = () => {
+    switch (alertType) {
+      case AlertType.Info:
+        return (
+          <AlertInfo
+            title={`Projected return: ${projectedFENIX.toFixed(5)} FENIX`}
+            description={
+              "Your stake is currently projected to return your principal; however, larger stakes in the pool may dilute your share."
+            }
+          />
+        );
+      case AlertType.Error:
+        return (
+          <AlertWarn
+            title={`Projected return: ${projectedFENIX.toFixed(5)} FENIX`}
+            description={
+              "Small and short stakes may not guarantee principal return. To break even, ensure you capture reward pools or account for penalties."
+            }
+          />
+        );
+    }
+  };
 
   return (
     <Container className="max-w-xl">
@@ -241,7 +301,7 @@ export default function Stake() {
             title="FENIX"
             description="Number of FENIX to stake"
             decimals={0}
-            value={ethers.utils.formatUnits(fenixBalance?.value ?? BigNumber.from(0))}
+            value={roundDown(Number(ethers.utils.formatUnits(fenixBalance?.value ?? BigNumber.from(0))), 12)}
             errorMessage={<ErrorMessage errors={errors} name="startStakeAmount" />}
             register={register("startStakeAmount")}
             setValue={setValue}
@@ -283,7 +343,7 @@ export default function Stake() {
               sizeBonus={sizeBonus}
               timeBonus={timeBonus}
               subtotal={subtotalBonus}
-              total={totalBonus}
+              total={Number(ethers.utils.formatUnits(totalBonusBn))}
               shareRate={Number(ethers.utils.formatUnits(shareRate))}
               shares={shares}
             />
@@ -291,6 +351,8 @@ export default function Stake() {
           <dl className="divide-y secondary-divider">
             <CountUpDatum title="You Will Receive" value={shares} decimals={6} suffix=" Shares" />
           </dl>
+
+          {toggleAlertView()}
 
           <button
             type="submit"

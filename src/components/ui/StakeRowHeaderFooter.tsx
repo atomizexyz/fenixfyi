@@ -18,7 +18,11 @@ export default function StakeRowHeaderFooter() {
         Penalty
       </th>
       <th scope="col" className="px-3 py-3.5 text-right align-text-top text-sm font-semibold primary-text">
-        Payout
+        Payout Now
+        <div className="text-xs tertiary-text"> FENIX </div>
+      </th>
+      <th scope="col" className="px-3 py-3.5 text-right align-text-top text-sm font-semibold primary-text">
+        Future Payout
         <div className="text-xs tertiary-text"> FENIX </div>
       </th>
       <th scope="col" className="px-3 py-3.5 text-center align-text-top text-sm font-semibold primary-text">

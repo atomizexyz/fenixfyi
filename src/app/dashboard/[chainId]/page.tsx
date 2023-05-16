@@ -53,7 +53,8 @@ const DashboardChainId = () => {
       setEquityPoolSupply(BigNumber.from(data?.[2] ?? 0));
       setRewardPoolSupply(BigNumber.from(data?.[3] ?? 0));
     },
-    watch: true,
+    watch: false,
+    cacheTime: 30_000,
   });
 
   useEffect(() => {

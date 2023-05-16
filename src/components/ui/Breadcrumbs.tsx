@@ -11,7 +11,7 @@ import { InjectedConnector } from "wagmi/dist/connectors/injected";
 
 export default function Breadcrumbs() {
   const pathname = usePathname();
-  const path = pathname.split("/").filter((item) => item !== "");
+  const path = pathname?.split("/").filter((item) => item !== "");
   const [token, setToken] = useState<any>(null);
   const [fenixBalance, setFenixBalance] = useState<any>(null);
 
@@ -20,7 +20,7 @@ export default function Breadcrumbs() {
   const { data: fenixData } = useBalance({
     address: address,
     token: fenixContract(chain).address,
-    watch: true,
+    staleTime: 120_000,
   });
 
   const { data: tokenData } = useToken({
@@ -45,7 +45,7 @@ export default function Breadcrumbs() {
               </Link>
             </div>
           </li>
-          {path.map((name, index) => {
+          {path?.map((name, index) => {
             const href = `/${path.slice(0, index + 1).join("/")}`;
 
             return (

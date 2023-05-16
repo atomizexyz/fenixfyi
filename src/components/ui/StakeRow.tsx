@@ -3,96 +3,78 @@
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { calculateProgress } from "@/utilities/helpers";
-import { Address, Chain, useAccount, useContractReads, useNetwork } from "wagmi";
-import { BigNumber, ethers } from "ethers";
-import { fenixContract } from "@/libraries/fenixContract";
-import { StakeStatus } from "@/models/stake";
+import { calculateEarlyPayout, calculateLatePayout, calculateProgress } from "@/utilities/helpers";
+import { Address, useAccount } from "wagmi";
+import { ethers } from "ethers";
+import { StakeStatus } from "@/models/stakeStatus";
 import CountUp from "react-countup";
 
 export const StakeRow: NextPage<{
   stakeIndex: number;
-  stakeStatus: StakeStatus;
-}> = ({ stakeIndex, stakeStatus }) => {
+  stake: any;
+  equityPoolSupply: number;
+  equityPoolTotalShares: number;
+  rewardPoolSupply: number;
+  cooldownUnlockTs: number;
+}> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0, cooldownUnlockTs }) => {
   const [startString, setStartString] = useState("-");
   const [endString, setEndString] = useState("-");
   const [principal, setPrincipal] = useState("-");
   const [shares, setShares] = useState("-");
   const [payout, setPayout] = useState("-");
+  const [futurePayout, setFuturePayout] = useState("-");
   const [projectedPayout, setProjectedPayout] = useState("-");
   const [penalty, setPenalty] = useState(0);
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
-  const [stake, setStake] = useState<any>();
 
-  const { chain } = useNetwork() as unknown as { chain: Chain };
   const { address } = useAccount() as unknown as { address: Address };
-  const { data: readsData } = useContractReads({
-    contracts: [
-      {
-        ...fenixContract(chain),
-        functionName: "stakeFor",
-        args: [address, BigNumber.from(stakeIndex)],
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "equityPoolSupply",
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "equityPoolTotalShares",
-      },
-    ],
-    watch: true,
-  });
-
-  const { data: rewardPayout } = useContractReads({
-    contracts: [
-      {
-        ...fenixContract(chain),
-        functionName: "calculateEarlyPayout",
-        args: [stake],
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "calculateLatePayout",
-        args: [stake],
-      },
-    ],
-  });
 
   useEffect(() => {
-    if (readsData?.[0]) {
-      setStake(readsData[0]);
-    }
+    const currentTs = Math.floor(Date.now() / 1000);
 
-    const equityPoolSupply = Number(ethers.utils.formatUnits(readsData?.[1] ?? 0));
-    const equityPoolTotalShares = Number(ethers.utils.formatUnits(readsData?.[2] ?? 0));
-
-    if (rewardPayout?.[0]) {
-      const earlyReward = Number(ethers.utils.formatUnits(rewardPayout?.[0] ?? 0));
-      const penalty = 1 - earlyReward;
+    const earlyPayout = calculateEarlyPayout(stake, currentTs);
+    if (earlyPayout) {
+      const penalty = 1 - earlyPayout;
       setPenalty(penalty);
     }
 
-    if (rewardPayout?.[1]) {
-      const lateReward = Number(ethers.utils.formatUnits(rewardPayout?.[1] ?? 0));
-      const penalty = 1 - lateReward;
+    const latePayout = calculateLatePayout(stake, currentTs);
+    if (latePayout) {
+      const penalty = 1 - latePayout;
       setPenalty(penalty);
     }
 
     if (stake && equityPoolTotalShares && equityPoolSupply) {
       setStartString(new Date(stake.startTs * 1000).toLocaleDateString());
       setEndString(new Date(stake.endTs * 1000).toLocaleDateString());
-      setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)).toFixed(2));
-      setShares(Number(ethers.utils.formatUnits(stake.shares)).toFixed(2));
+      setPrincipal(
+        Number(ethers.utils.formatUnits(stake.fenix)).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+      setShares(
+        Number(ethers.utils.formatUnits(stake.shares)).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
 
       if (equityPoolTotalShares > 0) {
         const shares = Number(ethers.utils.formatUnits(stake.shares));
         const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
         const payout = equityPayout * (1 - penalty);
-        setProjectedPayout(payout.toFixed(2));
+        setProjectedPayout(payout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+        let poolPayout = 0;
+        if (stake.endTs > cooldownUnlockTs) {
+          poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
+        }
+        setFuturePayout(
+          (equityPayout + poolPayout).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        );
       }
 
       const progressPct = calculateProgress(stake.startTs, stake.endTs);
@@ -101,9 +83,7 @@ export const StakeRow: NextPage<{
       setStatus(stake.status);
       setPayout(Number(ethers.utils.formatUnits(stake.payout)).toFixed(2));
     }
-  }, [clampedProgress, penalty, readsData, rewardPayout, stake]);
-
-  if (readsData?.[0] && readsData?.[0].status != stakeStatus) return null;
+  }, [clampedProgress, cooldownUnlockTs, equityPoolSupply, equityPoolTotalShares, penalty, rewardPoolSupply, stake]);
 
   const renderPenalty = (status: StakeStatus) => {
     switch (status) {
@@ -156,6 +136,16 @@ export const StakeRow: NextPage<{
     }
   };
 
+  const renderFuturePayout = (status: StakeStatus) => {
+    switch (status) {
+      case StakeStatus.END:
+      case StakeStatus.DEFER:
+        return <>{payout}</>;
+      default:
+        return <>{futurePayout}</>;
+    }
+  };
+
   return (
     <tr>
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">{startString}</td>
@@ -164,6 +154,9 @@ export const StakeRow: NextPage<{
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{shares}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPenalty(status)}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPayout(status)}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">
+        {renderFuturePayout(status)}
+      </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text font-mono">{renderProgress(status)}</td>
       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
         <div className="flex space-x-4">

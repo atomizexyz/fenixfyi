@@ -1,5 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import { UTC_TIME, ONE_DAY_TS, ONE_EIGHTY_DAYS_TS, FENIX_MAX_STAKE_LENGTH } from "./constants";
+import { StakeStatus } from "@/models/stakeStatus";
 
 export const truncateAddress = (address: string) => {
   if (address == undefined) return "";
@@ -35,22 +36,27 @@ export const calculateProgress = (startTs: number, endTs: number) => {
   return clamp(progress, 0, 1);
 };
 
-export const calculatePenalty = (startTs: number, endTs: number, term: number) => {
-  const todayTs = Math.floor(new Date().getTime() / 1000);
-  if (todayTs > endTs) return latePayoutPeantly(todayTs, endTs);
-  return earlyPayoutPenalty(todayTs, startTs, term);
-};
+export const calculateEarlyPayout = (stake: any, blockTs: number) => {
+  if (blockTs < stake.startTs || stake.status != StakeStatus.ACTIVE) return null;
+  if (blockTs > stake.endTs) return null;
 
-const earlyPayoutPenalty = (todayTs: number, startTs: number, term: number) => {
-  const termDelta = todayTs - startTs;
-  const scaleTerm = term * ONE_DAY_TS;
+  const termDelta = blockTs - stake.startTs;
+  const scaleTerm = stake.term * ONE_DAY_TS;
   const ratio = termDelta / scaleTerm;
-  return 1 - Math.pow(ratio, 2);
+  return Math.pow(ratio, 2);
 };
 
-const latePayoutPeantly = (todayTs: number, endTs: number) => {
-  const termDelta = todayTs - endTs;
+export const calculateLatePayout = (stake: any, blockTs: number) => {
+  if (blockTs < stake.startTs || stake.status != StakeStatus.ACTIVE) return null;
+  if (blockTs < stake.endTs) return null;
+
+  const termDelta = blockTs - stake.endTs;
   if (termDelta > ONE_EIGHTY_DAYS_TS) return 0;
   const ratio = termDelta / ONE_EIGHTY_DAYS_TS;
-  return Math.pow(ratio, 3);
+  return 1 - Math.pow(ratio, 3);
+};
+
+export const roundDown = (num: number, decimalPlaces: number = 18): number => {
+  const factor: number = Math.pow(10, decimalPlaces);
+  return Math.floor(num * factor) / factor;
 };
