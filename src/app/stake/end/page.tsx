@@ -94,6 +94,21 @@ export default function StakeAddressIndexEnd() {
     cacheTime: 10_000,
   });
 
+  const { data: rewardPayout } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "calculateEarlyPayout",
+        args: [stake],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateLatePayout",
+        args: [stake],
+      },
+    ],
+  });
+
   const {
     handleSubmit,
     formState: { errors, isValid },

@@ -29,6 +29,7 @@ export const StakeCard: NextPage<{
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
+  const [stake, setStake] = useState<any>();
 
   const { address } = useAccount() as unknown as { address: Address };
 

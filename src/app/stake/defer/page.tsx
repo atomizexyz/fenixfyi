@@ -48,6 +48,7 @@ const StakeAddressIndexDefer = () => {
   const [gasPrice, setGasPrice] = useState<BigNumber | null>();
   const [gasLimit, setGasLimit] = useState<BigNumber | null>();
 
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const address = searchParams?.get("address") as unknown as Address;
@@ -97,6 +98,21 @@ const StakeAddressIndexDefer = () => {
       },
     ],
     cacheTime: 10_000,
+  });
+
+  const { data: rewardPayout } = useContractReads({
+    contracts: [
+      {
+        ...fenixContract(chain),
+        functionName: "calculateEarlyPayout",
+        args: [stake],
+      },
+      {
+        ...fenixContract(chain),
+        functionName: "calculateLatePayout",
+        args: [stake],
+      },
+    ],
   });
 
   const schema = yup
