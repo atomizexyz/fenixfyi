@@ -28,24 +28,8 @@ export const StakeRow: NextPage<{
   const [progress, setProgress] = useState<string>("0%");
   const [clampedProgress, setClampedProgress] = useState(0);
   const [status, setStatus] = useState(0);
-  const [stake, setStake] = useState<any>();
 
   const { address } = useAccount() as unknown as { address: Address };
-
-  const { data: rewardPayout } = useContractReads({
-    contracts: [
-      {
-        ...fenixContract(chain),
-        functionName: "calculateEarlyPayout",
-        args: [stake],
-      },
-      {
-        ...fenixContract(chain),
-        functionName: "calculateLatePayout",
-        args: [stake],
-      },
-    ],
-  });
 
   useEffect(() => {
     const currentTs = Math.floor(Date.now() / 1000);
