@@ -9,22 +9,23 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { polygonMumbai, goerli, polygon, mainnet } from "wagmi/chains";
+import { polygonMumbai, goerli, polygon, mainnet, bsc } from "wagmi/chains";
 
 import { pulseChain, x1Devnet } from "./chains";
 import { foundry } from "wagmi/chains";
 
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID as string;
-const quickNodeId = process.env.NEXT_PUBLIC_QUICK_NODE_ID as string;
+const quickNodeId137 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_137 as string;
 const quickNodeId1 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_1 as string;
+const quickNodeId56 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_56 as string;
 const chainNetwork = process.env.NEXT_PUBLIC_CHAIN_NETWORK as string;
 
 export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [polygon, mainnet];
+    allChains = [polygon, mainnet, bsc];
     break;
   case "testnet":
     allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
@@ -46,8 +47,13 @@ const { chains, provider, webSocketProvider } = configureChains(
           };
         } else if (chain.id === polygon.id) {
           return {
-            http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
-            webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId}/`,
+            http: `https://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId137}/`,
+            webSocket: `wss://still-autumn-feather.matic.discover.quiknode.pro/${quickNodeId137}/`,
+          };
+        } else if (chain.id === bsc.id) {
+          return {
+            http: `https://side-summer-silence.bsc.quiknode.pro/${quickNodeId56}/`,
+            webSocket: `wss://side-summer-silence.bsc.quiknode.pro/${quickNodeId56}/`,
           };
         } else if (chain.id === goerli.id) {
           return {
