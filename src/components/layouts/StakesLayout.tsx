@@ -8,7 +8,7 @@ import { fenixContract } from "@/libraries/fenixContract";
 import { StakeStatus } from "@/models/stakeStatus";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { StakeRowTotalFooter } from "../ui/StakeRowTotalFooter";
+import { StakeStats } from "../ui/StakeStats";
 
 export interface StakeLayoutDatum {
   title: string;
@@ -79,6 +79,20 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
 
   return (
     <Container>
+      {allStakes.length > 0 && (
+        <>
+          <PageHeader title={"Stats"} subtitle={`Stats for ${title}`} />
+          <StakeStats
+            allStakes={allStakes}
+            stakeStatus={stakeStatus}
+            equityPoolTotalShares={equityPoolTotalShares}
+            equityPoolSupply={equityPoolSupply}
+            rewardPoolSupply={rewardPoolSupply}
+            cooldownUnlockTs={cooldownUnlockTs}
+          />
+        </>
+      )}
+
       <PageHeader title={title} subtitle={subtitle} />
       <div className="md:hidden">
         <CardContainer className="max-w-2xl">
@@ -124,18 +138,6 @@ export const StakesLayout: NextPage<StakeLayoutDatum> = ({ title, subtitle, stak
                 </>
               ))}
             </tbody>
-            {allStakes.length > 0 && (
-              <tfoot>
-                <StakeRowTotalFooter
-                  allStakes={allStakes}
-                  stakeStatus={stakeStatus}
-                  equityPoolTotalShares={equityPoolTotalShares}
-                  equityPoolSupply={equityPoolSupply}
-                  rewardPoolSupply={rewardPoolSupply}
-                  cooldownUnlockTs={cooldownUnlockTs}
-                />
-              </tfoot>
-            )}
           </table>
         </CardContainer>
       </div>

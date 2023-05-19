@@ -5,8 +5,15 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { StakeStatus } from "@/models/stakeStatus";
 import { calculateEarlyPayout, calculateLatePayout } from "@/utilities/helpers";
+import { set } from "date-fns";
 
-export const StakeRowTotalFooter: NextPage<{
+interface NameStat {
+  name: string;
+  units: string;
+  stat: string;
+}
+
+export const StakeStats: NextPage<{
   allStakes: any[];
   stakeStatus: StakeStatus;
   equityPoolTotalShares: number;
@@ -14,10 +21,7 @@ export const StakeRowTotalFooter: NextPage<{
   rewardPoolSupply: number;
   cooldownUnlockTs: number;
 }> = ({ allStakes, stakeStatus, equityPoolTotalShares, equityPoolSupply, rewardPoolSupply, cooldownUnlockTs }) => {
-  const [totalPrincipals, setTotalPrincipals] = useState("-");
-  const [totalShares, setTotalShares] = useState("-");
-  const [totalPayouts, setTotalPayouts] = useState("-");
-  const [totalFuturePayouts, setTotalFuturePayouts] = useState("-");
+  const [stats, setStats] = useState<NameStat[]>([]);
 
   useEffect(() => {
     let tmpTotalPrincipals = 0;
@@ -73,47 +77,56 @@ export const StakeRowTotalFooter: NextPage<{
       }
     });
 
-    setTotalFuturePayouts(
-      tmpTotalFuturePayouts.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    );
-
-    setTotalShares(
-      tmpTotalShares.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    );
-
-    setTotalPrincipals(
-      tmpTotalPrincipals.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    );
-
-    setTotalPayouts(
-      tmpTotalPayouts.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    );
+    const stats: NameStat[] = [
+      {
+        name: "Total Principal",
+        units: "FENIX",
+        stat: tmpTotalPrincipals.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      },
+      {
+        name: "Total Shares",
+        units: "",
+        stat: tmpTotalShares.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      },
+      {
+        name: "Total Payout Now",
+        units: "FENIX",
+        stat: tmpTotalPayouts.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      },
+      {
+        name: "Total Future Payouts",
+        units: "FENIX",
+        stat: tmpTotalFuturePayouts.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      },
+    ];
+    setStats(stats);
   }, [allStakes, cooldownUnlockTs, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply, stakeStatus]);
 
   return (
-    <tr>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">Total:</td>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6"></td>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6"></td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalPrincipals}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalShares}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text"></td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalPayouts}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalFuturePayouts}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text"></td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text"></td>
-    </tr>
+    <div>
+      <dl className="mb-5 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((item) => (
+          <div key={item.name} className="overflow-hidden rounded-lg primary-card px-4 py-5 shadow sm:p-">
+            <dt className="truncate text-sm font-medium primary-text flex justify-between">
+              {item.name}
+              <div className="inline text-xs tertiary-text"> {item.units} </div>
+            </dt>
+            <dd className="mt-1 text-2xl font-semibold tracking-tight secondary-text numerical-data ">{item.stat}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 };

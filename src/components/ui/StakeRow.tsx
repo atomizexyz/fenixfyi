@@ -156,9 +156,9 @@ export const StakeRow: NextPage<{
 
   return (
     <tr>
-      <td className="whitespace-nowrap py-4 text-sm primary-text">{startString}</td>
-      <td className="whitespace-nowrap px-2 py-4 text-sm primary-text">{endString}</td>
-      <td className="whitespace-nowrap px-2 py-4 text-sm primary-text numerical-data">{term}</td>
+      <td className="whitespace-nowrap py-4 text-sm secondary-text">{startString}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text">{endString}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">{term}</td>
 
       <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">{principal}</td>
       <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">{shares}</td>
