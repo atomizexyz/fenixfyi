@@ -156,20 +156,20 @@ export const StakeRow: NextPage<{
 
   return (
     <tr>
-      <td className="whitespace-nowrap py-4 pl-4 text-sm primary-text">{startString}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text">{endString}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{term}</td>
+      <td className="whitespace-nowrap py-4 text-sm primary-text">{startString}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm primary-text">{endString}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm primary-text numerical-data">{term}</td>
 
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{principal}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{shares}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPenalty(status)}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPayout(status)}</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">{principal}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">{shares}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">{renderPenalty(status)}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">{renderPayout(status)}</td>
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text numerical-data">
         {renderFuturePayout(status)}
       </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text font-mono">{renderProgress(status)}</td>
-      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-        <div className="flex space-x-4">
+      <td className="whitespace-nowrap px-2 py-4 text-sm secondary-text font-mono">{renderProgress(status)}</td>
+      <td className="relative whitespace-nowrap py-4 text-right text-sm font-medium sm:pr-6">
+        <div className="flex space-x-2">
           {status !== StakeStatus.END && (
             <Link href={`/stake/end?stakeIndex=${stakeIndex}`} className="primary-link">
               End
