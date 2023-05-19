@@ -13,24 +13,13 @@ export const StakeRowTotalFooter: NextPage<{
   equityPoolSupply: number;
   rewardPoolSupply: number;
   cooldownUnlockTs: number;
-}> = ({
-  allStakes,
-  stakeStatus,
-  equityPoolTotalShares,
-  equityPoolSupply,
-  rewardPoolSupply,
-  cooldownUnlockTs,
-}) => {
+}> = ({ allStakes, stakeStatus, equityPoolTotalShares, equityPoolSupply, rewardPoolSupply, cooldownUnlockTs }) => {
   const [totalPrincipals, setTotalPrincipals] = useState("-");
   const [totalShares, setTotalShares] = useState("-");
   const [totalPayouts, setTotalPayouts] = useState("-");
   const [totalFuturePayouts, setTotalFuturePayouts] = useState("-");
 
   useEffect(() => {
-    calculateSums();
-  }, [allStakes]);
-
-  const calculateSums = () => {
     let tmpTotalPrincipals = 0;
     let tmpTotalShares = 0;
     let tmpTotalPayouts = 0;
@@ -65,16 +54,14 @@ export const StakeRowTotalFooter: NextPage<{
 
           if (equityPoolTotalShares > 0) {
             const shares = Number(ethers.utils.formatUnits(stake.shares));
-            const equityPayout =
-              (shares / equityPoolTotalShares) * equityPoolSupply;
+            const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
             const payout = equityPayout * (1 - penalty);
             tmpTotalPayouts += payout;
           }
 
           // Total Future Payouts
           const shares = Number(ethers.utils.formatUnits(stake.shares));
-          const equityPayout =
-            (shares / equityPoolTotalShares) * equityPoolSupply;
+          const equityPayout = (shares / equityPoolTotalShares) * equityPoolSupply;
 
           let poolPayout = 0;
           if (stake.endTs > cooldownUnlockTs) {
@@ -113,27 +100,18 @@ export const StakeRowTotalFooter: NextPage<{
         maximumFractionDigits: 2,
       })
     );
-  };
+  }, [allStakes, cooldownUnlockTs, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply, stakeStatus]);
 
   return (
     <tr>
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">Total:</td>
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6"></td>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">
-        Total:
-      </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">
-        {totalPrincipals}
-      </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">
-        {totalShares}
-      </td>
+      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6"></td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalPrincipals}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalShares}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm primary-text"></td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">
-        {totalPayouts}
-      </td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">
-        {totalFuturePayouts}
-      </td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalPayouts}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{totalFuturePayouts}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm primary-text"></td>
       <td className="whitespace-nowrap px-3 py-4 text-sm primary-text"></td>
     </tr>
