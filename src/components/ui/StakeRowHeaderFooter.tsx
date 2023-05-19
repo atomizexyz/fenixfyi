@@ -7,6 +7,10 @@ export default function StakeRowHeaderFooter() {
       <th scope="col" className="py-3.5 pl-4 pr-3 text-left align-text-top text-sm font-semibold primary-text sm:pl-6">
         End
       </th>
+      <th scope="col" className="py-3.5 pl-4 pr-3 text-left align-text-top text-sm font-semibold primary-text sm:pl-6">
+        Term
+        <div className="text-xs tertiary-text"> DAYS </div>
+      </th>
       <th scope="col" className="px-3 py-3.5 text-right align-text-top text-sm font-semibold primary-text">
         Principal
         <div className="text-xs tertiary-text"> FENIX </div>

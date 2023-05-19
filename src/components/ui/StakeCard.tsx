@@ -18,6 +18,7 @@ export const StakeCard: NextPage<{
   rewardPoolSupply: number;
   cooldownUnlockTs: number;
 }> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0, cooldownUnlockTs }) => {
+  const [term, setTerm] = useState<number>(0);
   const [startMs, setStartMs] = useState<Date>(new Date());
   const [endMs, setEndMs] = useState<Date>(new Date());
   const [principal, setPrincipal] = useState<number>(0);
@@ -33,6 +34,7 @@ export const StakeCard: NextPage<{
   const { address } = useAccount() as unknown as { address: Address };
 
   useEffect(() => {
+    setTerm(stake.term);
     setStartMs(new Date(stake.startTs * 1000));
     setEndMs(new Date(stake.endTs * 1000));
     setPrincipal(Number(ethers.utils.formatUnits(stake.fenix)));
@@ -134,6 +136,7 @@ export const StakeCard: NextPage<{
       <dl className="divide-y secondary-divider">
         <DateDatum title="Start" value={startMs} />
         <DateDatum title="End" value={endMs} />
+        <CountUpDatum title="Term" value={term} description="DAYS" />
         <CountUpDatum title="Principal" value={principal} description="FENIX" decimals={2} />
         <CountUpDatum title="Shares" value={shares} decimals={2} />
         {renderPenalty(status)}

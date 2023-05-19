@@ -17,6 +17,7 @@ export const StakeRow: NextPage<{
   rewardPoolSupply: number;
   cooldownUnlockTs: number;
 }> = ({ stakeIndex, stake, equityPoolSupply, equityPoolTotalShares, rewardPoolSupply = 0, cooldownUnlockTs }) => {
+  const [term, setTerm] = useState("-");
   const [startString, setStartString] = useState("-");
   const [endString, setEndString] = useState("-");
   const [principal, setPrincipal] = useState("-");
@@ -47,18 +48,21 @@ export const StakeRow: NextPage<{
     }
 
     if (stake && equityPoolTotalShares && equityPoolSupply) {
+      setTerm(stake.term);
       setStartString(new Date(stake.startTs * 1000).toLocaleDateString());
       setEndString(new Date(stake.endTs * 1000).toLocaleDateString());
+      const principalNumber = Number(ethers.utils.formatUnits(stake.fenix));
       setPrincipal(
-        Number(ethers.utils.formatUnits(stake.fenix)).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+        principalNumber.toLocaleString(undefined, {
+          minimumFractionDigits: principalNumber > 1000 ? 0 : 2,
+          maximumFractionDigits: principalNumber > 1000 ? 0 : 2,
         })
       );
+      const sharesNumber = Number(ethers.utils.formatUnits(stake.shares));
       setShares(
-        Number(ethers.utils.formatUnits(stake.shares)).toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+        sharesNumber.toLocaleString(undefined, {
+          minimumFractionDigits: sharesNumber > 1000 ? 0 : 2,
+          maximumFractionDigits: sharesNumber > 1000 ? 0 : 2,
         })
       );
 
@@ -72,8 +76,12 @@ export const StakeRow: NextPage<{
         if (stake.endTs > cooldownUnlockTs) {
           poolPayout = (shares / equityPoolTotalShares) * rewardPoolSupply;
         }
+        const futurePayoutNumber = equityPayout + poolPayout;
         setFuturePayout(
-          (equityPayout + poolPayout).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          futurePayoutNumber.toLocaleString(undefined, {
+            minimumFractionDigits: futurePayoutNumber > 1000 ? 0 : 2,
+            maximumFractionDigits: futurePayoutNumber > 1000 ? 0 : 2,
+          })
         );
       }
 
@@ -148,8 +156,10 @@ export const StakeRow: NextPage<{
 
   return (
     <tr>
-      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium primary-text sm:pl-6">{startString}</td>
+      <td className="whitespace-nowrap py-4 pl-4 text-sm primary-text">{startString}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm primary-text">{endString}</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm primary-text numerical-data">{term}</td>
+
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{principal}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{shares}</td>
       <td className="whitespace-nowrap px-3 py-4 text-sm secondary-text numerical-data">{renderPenalty(status)}</td>
