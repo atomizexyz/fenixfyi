@@ -5,7 +5,6 @@ import { Address } from "@wagmi/core";
 import { BigNumber } from "ethers";
 import { Chain, useContractRead, useNetwork } from "wagmi";
 import { fenixContract } from "@/libraries/fenixContract";
-import { watchContractEvent } from "@wagmi/core";
 import { differenceInSeconds } from "date-fns";
 
 export interface UserMint {
@@ -72,15 +71,7 @@ export const FenixProvider = ({ children }: any) => {
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   const { chain } = useNetwork() as unknown as { chain: Chain };
-  const unwatch = watchContractEvent(
-    {
-      ...fenixContract(chain),
-      eventName: "FlushRewardPool",
-    },
-    (_reward) => {
-      setShowConfetti(true);
-    }
-  );
+
   const { data: cooldownUnlockTs } = useContractRead({
     ...fenixContract(chain),
     functionName: "cooldownUnlockTs",

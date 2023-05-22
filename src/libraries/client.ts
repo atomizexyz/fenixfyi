@@ -9,9 +9,21 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { polygonMumbai, goerli, polygon, mainnet, bsc } from "wagmi/chains";
+import {
+  polygonMumbai,
+  goerli,
+  polygon,
+  mainnet,
+  bsc,
+  avalanche,
+  moonbeam,
+  evmos,
+  dogechain,
+  okc,
+  fantom,
+} from "wagmi/chains";
 
-import { pulseChain, x1Devnet } from "./chains";
+import { ethereumPoW, pulseChain, x1Devnet } from "./chains";
 import { foundry } from "wagmi/chains";
 
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
@@ -25,7 +37,7 @@ export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [polygon, mainnet, bsc];
+    allChains = [polygon, mainnet, bsc, avalanche, moonbeam, evmos, fantom, dogechain, okc, ethereumPoW];
     break;
   case "testnet":
     allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
@@ -35,7 +47,7 @@ switch (chainNetwork) {
     break;
 }
 
-const { chains, provider, webSocketProvider } = configureChains(
+export const { chains, provider, webSocketProvider } = configureChains(
   allChains,
   [
     jsonRpcProvider({
