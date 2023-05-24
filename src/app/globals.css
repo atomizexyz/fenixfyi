@@ -208,3 +208,32 @@
     background-color: #000000;
   }
 }
+
+/* CryptoCell Include  */
+#fenix-iframe {
+  position: relative;
+  width: 100%;
+  padding-bottom: 380px;
+}
+
+@media (max-width: 1024px) {
+  #fenix-iframe {
+    padding-bottom: 100vh;
+  }
+}
+
+@media (max-width: 414px) {
+  #fenix-iframe {
+    padding-bottom: 100vh;
+  }
+}
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  bottom: 0;
+  height: 100%;
+  border: none;
+}

@@ -36,6 +36,12 @@ const Dashboard = () => {
           </table>
         </CardContainer>
       </div>
+      <PageHeader title="Fenix Burn Data (Ethereum)" />
+      <CardContainer>
+        <div id="fenix-iframe">
+          <iframe src="https://xenturbo.io/dashboard/fenix"></iframe>
+        </div>
+      </CardContainer>
     </Container>
   );
 };
