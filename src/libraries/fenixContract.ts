@@ -12,6 +12,7 @@ import {
   polygon,
   polygonMumbai,
   dogechain,
+  okc,
 } from "wagmi/chains";
 
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
@@ -57,6 +58,7 @@ export const fenixContract = (contractChain?: Chain) => {
     case moonbeam.id:
     case fantom.id:
     case dogechain.id:
+    case okc.id:
       return {
         address: "0xC3e8abfA04B0EC442c2A4D65699a40F7FcEd8055" as Address,
         abi: FENIX_ABI,
