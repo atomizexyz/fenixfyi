@@ -66,6 +66,11 @@ export const fenixContract = (contractChain?: Chain) => {
         chainId: contractChain.id,
       };
     case evmos.id:
+      return {
+        address: "0x7c27d2D2044FE90Cb98f5ECdc235839FdE740124" as Address,
+        abi: FENIX_ABI,
+        chainId: contractChain.id,
+      };
     default:
       return {
         address: "" as Address,
