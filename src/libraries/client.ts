@@ -31,6 +31,8 @@ const infuraId = process.env.NEXT_PUBLIC_INFURA_ID as string;
 const quickNodeId137 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_137 as string;
 const quickNodeId1 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_1 as string;
 const quickNodeId56 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_56 as string;
+const quickNodeId43114 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_43114 as string;
+const quickNodeId250 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_250 as string;
 const chainNetwork = process.env.NEXT_PUBLIC_CHAIN_NETWORK as string;
 
 export let allChains: Chain[];
@@ -66,6 +68,16 @@ export const { chains, provider, webSocketProvider } = configureChains(
           return {
             http: `https://side-summer-silence.bsc.quiknode.pro/${quickNodeId56}/`,
             webSocket: `wss://side-summer-silence.bsc.quiknode.pro/${quickNodeId56}/`,
+          };
+        } else if (chain.id === avalanche.id) {
+          return {
+            http: `https://frequent-sleek-sea.avalanche-mainnet.quiknode.pro/${quickNodeId43114}/ext/bc/C/rpc/`,
+            webSocket: `wss://frequent-sleek-sea.avalanche-mainnet.quiknode.pro/${quickNodeId43114}/ext/bc/C/ws/`,
+          };
+        } else if (chain.id === fantom.id) {
+          return {
+            http: `https://ultra-late-field.fantom.quiknode.pro/${quickNodeId250}/`,
+            webSocket: `wss://ultra-late-field.fantom.quiknode.pro/${quickNodeId250}/`,
           };
         } else if (chain.id === goerli.id) {
           return {
