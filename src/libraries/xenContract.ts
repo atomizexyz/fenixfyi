@@ -16,7 +16,7 @@ import {
 } from "wagmi/chains";
 
 import XENCryptoABI from "@/models/abi/XENCryptoABI";
-import { pulseChain, x1Devnet } from "@/libraries/chains";
+import { ethereumPoW, pulseChain, x1Devnet } from "@/libraries/chains";
 
 export const xenContract = (contractChain?: Chain) => {
   switch (contractChain?.id) {
@@ -65,6 +65,7 @@ export const xenContract = (contractChain?: Chain) => {
     case bsc.id:
     case polygon.id:
     case evmos.id:
+    case ethereumPoW.id:
       return {
         address: "0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e" as Address,
         abi: XENCryptoABI,
