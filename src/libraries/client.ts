@@ -83,6 +83,10 @@ export const { chains, provider, webSocketProvider } = configureChains(
           return {
             http: `https://rpc.ankr.com/eth_goerli`,
           };
+        } else if (chain.id === evmos.id) {
+          return {
+            http: `https://evmos-evm.publicnode.com/`,
+          };
         } else {
           return null;
         }
@@ -91,7 +95,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
     }),
     infuraProvider({ apiKey: infuraId, priority: 1 }),
     alchemyProvider({ apiKey: alchemyId, priority: 1 }),
-    publicProvider({ priority: 2 }),
+    publicProvider({ priority: 1 }),
   ],
   { pollingInterval: 10_000 }
 );
