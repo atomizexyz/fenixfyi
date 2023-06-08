@@ -1,5 +1,4 @@
 import { IconBrandGithub, IconBrandTelegram, IconBrandTwitter } from "@tabler/icons-react";
-import { SVGProps } from "react";
 
 export const navigation = {
   header: [
