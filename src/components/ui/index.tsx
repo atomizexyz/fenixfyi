@@ -3,7 +3,6 @@ import Footer from "./Footer";
 import Header from "./Header";
 import ConnectButton from "./ConnectButton";
 import PageHeader from "./PageHeader";
-import ChainDropdown from "./ChainDropdown";
 import Breadcrumbs from "./Breadcrumbs";
 import GasEstimate from "./GasEstimate";
 import StakeRowHeaderFooter from "./StakeRowHeaderFooter";
@@ -19,7 +18,6 @@ export {
   Header,
   ConnectButton,
   PageHeader,
-  ChainDropdown,
   Breadcrumbs,
   StakeRowHeaderFooter,
   GasEstimate,
