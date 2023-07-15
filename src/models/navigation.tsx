@@ -11,7 +11,7 @@ export const navigation = {
     { name: "Litepaper", href: "http://github.com/atomizexyz/litepaper" },
     { name: "Audit", href: "https://skynet.certik.com/projects/fenix" },
     { name: "Brand", href: "https://brand.fenix.fyi" },
-    { name: "Merch", href: "https://xenmerch.store/product-tag/fenix" },
+    { name: "Merch", href: "https://xenmerch.store/collection/fenix/" },
     { name: "Code", href: "https://github.com/atomizexyz/fenixfyi" },
   ],
   social: [
