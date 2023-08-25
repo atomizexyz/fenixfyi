@@ -55,8 +55,8 @@ switch (chainNetwork) {
       dogechain,
       okc,
       ethereumPoW,
-      // pulsechain,
       base,
+      pulsechain,
     ];
     break;
   case "testnet":

@@ -15,6 +15,7 @@ import {
   okc,
   base,
   pulsechainV4,
+  pulsechain,
 } from "@wagmi/chains";
 
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
@@ -62,6 +63,7 @@ export const fenixContract = (contractChain?: Chain) => {
     case dogechain.id:
     case okc.id:
     case ethereumPoW.id:
+    case pulsechain.id:
       return {
         address: "0xC3e8abfA04B0EC442c2A4D65699a40F7FcEd8055" as Address,
         abi: FENIX_ABI,
