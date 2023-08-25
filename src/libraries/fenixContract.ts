@@ -13,10 +13,12 @@ import {
   polygonMumbai,
   dogechain,
   okc,
-} from "wagmi/chains";
+  base,
+  pulsechainV4,
+} from "@wagmi/chains";
 
 import FENIX_ABI from "@/models/abi/FENIX_ABI";
-import { ethereumPoW, pulseChain, x1Devnet } from "@/libraries/chains";
+import { ethereumPoW, x1Devnet } from "@/libraries/chains";
 
 export const fenixContract = (contractChain?: Chain) => {
   switch (contractChain?.id) {
@@ -45,7 +47,7 @@ export const fenixContract = (contractChain?: Chain) => {
         abi: FENIX_ABI,
         chainId: contractChain.id,
       };
-    case pulseChain.id:
+    case pulsechainV4.id:
       return {
         address: "0xd2ac6954b3f08f7024E90CFAe252fb8c06c0a868" as Address,
         abi: FENIX_ABI,
@@ -68,6 +70,12 @@ export const fenixContract = (contractChain?: Chain) => {
     case evmos.id:
       return {
         address: "0x7c27d2D2044FE90Cb98f5ECdc235839FdE740124" as Address,
+        abi: FENIX_ABI,
+        chainId: contractChain.id,
+      };
+    case base.id:
+      return {
+        address: "0x3089701078f5daf38e7e65a39d7554faa5196d51" as Address,
         abi: FENIX_ABI,
         chainId: contractChain.id,
       };

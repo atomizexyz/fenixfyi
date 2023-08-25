@@ -12,6 +12,7 @@ import {
   PolygonIcon,
   PulseChainIcon,
   X1Icon,
+  BaseIcon,
 } from "@/components/ui/ChainIcons";
 import { IconHome } from "@tabler/icons-react";
 
@@ -28,10 +29,11 @@ export const chainIcons: Record<number, JSX.Element> = {
   97: <BinanceSmartChainIcon />,
   137: <PolygonIcon />,
   250: <FantomIcon />,
-  942: <PulseChainIcon />,
+  943: <PulseChainIcon />,
   1284: <MoonbeamIcon />,
   1337: <IconHome className="h-5 w-5" />,
   2000: <DogeChainIcon />,
+  8453: <BaseIcon />,
   9001: <EVMOSIcon />,
   10001: <EthereumPOWIcon />,
   43114: <AvalancheIcon />,

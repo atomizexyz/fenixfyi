@@ -9,6 +9,9 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+
+import { ethereumPoW, x1Devnet } from "./chains";
+
 import {
   polygonMumbai,
   goerli,
@@ -21,10 +24,11 @@ import {
   dogechain,
   okc,
   fantom,
-} from "wagmi/chains";
-
-import { ethereumPoW, pulseChain, x1Devnet } from "./chains";
-import { foundry } from "wagmi/chains";
+  foundry,
+  pulsechainV4,
+  base,
+  pulsechain,
+} from "@wagmi/chains";
 
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID as string;
@@ -33,16 +37,30 @@ const quickNodeId1 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_1 as string;
 const quickNodeId56 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_56 as string;
 const quickNodeId43114 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_43114 as string;
 const quickNodeId250 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_250 as string;
+const quickNodeId8453 = process.env.NEXT_PUBLIC_QUICK_NODE_ID_8453 as string;
 const chainNetwork = process.env.NEXT_PUBLIC_CHAIN_NETWORK as string;
 
 export let allChains: Chain[];
 
 switch (chainNetwork) {
   case "mainnet":
-    allChains = [polygon, mainnet, bsc, avalanche, moonbeam, evmos, fantom, dogechain, okc, ethereumPoW];
+    allChains = [
+      polygon,
+      mainnet,
+      bsc,
+      avalanche,
+      moonbeam,
+      evmos,
+      fantom,
+      dogechain,
+      okc,
+      ethereumPoW,
+      // pulsechain,
+      base,
+    ];
     break;
   case "testnet":
-    allChains = [goerli, polygonMumbai, pulseChain, x1Devnet];
+    allChains = [goerli, polygonMumbai, pulsechainV4, x1Devnet];
     break;
   default:
     allChains = [foundry];
@@ -78,6 +96,11 @@ export const { chains, provider, webSocketProvider } = configureChains(
           return {
             http: `https://ultra-late-field.fantom.quiknode.pro/${quickNodeId250}/`,
             webSocket: `wss://ultra-late-field.fantom.quiknode.pro/${quickNodeId250}/`,
+          };
+        } else if (chain.id === base.id) {
+          return {
+            http: `https://crimson-alien-water.base-mainnet.quiknode.pro/${quickNodeId8453}/`,
+            webSocket: `wss://crimson-alien-water.base-mainnet.quiknode.pro/${quickNodeId8453}/`,
           };
         } else if (chain.id === goerli.id) {
           return {
