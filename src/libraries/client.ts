@@ -108,11 +108,11 @@ export const { chains, provider, webSocketProvider } = configureChains(
           };
         } else if (chain.id === evmos.id) {
           return {
-            http: `https://evmos-mainnet.public.blastapi.io`,
+            http: `https://evmos-evm-rpc.publicnode.com`,
           };
         } else if (chain.id === dogechain.id) {
           return {
-            http: `https://rpc.ankr.com/dogechain`,
+            http: `https://rpc.dogechain.dog`,
           };
         } else {
           return null;
