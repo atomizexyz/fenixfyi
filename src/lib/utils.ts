@@ -68,6 +68,27 @@ export function calculateEarlyPenalty(
   return ratio * ratio;
 }
 
+export function formatUsd(value: number): string {
+  if (value >= 1_000_000) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      notation: "compact",
+      maximumFractionDigits: 2,
+    }).format(value);
+  }
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: value < 0.01 ? 6 : 2,
+  }).format(value);
+}
+
+export function formatPercent(value: number): string {
+  const sign = value >= 0 ? "+" : "";
+  return `${sign}${value.toFixed(2)}%`;
+}
+
 export function calculateLatePenalty(lateDays: number): number {
   if (lateDays >= 180) return 0;
   const ratio = lateDays / 180;

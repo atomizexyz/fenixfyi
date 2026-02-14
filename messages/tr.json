@@ -16,7 +16,7 @@
     "subtitle": "FENIX oluşturmak için XEN yakın. Sabit %1,618 yıllık enflasyon oranıyla güvensiz getiri kazanmak için FENIX stake edin.",
     "cta_burn": "Yakmaya Başla",
     "cta_learn": "Daha Fazla Bilgi",
-    "next_flush": "Sonraki flush",
+    "next_flush": "Sonraki ödül",
     "flush_ready": "Hazir!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Aydınlık Mod",
     "language": "Dil",
     "chain": "Zincir"
+  },
+  "dex": {
+    "title": "Likidite Çiftleri",
+    "subtitle": "Merkezi olmayan borsalardaki FENIX işlem çiftleri",
+    "chain": "Zincir",
+    "pair": "Çift",
+    "exchange": "DEX",
+    "price": "Fiyat",
+    "change_24h": "24s Değişim",
+    "volume_24h": "24s Hacim",
+    "liquidity": "Likidite",
+    "no_pairs": "İşlem çifti bulunamadı"
   }
 }

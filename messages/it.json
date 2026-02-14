@@ -16,7 +16,7 @@
     "subtitle": "Brucia XEN per creare FENIX. Metti in staking FENIX per guadagnare rendimenti trustless a un tasso d'inflazione fisso annuale dell'1,618%.",
     "cta_burn": "Inizia a Bruciare",
     "cta_learn": "Scopri di Più",
-    "next_flush": "Prossimo flush tra",
+    "next_flush": "Prossima ricompensa tra",
     "flush_ready": "Pronto!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Modalità Chiara",
     "language": "Lingua",
     "chain": "Catena"
+  },
+  "dex": {
+    "title": "Coppie di Liquidità",
+    "subtitle": "Coppie di trading FENIX su exchange decentralizzati",
+    "chain": "Catena",
+    "pair": "Coppia",
+    "exchange": "DEX",
+    "price": "Prezzo",
+    "change_24h": "Variazione 24h",
+    "volume_24h": "Volume 24h",
+    "liquidity": "Liquidità",
+    "no_pairs": "Nessuna coppia di trading trovata"
   }
 }

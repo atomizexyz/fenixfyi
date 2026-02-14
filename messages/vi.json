@@ -16,7 +16,7 @@
     "subtitle": "Đốt XEN để tạo FENIX. Stake FENIX để kiếm lợi nhuận phi tập trung với tỷ lệ lạm phát cố định hàng năm 1,618%.",
     "cta_burn": "Bắt Đầu Đốt",
     "cta_learn": "Tìm Hiểu Thêm",
-    "next_flush": "Lan flush tiep theo sau",
+    "next_flush": "Phần thưởng tiếp theo sau",
     "flush_ready": "San sang!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Chế Độ Sáng",
     "language": "Ngôn ngữ",
     "chain": "Chuỗi"
+  },
+  "dex": {
+    "title": "Cặp Thanh Khoản",
+    "subtitle": "Các cặp giao dịch FENIX trên sàn phi tập trung",
+    "chain": "Chuỗi",
+    "pair": "Cặp",
+    "exchange": "DEX",
+    "price": "Giá",
+    "change_24h": "Thay đổi 24h",
+    "volume_24h": "Khối lượng 24h",
+    "liquidity": "Thanh khoản",
+    "no_pairs": "Không tìm thấy cặp giao dịch"
   }
 }

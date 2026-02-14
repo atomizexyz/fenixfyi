@@ -16,7 +16,7 @@
     "subtitle": "燃烧XEN以创建FENIX。质押FENIX以固定年通胀率1.618%赚取无信任收益。",
     "cta_burn": "开始燃烧",
     "cta_learn": "了解更多",
-    "next_flush": "下次刷新倒计时",
+    "next_flush": "下次奖励倒计时",
     "flush_ready": "就绪！"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "浅色模式",
     "language": "语言",
     "chain": "链"
+  },
+  "dex": {
+    "title": "流动性交易对",
+    "subtitle": "去中心化交易所上的FENIX交易对",
+    "chain": "链",
+    "pair": "交易对",
+    "exchange": "DEX",
+    "price": "价格",
+    "change_24h": "24小时涨跌",
+    "volume_24h": "24小时交易量",
+    "liquidity": "流动性",
+    "no_pairs": "未找到交易对"
   }
 }

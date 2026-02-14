@@ -16,7 +16,7 @@
     "subtitle": "Verbrenne XEN, um FENIX zu erschaffen. Stake FENIX, um vertrauensfreie Rendite bei einer festen jährlichen Inflationsrate von 1,618% zu verdienen.",
     "cta_burn": "Verbrennung Starten",
     "cta_learn": "Mehr Erfahren",
-    "next_flush": "Nachster Flush in",
+    "next_flush": "Nächste Belohnung in",
     "flush_ready": "Bereit!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Hellmodus",
     "language": "Sprache",
     "chain": "Kette"
+  },
+  "dex": {
+    "title": "Liquiditätspaare",
+    "subtitle": "FENIX-Handelspaare auf dezentralen Börsen",
+    "chain": "Kette",
+    "pair": "Paar",
+    "exchange": "DEX",
+    "price": "Preis",
+    "change_24h": "24h Änderung",
+    "volume_24h": "24h Volumen",
+    "liquidity": "Liquidität",
+    "no_pairs": "Keine Handelspaare gefunden"
   }
 }

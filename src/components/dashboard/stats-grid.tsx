@@ -15,7 +15,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFenixStats } from "@/hooks/use-fenix-contract";
-import { formatEther } from "@/lib/utils";
+import { useChainPrice } from "@/hooks/use-dexscreener-prices";
+import { getChainConfig } from "@/config/chains";
+import { formatEther, formatUsd } from "@/lib/utils";
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -23,9 +25,11 @@ interface StatCardProps {
   value: number | undefined;
   suffix?: string;
   isLoading: boolean;
+  usdValue?: number;
+  usdIsLoading?: boolean;
 }
 
-function StatCard({ icon, label, value, suffix, isLoading }: StatCardProps) {
+function StatCard({ icon, label, value, suffix, isLoading, usdValue, usdIsLoading }: StatCardProps) {
   return (
     <Card variant="glow" className="group">
       <CardContent className="p-5">
@@ -68,6 +72,14 @@ function StatCard({ icon, label, value, suffix, isLoading }: StatCardProps) {
               )}
             </div>
           )}
+
+          {usdIsLoading ? (
+            <Skeleton className="mt-1 h-4 w-20" />
+          ) : usdValue !== undefined ? (
+            <p className="mt-1 text-sm text-ash-400 dark:text-ash-500">
+              {formatUsd(usdValue)}
+            </p>
+          ) : null}
         </div>
       </CardContent>
     </Card>
@@ -87,6 +99,9 @@ export function StatsGrid() {
     shareRate,
     isLoading,
   } = useFenixStats(chainId);
+  const { data: priceData, isLoading: priceIsLoading } = useChainPrice(chainId);
+  const chainConfig = getChainConfig(chainId);
+  const chainName = chainConfig?.chain.name ?? "Ethereum";
 
   const totalSupplyNum =
     totalSupply !== undefined
@@ -111,6 +126,8 @@ export function StatsGrid() {
       ? parseFloat(formatEther(equityPoolTotalShares))
       : undefined;
 
+  const priceUsd = priceData?.priceUsd;
+
   const stats: StatCardProps[] = [
     {
       icon: <Flame className="h-5 w-5" />,
@@ -125,6 +142,8 @@ export function StatsGrid() {
       value: totalSupplyNum,
       suffix: "FENIX",
       isLoading,
+      usdValue: totalSupplyNum !== undefined && priceUsd !== undefined ? totalSupplyNum * priceUsd : undefined,
+      usdIsLoading: priceIsLoading,
     },
     {
       icon: <Lock className="h-5 w-5" />,
@@ -145,6 +164,8 @@ export function StatsGrid() {
       value: equityPoolNum,
       suffix: "FENIX",
       isLoading,
+      usdValue: equityPoolNum !== undefined && priceUsd !== undefined ? equityPoolNum * priceUsd : undefined,
+      usdIsLoading: priceIsLoading,
     },
     {
       icon: <Trophy className="h-5 w-5" />,
@@ -152,14 +173,21 @@ export function StatsGrid() {
       value: rewardPoolNum,
       suffix: "FENIX",
       isLoading,
+      usdValue: rewardPoolNum !== undefined && priceUsd !== undefined ? rewardPoolNum * priceUsd : undefined,
+      usdIsLoading: priceIsLoading,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {stats.map((stat) => (
-        <StatCard key={stat.label} {...stat} />
-      ))}
+    <div className="space-y-4">
+      <p className="text-sm font-medium text-ash-500 dark:text-ash-400">
+        {chainName}
+      </p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {stats.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
+        ))}
+      </div>
     </div>
   );
 }

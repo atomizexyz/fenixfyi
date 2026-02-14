@@ -16,7 +16,7 @@
     "subtitle": "Bakar XEN untuk membuat FENIX. Stake FENIX untuk mendapatkan imbal hasil tanpa kepercayaan pada tingkat inflasi tetap tahunan 1,618%.",
     "cta_burn": "Mulai Membakar",
     "cta_learn": "Pelajari Lebih Lanjut",
-    "next_flush": "Flush berikutnya dalam",
+    "next_flush": "Hadiah berikutnya dalam",
     "flush_ready": "Siap!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Mode Terang",
     "language": "Bahasa",
     "chain": "Rantai"
+  },
+  "dex": {
+    "title": "Pasangan Likuiditas",
+    "subtitle": "Pasangan trading FENIX di bursa terdesentralisasi",
+    "chain": "Rantai",
+    "pair": "Pasangan",
+    "exchange": "DEX",
+    "price": "Harga",
+    "change_24h": "Perubahan 24j",
+    "volume_24h": "Volume 24j",
+    "liquidity": "Likuiditas",
+    "no_pairs": "Pasangan trading tidak ditemukan"
   }
 }

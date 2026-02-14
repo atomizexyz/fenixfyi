@@ -16,7 +16,7 @@
     "subtitle": "Quema XEN para crear FENIX. Haz staking de FENIX para ganar rendimiento sin confianza a una tasa de inflación fija anual del 1,618%.",
     "cta_burn": "Empezar a Quemar",
     "cta_learn": "Más Información",
-    "next_flush": "Siguiente vaciado en",
+    "next_flush": "Siguiente recompensa en",
     "flush_ready": "Listo!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Modo Claro",
     "language": "Idioma",
     "chain": "Cadena"
+  },
+  "dex": {
+    "title": "Pares de Liquidez",
+    "subtitle": "Pares de trading de FENIX en exchanges descentralizados",
+    "chain": "Cadena",
+    "pair": "Par",
+    "exchange": "DEX",
+    "price": "Precio",
+    "change_24h": "Cambio 24h",
+    "volume_24h": "Volumen 24h",
+    "liquidity": "Liquidez",
+    "no_pairs": "No se encontraron pares de trading"
   }
 }

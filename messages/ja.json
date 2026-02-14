@@ -16,7 +16,7 @@
     "subtitle": "XENをバーンしてFENIXを生成。FENIXをステークして年間固定インフレ率1.618%でトラストレス利回りを獲得。",
     "cta_burn": "バーンを開始",
     "cta_learn": "詳しく見る",
-    "next_flush": "次のフラッシュまで",
+    "next_flush": "次の報酬まで",
     "flush_ready": "準備完了！"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "ライトモード",
     "language": "言語",
     "chain": "チェーン"
+  },
+  "dex": {
+    "title": "流動性ペア",
+    "subtitle": "分散型取引所のFENIX取引ペア",
+    "chain": "チェーン",
+    "pair": "ペア",
+    "exchange": "DEX",
+    "price": "価格",
+    "change_24h": "24時間変動",
+    "volume_24h": "24時間出来高",
+    "liquidity": "流動性",
+    "no_pairs": "取引ペアが見つかりません"
   }
 }

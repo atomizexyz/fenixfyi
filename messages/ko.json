@@ -16,7 +16,7 @@
     "subtitle": "XEN을 소각하여 FENIX를 생성하세요. FENIX를 스테이킹하여 연간 고정 인플레이션율 1.618%로 트러스트리스 수익을 획득하세요.",
     "cta_burn": "소각 시작",
     "cta_learn": "자세히 알아보기",
-    "next_flush": "다음 플러시까지",
+    "next_flush": "다음 보상까지",
     "flush_ready": "준비 완료!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "라이트 모드",
     "language": "언어",
     "chain": "체인"
+  },
+  "dex": {
+    "title": "유동성 페어",
+    "subtitle": "탈중앙화 거래소의 FENIX 거래 페어",
+    "chain": "체인",
+    "pair": "페어",
+    "exchange": "DEX",
+    "price": "가격",
+    "change_24h": "24시간 변동",
+    "volume_24h": "24시간 거래량",
+    "liquidity": "유동성",
+    "no_pairs": "거래 페어를 찾을 수 없습니다"
   }
 }

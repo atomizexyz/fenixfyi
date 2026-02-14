@@ -16,7 +16,7 @@
     "subtitle": "Brûlez XEN pour créer FENIX. Stakez FENIX pour gagner un rendement sans confiance à un taux d'inflation fixe annuel de 1,618%.",
     "cta_burn": "Commencer à Brûler",
     "cta_learn": "En Savoir Plus",
-    "next_flush": "Prochain flush dans",
+    "next_flush": "Prochaine récompense dans",
     "flush_ready": "Pret !"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Mode Clair",
     "language": "Langue",
     "chain": "Chaîne"
+  },
+  "dex": {
+    "title": "Paires de Liquidité",
+    "subtitle": "Paires de trading FENIX sur les échanges décentralisés",
+    "chain": "Chaîne",
+    "pair": "Paire",
+    "exchange": "DEX",
+    "price": "Prix",
+    "change_24h": "Variation 24h",
+    "volume_24h": "Volume 24h",
+    "liquidity": "Liquidité",
+    "no_pairs": "Aucune paire de trading trouvée"
   }
 }

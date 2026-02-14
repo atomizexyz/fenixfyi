@@ -16,7 +16,7 @@
     "subtitle": "Verbrand XEN om FENIX te creeren. Stake FENIX om vertrouwensloos rendement te verdienen tegen een vast jaarlijks inflatiepercentage van 1,618%.",
     "cta_burn": "Begin Met Verbranden",
     "cta_learn": "Meer Informatie",
-    "next_flush": "Volgende flush over",
+    "next_flush": "Volgende beloning over",
     "flush_ready": "Klaar!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Lichte Modus",
     "language": "Taal",
     "chain": "Keten"
+  },
+  "dex": {
+    "title": "Liquiditeitsparen",
+    "subtitle": "FENIX-handelsparen op gedecentraliseerde beurzen",
+    "chain": "Keten",
+    "pair": "Paar",
+    "exchange": "DEX",
+    "price": "Prijs",
+    "change_24h": "24u Wijziging",
+    "volume_24h": "24u Volume",
+    "liquidity": "Liquiditeit",
+    "no_pairs": "Geen handelsparen gevonden"
   }
 }

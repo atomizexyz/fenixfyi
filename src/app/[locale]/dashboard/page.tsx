@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { StatsGrid } from "@/components/dashboard/stats-grid";
 import { YieldChart } from "@/components/charts/yield-chart";
 import { SupplyChart } from "@/components/charts/equity-pool-chart";
+import { LiquidityPairsSection } from "@/components/dashboard/liquidity-pairs";
 
 export default async function DashboardPage({
   params,
@@ -27,6 +28,8 @@ export default async function DashboardPage({
         <YieldChart amount={1000} term={365} />
         <SupplyChart />
       </div>
+
+      <LiquidityPairsSection filterByChain />
     </div>
   );
 }

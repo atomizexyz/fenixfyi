@@ -16,7 +16,7 @@
     "subtitle": "Spal XEN, aby stworzyc FENIX. Stakuj FENIX, aby zarabiac bezzaufaniowy zysk przy stalej rocznej stopie inflacji 1,618%.",
     "cta_burn": "Zacznij Spalanie",
     "cta_learn": "Dowiedz sie Wiecej",
-    "next_flush": "Nastepne oproznienie za",
+    "next_flush": "Następna nagroda za",
     "flush_ready": "Gotowe!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Tryb Jasny",
     "language": "Jezyk",
     "chain": "Lancuch"
+  },
+  "dex": {
+    "title": "Pary Płynności",
+    "subtitle": "Pary handlowe FENIX na zdecentralizowanych giełdach",
+    "chain": "Sieć",
+    "pair": "Para",
+    "exchange": "DEX",
+    "price": "Cena",
+    "change_24h": "Zmiana 24h",
+    "volume_24h": "Wolumen 24h",
+    "liquidity": "Płynność",
+    "no_pairs": "Nie znaleziono par handlowych"
   }
 }

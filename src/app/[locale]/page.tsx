@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { HeroSection } from "@/components/dashboard/hero-section";
 import { ChainTable } from "@/components/dashboard/chain-table";
+import { LiquidityPairsSection } from "@/components/dashboard/liquidity-pairs";
 import { ChainSupplyGrid } from "@/components/charts/equity-pool-chart";
 import { FeaturesSection } from "@/components/dashboard/features-section";
 
@@ -17,6 +18,7 @@ export default async function HomePage({
       <HeroSection />
       <div className="mx-auto max-w-7xl space-y-16 px-4 sm:px-6 lg:px-8">
         <ChainTable />
+        <LiquidityPairsSection />
         <ChainSupplyGrid />
       </div>
       <FeaturesSection />

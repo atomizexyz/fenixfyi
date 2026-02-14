@@ -16,7 +16,7 @@
     "subtitle": "Burn XEN to create FENIX. Stake FENIX to earn trustless yield at a fixed 1.618% annual inflation rate.",
     "cta_burn": "Start Burning",
     "cta_learn": "Learn More",
-    "next_flush": "Next Flush In",
+    "next_flush": "Next Reward In",
     "flush_ready": "Ready!"
   },
   "stats": {
@@ -164,5 +164,17 @@
     "light_mode": "Light Mode",
     "language": "Language",
     "chain": "Chain"
+  },
+  "dex": {
+    "title": "Liquidity Pairs",
+    "subtitle": "FENIX trading pairs across decentralized exchanges",
+    "chain": "Chain",
+    "pair": "Pair",
+    "exchange": "DEX",
+    "price": "Price",
+    "change_24h": "24h Change",
+    "volume_24h": "24h Volume",
+    "liquidity": "Liquidity",
+    "no_pairs": "No trading pairs found"
   }
 }
