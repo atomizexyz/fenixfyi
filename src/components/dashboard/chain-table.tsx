@@ -7,7 +7,6 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,19 +14,14 @@ import {
   type ChainStats,
 } from "@/hooks/use-all-chains-stats";
 import { formatEther, shortenAddress } from "@/lib/utils";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [text]);
+  const { copied, copy } = useCopyToClipboard();
 
   return (
     <button
-      onClick={handleCopy}
+      onClick={() => copy(text)}
       className="inline-flex items-center text-ash-400 transition-colors hover:text-fenix-500"
       title="Copy address"
     >
@@ -67,9 +61,8 @@ function StatusDot({ status }: { status: ChainStats["status"] }) {
   );
 }
 
-function ChainRow({ stats }: { stats: ChainStats }) {
-  const { chainConfig, totalSupply, equityPoolSupply, rewardPoolSupply, shareRate, status } =
-    stats;
+function parseChainStats(stats: ChainStats) {
+  const { chainConfig, totalSupply, equityPoolSupply, rewardPoolSupply, shareRate } = stats;
   const chain = chainConfig.chain;
 
   const equityNum = equityPoolSupply !== undefined
@@ -89,6 +82,14 @@ function ChainRow({ stats }: { stats: ChainStats }) {
   const addressUrl = explorerUrl
     ? `${explorerUrl}/address/${chainConfig.fenixContract}`
     : undefined;
+
+  return { chain, equityNum, rewardNum, circulatingNum, shareRateNum, addressUrl };
+}
+
+function ChainRow({ stats }: { stats: ChainStats }) {
+  const { chainConfig, status } = stats;
+  const { chain, equityNum, rewardNum, circulatingNum, shareRateNum, addressUrl } =
+    parseChainStats(stats);
 
   return (
     <tr className="border-b border-ash-100 transition-colors hover:bg-ash-50/50 dark:border-ash-800 dark:hover:bg-ash-800/30">
@@ -209,27 +210,9 @@ function ChainRow({ stats }: { stats: ChainStats }) {
 // Mobile card view for small screens
 function ChainCard({ stats }: { stats: ChainStats }) {
   const t = useTranslations("chain_table");
-  const { chainConfig, totalSupply, equityPoolSupply, rewardPoolSupply, shareRate, status } =
-    stats;
-  const chain = chainConfig.chain;
-
-  const equityNum = equityPoolSupply !== undefined
-    ? parseFloat(formatEther(equityPoolSupply))
-    : undefined;
-  const rewardNum = rewardPoolSupply !== undefined
-    ? parseFloat(formatEther(rewardPoolSupply))
-    : undefined;
-  const circulatingNum = totalSupply !== undefined
-    ? parseFloat(formatEther(totalSupply))
-    : undefined;
-  const shareRateNum = shareRate !== undefined
-    ? parseFloat(formatEther(shareRate))
-    : undefined;
-
-  const explorerUrl = chain.blockExplorers?.default?.url;
-  const addressUrl = explorerUrl
-    ? `${explorerUrl}/address/${chainConfig.fenixContract}`
-    : undefined;
+  const { chainConfig, status } = stats;
+  const { chain, equityNum, rewardNum, circulatingNum, shareRateNum, addressUrl } =
+    parseChainStats(stats);
 
   return (
     <Card variant="glow" className="overflow-hidden">

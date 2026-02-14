@@ -7,8 +7,10 @@ import { useDisconnect } from "wagmi";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Menu, X, LogOut, Copy, Check, ExternalLink } from "lucide-react";
 import { FenixLogo, FenixWordmark } from "@/components/icons";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { useClickOutside } from "@/hooks/use-click-outside";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { ChainSelector } from "@/components/wallet/chain-selector";
 import { WalletQR } from "@/components/wallet/wallet-qr";
 import { LocaleSelector } from "@/components/layout/locale-selector";
@@ -17,24 +19,10 @@ function WalletButton() {
   const t = useTranslations("nav");
   const { disconnect } = useDisconnect();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { copied, copy } = useCopyToClipboard();
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCopy = useCallback((address: string) => {
-    navigator.clipboard.writeText(address);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, []);
+  useClickOutside(menuRef, useCallback(() => setMenuOpen(false), []));
 
   const handleDisconnect = useCallback(() => {
     setMenuOpen(false);
@@ -68,7 +56,7 @@ function WalletButton() {
               <div className="absolute end-0 top-full z-50 mt-2 w-52 rounded-xl border border-ash-200 bg-white p-1 shadow-lg dark:border-ash-700 dark:bg-ash-900">
                 {address && (
                   <button
-                    onClick={() => handleCopy(address)}
+                    onClick={() => copy(address)}
                     className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ash-700 transition-colors hover:bg-ash-100 dark:text-ash-300 dark:hover:bg-ash-800"
                   >
                     {copied ? (
@@ -76,7 +64,7 @@ function WalletButton() {
                     ) : (
                       <Copy className="h-4 w-4" />
                     )}
-                    {copied ? "Copied!" : "Copy Address"}
+                    {copied ? t("copied") : t("copy_address")}
                   </button>
                 )}
 
@@ -88,7 +76,7 @@ function WalletButton() {
                   className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-ash-700 transition-colors hover:bg-ash-100 dark:text-ash-300 dark:hover:bg-ash-800"
                 >
                   <ExternalLink className="h-4 w-4" />
-                  Wallet Details
+                  {t("wallet_details")}
                 </button>
 
                 <div className="my-1 border-t border-ash-200 dark:border-ash-700" />

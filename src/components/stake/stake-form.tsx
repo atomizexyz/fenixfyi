@@ -310,9 +310,9 @@ export function StakeForm() {
           disabled={!isConnected || !isValidAmount || isProcessing}
         >
           {isConfirming
-            ? "Confirming..."
+            ? t("confirming")
             : isPending
-              ? "Starting Stake..."
+              ? t("staking")
               : t("stake_button")}
         </Button>
 

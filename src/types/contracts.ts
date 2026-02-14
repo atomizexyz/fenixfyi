@@ -1,22 +1,3 @@
-export interface ChainConfig {
-  id: number;
-  name: string;
-  network: string;
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
-  rpcUrls: string[];
-  blockExplorers: {
-    name: string;
-    url: string;
-  }[];
-  xenContractAddress: `0x${string}`;
-  fenixContractAddress: `0x${string}`;
-  iconPath: string;
-}
-
 export interface StakeInfo {
   status: StakeStatus;
   startTs: bigint;

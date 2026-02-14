@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   calculateTotalBonus,
@@ -95,7 +96,7 @@ function CustomTooltip({
 }
 
 export function YieldChart({ amount, term, className }: YieldChartProps) {
-
+  const t = useTranslations("stats");
   const data = useMemo(
     () => generateYieldData(amount, term),
     [amount, term]
@@ -107,14 +108,14 @@ export function YieldChart({ amount, term, className }: YieldChartProps) {
     <Card variant="glow" className={className}>
       <CardHeader>
         <CardTitle className="text-base font-semibold">
-          Projected Yield
+          {t("projected_yield")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {!hasData ? (
           <div className="flex h-[280px] items-center justify-center">
             <p className="text-sm text-ash-400 dark:text-ash-500">
-              Enter an amount and term to see projected yield
+              {t("yield_empty")}
             </p>
           </div>
         ) : (

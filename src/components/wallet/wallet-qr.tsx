@@ -8,20 +8,15 @@ import { QrCode, Copy, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FenixLogo } from "@/components/icons";
 import { cn, shortenAddress } from "@/lib/utils";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 export function WalletQR() {
   const t = useTranslations("common");
   const { address, isConnected } = useAccount();
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   if (!isConnected || !address) return null;
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(address);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <>
@@ -57,10 +52,10 @@ export function WalletQR() {
               {/* Title */}
               <div className="text-center">
                 <h3 className="text-lg font-semibold text-ash-900 dark:text-ash-100">
-                  Wallet Address
+                  {t("wallet_address")}
                 </h3>
                 <p className="mt-1 text-sm text-ash-500 dark:text-ash-400">
-                  Scan to send tokens to this address
+                  {t("scan_to_send")}
                 </p>
               </div>
 
@@ -87,7 +82,7 @@ export function WalletQR() {
                   {shortenAddress(address, 8)}
                 </span>
                 <button
-                  onClick={handleCopy}
+                  onClick={() => copy(address)}
                   className={cn(
                     "flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition-colors",
                     copied

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FenixLogo } from "@/components/icons";
 import { useCooldownUnlockTs } from "@/hooks/use-fenix-contract";
+import { useCountdown } from "@/hooks/use-countdown";
 import { mainnet } from "wagmi/chains";
 
 const ORB_CONFIG = [
@@ -105,29 +106,15 @@ function FloatingParticles() {
 function FlushCountdownDisplay() {
   const t = useTranslations("hero");
   const { data: cooldownUnlockTs } = useCooldownUnlockTs(mainnet.id);
-  const [now, setNow] = useState(Math.floor(Date.now() / 1000));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(Math.floor(Date.now() / 1000));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const target = useMemo(() => {
     if (!cooldownUnlockTs) return 0;
     return Number(cooldownUnlockTs);
   }, [cooldownUnlockTs]);
 
+  const { days, hours, minutes, seconds, ready } = useCountdown(target);
+
   if (!target) return null;
-
-  const remaining = Math.max(target - now, 0);
-  const ready = remaining <= 0;
-
-  const days = Math.floor(remaining / 86400);
-  const hours = Math.floor((remaining % 86400) / 3600);
-  const minutes = Math.floor((remaining % 3600) / 60);
-  const seconds = remaining % 60;
 
   return (
     <motion.div

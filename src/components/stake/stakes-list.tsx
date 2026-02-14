@@ -33,10 +33,11 @@ import {
   calculateLatePenalty,
   secondsToDays,
 } from "@/lib/utils";
+import { SECONDS_PER_DAY } from "@/config/constants";
 import { StakeStatus, type StakeInfo } from "@/types/contracts";
 
 export function getMaturityTs(stake: StakeInfo): number {
-  return Number(stake.startTs) + Number(stake.term) * 86_400;
+  return Number(stake.startTs) + Number(stake.term) * SECONDS_PER_DAY;
 }
 
 export function getStakeStatus(
@@ -79,7 +80,7 @@ export function getStakeStatus(
 }
 
 export function getProgress(stake: StakeInfo, now: number): number {
-  const termSeconds = Number(stake.term) * 86_400;
+  const termSeconds = Number(stake.term) * SECONDS_PER_DAY;
   const startTs = Number(stake.startTs);
   const elapsed = now - startTs;
 
@@ -94,7 +95,7 @@ export function getDaysInfo(
 ): { days: number; isLate: boolean } {
   const maturity = getMaturityTs(stake);
   const diff = maturity - now;
-  const days = Math.abs(Math.ceil(diff / 86_400));
+  const days = Math.abs(Math.ceil(diff / SECONDS_PER_DAY));
 
   return { days, isLate: diff < 0 };
 }
@@ -483,7 +484,7 @@ export function StakesList() {
         <div className="flex items-center gap-2 rounded-lg border border-ember-200 bg-ember-50 p-3 text-sm text-ember-700 dark:border-ember-800 dark:bg-ember-950/30 dark:text-ember-400">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>
-            {endError ? "Error ending stake" : "Error deferring stake"}
+            {endError ? t("error_ending") : t("error_deferring")}
           </span>
         </div>
       )}

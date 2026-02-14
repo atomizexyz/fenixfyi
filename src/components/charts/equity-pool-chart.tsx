@@ -180,7 +180,7 @@ export function SupplyChart({ className }: SupplyChartProps) {
         ) : data.length === 0 ? (
           <div className="flex h-[280px] items-center justify-center">
             <p className="text-sm text-ash-400 dark:text-ash-500">
-              No pool data available
+              {t("no_pool_data")}
             </p>
           </div>
         ) : (
@@ -240,9 +240,6 @@ export function SupplyChart({ className }: SupplyChartProps) {
     </Card>
   );
 }
-
-/** @deprecated Use SupplyChart instead */
-export const EquityPoolChart = SupplyChart;
 
 /* ── Mini chart card (per-chain, data-driven) ──────────────────── */
 

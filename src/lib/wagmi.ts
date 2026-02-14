@@ -1,53 +1,22 @@
 import { createConfig, createStorage, cookieStorage } from "wagmi";
-import {
-  mainnet,
-  polygon,
-  avalanche,
-  bsc,
-  base,
-  fantom,
-  moonbeam,
-  evmos,
-  pulsechain,
-  dogechain,
-  okc,
-} from "wagmi/chains";
 import { getDefaultConfig } from "connectkit";
-import { ethereumPow } from "@/config/chains";
+import { SUPPORTED_CHAINS } from "@/config/chains";
 import { chainTransports } from "@/config/rpc";
 
-const chains = [
-  mainnet,
-  polygon,
-  bsc,
-  avalanche,
-  moonbeam,
-  evmos,
-  fantom,
-  dogechain,
-  okc,
-  ethereumPow,
-  base,
-  pulsechain,
-] as const;
+const chains = SUPPORTED_CHAINS as unknown as readonly [
+  (typeof SUPPORTED_CHAINS)[0],
+  ...typeof SUPPORTED_CHAINS,
+];
+
+const transports: Record<number, (typeof chainTransports)[number]> =
+  Object.fromEntries(
+    SUPPORTED_CHAINS.map((chain) => [chain.id, chainTransports[chain.id]]),
+  );
 
 export const config = createConfig({
   ...getDefaultConfig({
     chains,
-    transports: {
-      [mainnet.id]: chainTransports[mainnet.id],
-      [polygon.id]: chainTransports[polygon.id],
-      [bsc.id]: chainTransports[bsc.id],
-      [avalanche.id]: chainTransports[avalanche.id],
-      [moonbeam.id]: chainTransports[moonbeam.id],
-      [evmos.id]: chainTransports[evmos.id],
-      [fantom.id]: chainTransports[fantom.id],
-      [dogechain.id]: chainTransports[dogechain.id],
-      [okc.id]: chainTransports[okc.id],
-      [ethereumPow.id]: chainTransports[ethereumPow.id],
-      [base.id]: chainTransports[base.id],
-      [pulsechain.id]: chainTransports[pulsechain.id],
-    },
+    transports,
     walletConnectProjectId:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "demo",
     appName: "Fenix Protocol",

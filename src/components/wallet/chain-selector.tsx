@@ -3,8 +3,9 @@
 import { useAccount, useSwitchChain } from "wagmi";
 import { FENIX_CHAINS } from "@/config/chains";
 import { ChevronDown } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { useClickOutside } from "@/hooks/use-click-outside";
 
 export function ChainSelector() {
   const { chain } = useAccount();
@@ -14,15 +15,7 @@ export function ChainSelector() {
 
   const currentChain = FENIX_CHAINS.find((c) => c.chain.id === chain?.id);
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  useClickOutside(ref, useCallback(() => setOpen(false), []));
 
   if (!chain) return null;
 

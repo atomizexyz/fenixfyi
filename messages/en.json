@@ -9,7 +9,10 @@
     "stake": "Stake",
     "rewards": "Rewards",
     "connect": "Connect Wallet",
-    "disconnect": "Disconnect"
+    "disconnect": "Disconnect",
+    "copied": "Copied!",
+    "copy_address": "Copy Address",
+    "wallet_details": "Wallet Details"
   },
   "hero": {
     "title": "Rise From The Ashes",
@@ -29,7 +32,10 @@
     "circulating": "Circulating",
     "supply_distribution": "Supply Distribution",
     "inflation_rate": "Inflation Rate",
-    "active_stakes": "Active Stakes"
+    "active_stakes": "Active Stakes",
+    "projected_yield": "Projected Yield",
+    "yield_empty": "Enter an amount and term to see projected yield",
+    "no_pool_data": "No pool data available"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -47,7 +53,12 @@
     "max": "Max",
     "balance": "Balance",
     "success": "Successfully burned {xen} XEN for {fenix} FENIX",
-    "error": "Error burning XEN"
+    "error": "Error burning XEN",
+    "confirming": "Confirming...",
+    "approving": "Approving...",
+    "burning": "Burning...",
+    "approval_confirmed": "Approval confirmed. You can now burn.",
+    "unsupported_network": "Please switch to a supported network"
   },
   "stake": {
     "title": "Stake FENIX",
@@ -68,7 +79,9 @@
     "balance": "Balance",
     "max": "Max",
     "success": "Successfully staked {amount} FENIX for {term} days",
-    "error": "Error starting stake"
+    "error": "Error starting stake",
+    "confirming": "Confirming...",
+    "staking": "Starting Stake..."
   },
   "stakes": {
     "title": "Your Stakes",
@@ -95,7 +108,9 @@
     "matured": "Matured",
     "previous": "Previous",
     "next": "Next",
-    "page_of": "Page {page} of {total}"
+    "page_of": "Page {page} of {total}",
+    "error_ending": "Error ending stake",
+    "error_deferring": "Error deferring stake"
   },
   "rewards": {
     "title": "Rewards",
@@ -109,7 +124,11 @@
     "estimated_reward": "Estimated Reward",
     "weeks": "{weeks} weeks",
     "days": "{days} days",
-    "ready": "Ready"
+    "ready": "Ready",
+    "confirming": "Confirming...",
+    "flushing": "Flushing...",
+    "flush_success": "Rewards flushed successfully",
+    "flush_error": "Error flushing rewards"
   },
   "chain_table": {
     "title": "Cross-Chain Overview",
@@ -154,6 +173,8 @@
     "retry": "Try again",
     "copy": "Copy",
     "copied": "Copied!",
+    "wallet_address": "Wallet Address",
+    "scan_to_send": "Scan to send tokens to this address",
     "share": "Share",
     "close": "Close",
     "confirm": "Confirm",

@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { SECONDS_PER_DAY } from "@/config/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,11 +40,11 @@ export function shortenAddress(
 }
 
 export function daysToSeconds(days: number): number {
-  return days * 86_400;
+  return days * SECONDS_PER_DAY;
 }
 
 export function secondsToDays(seconds: number): number {
-  return Math.floor(seconds / 86_400);
+  return Math.floor(seconds / SECONDS_PER_DAY);
 }
 
 export function calculateTimeBonus(term: number): number {

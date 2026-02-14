@@ -211,9 +211,9 @@ export function BurnForm() {
               disabled={!isConnected || !chainSupported || isProcessing}
             >
               {isApproveConfirming
-                ? "Confirming..."
+                ? t("confirming")
                 : isApprovePending
-                  ? "Approving..."
+                  ? t("approving")
                   : t("approve")}
             </Button>
           ) : (
@@ -225,9 +225,9 @@ export function BurnForm() {
               disabled={!isConnected || !chainSupported || !isValidAmount || isProcessing}
             >
               {isBurnConfirming
-                ? "Confirming..."
+                ? t("confirming")
                 : isBurnPending
-                  ? "Burning..."
+                  ? t("burning")
                   : t("burn_button")}
             </Button>
           )}
@@ -251,14 +251,14 @@ export function BurnForm() {
         {isApproveSuccess && needsApproval && (
           <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400">
             <CheckCircle className="h-4 w-4 shrink-0" />
-            <span>Approval confirmed. You can now burn.</span>
+            <span>{t("approval_confirmed")}</span>
           </div>
         )}
 
         {isConnected && !chainSupported && (
           <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-400">
             <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>Please switch to a supported network</span>
+            <span>{t("unsupported_network")}</span>
           </div>
         )}
 
